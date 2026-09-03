@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - Analisador AFD</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 40px;
+            background-color: #f4f7f6;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 { margin-top: 0; color: #004085; border-bottom: 2px solid #e9ecef; padding-bottom: 10px; }
+        .file-upload-box {
+            border: 2px dashed #0056b3;
+            padding: 30px;
+            text-align: center;
+            border-radius: 8px;
+            background-color: #e9f2fd;
+            margin: 20px 0;
+        }
+        input[type="file"] { font-size: 16px; cursor: pointer; }
+        
+        /* Estilos dos Botões e Resumo */
+        .header-resultados {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #dee2e6;
+        }
+        .btn { 
+            padding: 10px 20px; background: #28a745; 
+            color: white; text-align: center; border: none; border-radius: 4px; 
+            cursor: pointer; font-size: 14px; font-weight: bold;
+        }
+        .btn:hover { background: #218838; }
+        
+        /* Estilos da Tabela */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background-color: #004085; color: white; position: sticky; top: 0; }
+        tr:hover { background-color: #f1f1f1; }
+        
+        /* Cores das Operações */
+        .op-inclusao { color: #28a745; font-weight: bold; }
+        .op-alteracao { color: #fd7e14; font-weight: bold; }
+        .op-exclusao { color: #dc3545; font-weight: bold; }
+        
+        #sessaoResultados { display: none; margin-top: 30px; }
+        #status { font-size: 16px; font-weight: bold; color: #004085; text-align: center; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📊 Analisador de Arquivo Fonte de Dados (AFD)</h2>
+        <p>Selecione o arquivo exportado do REP. Serão exibidos os registros de Inclusão, Alteração e Exclusão (Tipo 5).</p>
+        
+        <div class="file-upload-box">
+            <input type="file" id="arquivoAfd" accept=".txt">
+        </div>
+        
+        <div id="status"></div>
+        
+        <!-- Esta área só aparece após a leitura do arquivo -->
+        <div id="sessaoResultados">
+            <div class="header-resultados">
+                <div id="resumoValores">
+                    <!-- Resumo inserido via JS -->
+                </div>
+                <button id="btnDownload" class="btn">⬇️ Baixar JSON Completo</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Hora</th>
+                        <th>Operação</th>
+                        <th>CPF</th>
+                        <th>Colaborador / PIS</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCorpo">
+                    <!-- Linhas inseridas via JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+</html>

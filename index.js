@@ -1,169 +1,90 @@
-const { Worker, isMainThread, parentPort } = require('worker_threads');
-const fs = require('fs');
-const readline = require('readline');
-const os = require('os');
-const path = require('path');
+document.addEventListener('DOMContentLoaded', () => {
+    const fileInput = document.getElementById('arquivoAfd');
+    const statusDiv = document.getElementById('status');
+    const sessaoResultados = document.getElementById('sessaoResultados');
+    const resumoValores = document.getElementById('resumoValores');
+    const tabelaCorpo = document.getElementById('tabelaCorpo');
+    const btnDownload = document.getElementById('btnDownload');
 
-// --- THREAD PRINCIPAL ---
-if (isMainThread) {
-    const arquivoAfd = process.argv[2];
+    let relatorioFinal = null;
 
-    if (!arquivoAfd) {
-        console.error('Uso incorreto. Execute: leitor_afd.exe <caminho_do_arquivo.txt>');
-        process.exit(1);
-    }
+    fileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
 
-    const numWorkers = Math.max(1, os.cpus().length - 1); // Deixa 1 núcleo livre
-    const workers = [];
-    let trabalhadoresAtivos = 0;
-    
-    // Armazena os dados consolidados
-    const relatorioFinal = {
-        porData: {},
-        porCPF: {},
-        porOperacao: { 'Inclusão': 0, 'Alteração': 0, 'Exclusão': 0 }
-    };
+        // Limpa a tela para um novo arquivo
+        sessaoResultados.style.display = 'none';
+        tabelaCorpo.innerHTML = '';
+        statusDiv.innerHTML = "Processando arquivo... ⏳ Isso pode levar alguns segundos dependendo do tamanho.";
 
-    console.log(`Iniciando leitura do AFD usando ${numWorkers} workers...`);
+        const worker = new Worker('worker.js');
+        worker.postMessage(file);
 
-    // Inicializa os workers
-    for (let i = 0; i < numWorkers; i++) {
-        const worker = new Worker(__filename);
-        worker.on('message', (resultadoParcial) => {
-            mesclarResultados(resultadoParcial);
-        });
-        worker.on('error', (erro) => console.error('Erro no worker:', erro));
-        worker.on('exit', () => {
-            trabalhadoresAtivos--;
-            if (trabalhadoresAtivos === 0) {
-                gerarSaidaParaSuporte();
+        worker.onmessage = (e) => {
+            if (e.data.erro) {
+                statusDiv.innerHTML = `<span style="color: red;">Erro: ${e.data.erro}</span>`;
+                return;
             }
-        });
-        workers.push(worker);
-        trabalhadoresAtivos++;
-    }
 
-    // Leitura do arquivo e envio em lotes
-    const rl = readline.createInterface({
-        input: fs.createReadStream(arquivoAfd),
-        crlfDelay: Infinity
-    });
+            relatorioFinal = e.data.resultado;
+            
+            // 1. Atualiza o painel de Resumo
+            resumoValores.innerHTML = `
+                <strong>Total Encontrado:</strong><br>
+                <span style="color: #28a745;">Inclusões: ${relatorioFinal.porOperacao['Inclusão']}</span> | 
+                <span style="color: #fd7e14;">Alterações: ${relatorioFinal.porOperacao['Alteração']}</span> | 
+                <span style="color: #dc3545;">Exclusões: ${relatorioFinal.porOperacao['Exclusão']}</span>
+            `;
 
-    let lote = [];
-    let workerIndex = 0;
-    const TAMANHO_LOTE = 20000;
+            // 2. Preenche a tabela iterando pelas datas
+            for (const [data, registros] of Object.entries(relatorioFinal.porData)) {
+                registros.forEach(reg => {
+                    const tr = document.createElement('tr');
+                    
+                    // Define a classe CSS de cor baseado na operação
+                    let classeOp = '';
+                    if (reg.operacao === 'Inclusão') classeOp = 'op-inclusao';
+                    if (reg.operacao === 'Alteração') classeOp = 'op-alteracao';
+                    if (reg.operacao === 'Exclusão') classeOp = 'op-exclusao';
 
-    rl.on('line', (linha) => {
-        // Envia apenas as linhas do Tipo 5 para economizar memória e tráfego
-        if (linha.length >= 50 && linha.charAt(9) === '5') {
-            lote.push(linha);
-        }
+                    // Formata a exibição da hora (pega apenas a parte da hora da string ISO)
+                    const horaFormatada = reg.dataHora.substring(11, 19);
+                    
+                    // Formata a data (de YYYY-MM-DD para DD/MM/YYYY) para ficar mais amigável
+                    const partesData = data.split('-');
+                    const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
 
-        if (lote.length >= TAMANHO_LOTE) {
-            workers[workerIndex].postMessage(lote);
-            lote = [];
-            workerIndex = (workerIndex + 1) % numWorkers;
-        }
-    });
-
-    rl.on('close', () => {
-        if (lote.length > 0) {
-            workers[workerIndex].postMessage(lote);
-        }
-        // Avisa os workers que o arquivo acabou
-        workers.forEach(w => w.postMessage('FIM'));
-    });
-
-    function mesclarResultados(parcial) {
-        // Mescla datas
-        for (const [data, registros] of Object.entries(parcial.porData)) {
-            if (!relatorioFinal.porData[data]) relatorioFinal.porData[data] = [];
-            relatorioFinal.porData[data].push(...registros);
-        }
-        // Mescla CPFs
-        for (const [cpf, registros] of Object.entries(parcial.porCPF)) {
-            if (!relatorioFinal.porCPF[cpf]) relatorioFinal.porCPF[cpf] = [];
-            relatorioFinal.porCPF[cpf].push(...registros);
-        }
-        // Mescla Contadores de Operação
-        for (const [op, qtd] of Object.entries(parcial.porOperacao)) {
-            if (relatorioFinal.porOperacao[op] !== undefined) {
-                relatorioFinal.porOperacao[op] += qtd;
+                    tr.innerHTML = `
+                        <td>${dataFormatada}</td>
+                        <td>${horaFormatada}</td>
+                        <td class="${classeOp}">${reg.operacao}</td>
+                        <td>${reg.cpf}</td>
+                        <td>${reg.detalhes}</td>
+                    `;
+                    tabelaCorpo.appendChild(tr);
+                });
             }
-        }
-    }
-
-    function gerarSaidaParaSuporte() {
-        const nomeArquivoSaida = `Analise_AFD_${Date.now()}.json`;
-        
-        fs.writeFileSync(nomeArquivoSaida, JSON.stringify(relatorioFinal, null, 2), 'utf8');
-        
-        console.log('\n--- RESUMO DA ANÁLISE ---');
-        console.log(`Total de Inclusões: ${relatorioFinal.porOperacao['Inclusão']}`);
-        console.log(`Total de Alterações: ${relatorioFinal.porOperacao['Alteração']}`);
-        console.log(`Total de Exclusões:  ${relatorioFinal.porOperacao['Exclusão']}`);
-        console.log('\nAnálise concluída com sucesso!');
-        console.log(`Os dados agrupados foram salvos no arquivo: ${nomeArquivoSaida}`);
-        console.log('Esse arquivo contém os detalhes agrupados por Data e por CPF para facilitar as auditorias.');
-        process.exit(0);
-    }
-} 
-// --- WORKER THREAD ---
-else {
-    let processando = false;
-
-    parentPort.on('message', (mensagem) => {
-        if (mensagem === 'FIM') {
-            process.exit(0);
-        }
-
-        const linhas = mensagem;
-        const resultadoLocal = {
-            porData: {},
-            porCPF: {},
-            porOperacao: { 'Inclusão': 0, 'Alteração': 0, 'Exclusão': 0 }
+            
+            statusDiv.innerHTML = ""; // Limpa a mensagem de carregamento
+            sessaoResultados.style.display = 'block'; // Mostra a tabela e botões
+            worker.terminate();
         };
-
-        for (const linha of linhas) {
-            try {
-                // Layout baseado na Portaria 671 (Slide)
-                const nsr = linha.substring(0, 9);
-                // tipo = linha.substring(9, 10); // Já filtrado no main (sempre '5')
-                const dataHora = linha.substring(10, 34); // ex: 2025-01-06T16:16:00-0300
-                const dataStr = dataHora.substring(0, 10);
-                const codigoOp = linha.substring(34, 35);
-                const cpf = linha.substring(35, 46);
-                const nomeEPis = linha.substring(46).trim(); 
-
-                let operacao = 'Desconhecida';
-                if (codigoOp === 'I') operacao = 'Inclusão';
-                else if (codigoOp === 'A') operacao = 'Alteração';
-                else if (codigoOp === 'E') operacao = 'Exclusão';
-
-                const registro = {
-                    nsr,
-                    dataHora,
-                    operacao,
-                    cpf,
-                    detalhes: nomeEPis
-                };
-
-                // Agrupamentos
-                if (!resultadoLocal.porData[dataStr]) resultadoLocal.porData[dataStr] = [];
-                resultadoLocal.porData[dataStr].push(registro);
-
-                if (!resultadoLocal.porCPF[cpf]) resultadoLocal.porCPF[cpf] = [];
-                resultadoLocal.porCPF[cpf].push(registro);
-
-                if (resultadoLocal.porOperacao[operacao] !== undefined) {
-                    resultadoLocal.porOperacao[operacao]++;
-                }
-            } catch (err) {
-                // Ignora linhas mal formatadas silenciosamente para não poluir o log do suporte
-            }
-        }
-
-        // Devolve os resultados agregados para a thread principal
-        parentPort.postMessage(resultadoLocal);
     });
-}
+
+    // Função para baixar o JSON
+    btnDownload.addEventListener('click', () => {
+        if (!relatorioFinal) return;
+
+        const blob = new Blob([JSON.stringify(relatorioFinal, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Auditoria_AFD_${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    });
+});
