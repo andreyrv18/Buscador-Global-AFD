@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             relatorioFinal = e.data.resultado;
-            
+
             // 1. Atualiza o painel de Resumo
             resumoValores.innerHTML = `
                 <strong>Total Encontrado:</strong><br>
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             for (const [data, registros] of Object.entries(relatorioFinal.porData)) {
                 registros.forEach(reg => {
                     const tr = document.createElement('tr');
-                    
+
                     // Define a classe CSS de cor baseado na operação
                     let classeOp = '';
                     if (reg.operacao === 'Inclusão') classeOp = 'op-inclusao';
@@ -49,22 +49,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
                     // Formata a exibição da hora (pega apenas a parte da hora da string ISO)
                     const horaFormatada = reg.dataHora.substring(11, 19);
-                    
+
                     // Formata a data (de YYYY-MM-DD para DD/MM/YYYY) para ficar mais amigável
                     const partesData = data.split('-');
                     const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
 
                     tr.innerHTML = `
                         <td>${dataFormatada}</td>
-                        <td>${horaFormatada}</td>
+                        <td>${reg.horaFormatada}</td>
                         <td class="${classeOp}">${reg.operacao}</td>
-                        <td>${reg.cpf}</td>
+                        <td>${reg.cpfPis}</td>
                         <td>${reg.detalhes}</td>
                     `;
                     tabelaCorpo.appendChild(tr);
                 });
             }
-            
+
             statusDiv.innerHTML = ""; // Limpa a mensagem de carregamento
             sessaoResultados.style.display = 'block'; // Mostra a tabela e botões
             worker.terminate();
@@ -77,13 +77,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const blob = new Blob([JSON.stringify(relatorioFinal, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
-        
+
         const a = document.createElement('a');
         a.href = url;
         a.download = `Auditoria_AFD_${Date.now()}.json`;
         document.body.appendChild(a);
         a.click();
-        
+
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });

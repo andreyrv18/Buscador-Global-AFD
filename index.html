@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Analisador AFD</title>
+    <title>Dashboard - Filtro AFD</title>
     <style>
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
@@ -69,13 +69,14 @@
         
         #sessaoResultados { display: none; margin-top: 30px; }
         #status { font-size: 16px; font-weight: bold; color: #004085; text-align: center; }
+        
     </style>
 </head>
 <body>
     <div class="container">
-        <h2>📊 Analisador de Arquivo Fonte de Dados (AFD)</h2>
+        <h2>📊 Filtro para Arquivo Fonte de Dados (AFD)</h2>
         <p>Selecione o arquivo exportado do REP. Serão exibidos os registros de Inclusão, Alteração e Exclusão (Tipo 5).</p>
-        
+        <p>Portarias suportadas: 595, 1510, 671</p>
         <div class="file-upload-box">
             <input type="file" id="arquivoAfd" accept=".txt">
         </div>
@@ -92,13 +93,13 @@
             </div>
 
             <table>
-                <thead>
+             <thead>
                     <tr>
                         <th>Data</th>
                         <th>Hora</th>
                         <th>Operação</th>
-                        <th>CPF</th>
-                        <th>Colaborador / PIS</th>
+                        <th>CPF / PIS</th> <!-- Alterado aqui -->
+                        <th>Colaborador (Nome)</th> <!-- Alterado aqui -->
                     </tr>
                 </thead>
                 <tbody id="tabelaCorpo">
