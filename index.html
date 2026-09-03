@@ -69,7 +69,8 @@
         
         #sessaoResultados { display: none; margin-top: 30px; }
         #status { font-size: 16px; font-weight: bold; color: #004085; text-align: center; }
-        
+        .btn:disabled { background: #6c757d; cursor: not-allowed; }
+.paginacao { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border: 1px solid #dee2e6; }
     </style>
 </head>
 <body>
@@ -85,11 +86,26 @@
         
         <!-- Esta área só aparece após a leitura do arquivo -->
         <div id="sessaoResultados">
-            <div class="header-resultados">
+         <div class="header-resultados">
                 <div id="resumoValores">
                     <!-- Resumo inserido via JS -->
                 </div>
-                <button id="btnDownload" class="btn">⬇️ Baixar JSON Completo</button>
+                
+                <!-- NOVO: Controles da direita (Seletor + Download) -->
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div>
+                        <label for="tamanhoPagina" style="font-weight: bold;">Itens por página: </label>
+                        <select id="tamanhoPagina" style="padding: 8px; font-size: 14px; border-radius: 4px;">
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="50">50</option>
+                            <option value="100" selected>100</option>
+                            <option value="500">500</option>
+                        </select>
+                    </div>
+                    <button id="btnDownload" class="btn">⬇️ Baixar JSON</button>
+                </div>
             </div>
 
             <table>
@@ -106,6 +122,11 @@
                     <!-- Linhas inseridas via JS -->
                 </tbody>
             </table>
+            <div class="paginacao" id="controlesPaginacao" style="display: none;">
+                <button id="btnAnterior" class="btn">⬅️ Anterior</button>
+                <span id="infoPagina" style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>
+                <button id="btnProximo" class="btn">Próxima ➡️</button>
+            </div>
         </div>
     </div>
 

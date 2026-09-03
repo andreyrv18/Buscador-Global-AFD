@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Analisador de AFD - Suporte",
-  "version": "1.5",
+  "version": "2.0",
   "description": "Lê e agrupa arquivos AFD (Portaria 671) localmente em tela cheia.",
   "action": {
     "default_title": "Abrir Analisador AFD"
