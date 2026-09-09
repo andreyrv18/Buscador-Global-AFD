@@ -299,3 +299,18 @@ tr:hover {
     border-color: #dc3545;
     background-color: #ffebee;
 }
+
+
+/* Classes para o efeito Zebra Stripe por Agrupamento de Data */
+tr.zebra-par {
+    background-color: #ffffff;
+}
+
+tr.zebra-impar {
+    background-color: #f2f2f2;
+}
+
+/* Mantém o destaque ao passar o mouse por cima */
+tbody tr:hover {
+    background-color: #e2eafc !important;
+}
