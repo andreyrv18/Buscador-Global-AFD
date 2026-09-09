@@ -9,122 +9,159 @@
 </head>
 
 <body>
-    <div class="container">
-        <h2>Buscador Global para Arquivo Fonte de Dados (AFD)</h2>
-        <p>Selecione o arquivo exportado do REP. Serão exibidos os registros de Inclusão, Alteração e Exclusão (Tipo 5).
-        </p>
-        <p>Portarias suportadas: 595, 1510, 671</p>
-        <div class="file-upload-box">
-            <input type="file" id="arquivoAfd" accept=".txt" class="hidden-input">
-            <label for="arquivoAfd" class="btn btn-primary btn-icon">
-                <span class="material-symbols-rounded">upload</span>
-                Selecionar arquivo
-            </label>
-            <span id="fileNameDisplay" class="file-name-display">Nenhum arquivo selecionado</span>
+    <div class="app-container">
+        <!-- Menu Lateral (Sidebar) -->
+        <nav class="sidebar">
+            <div class="logo">
+                <span>⚡ Buscador AFD</span>
+            </div>
+            <ul class="menu">
+                <li class="menu-item ativo" data-aba="abaFuncionarios">
+                    <span class="icon">👤</span>
+                    <span class="label">Funcionários (Tipo 5)</span>
+                </li>
+                <li class="menu-item" data-aba="abaRelogio">
+                    <span class="icon">⏱️</span>
+                    <span class="label">Ajustes Relógio (Tipo 4)</span>
+                </li>
+                <li class="menu-item" data-aba="abaEventos">
+                    <span class="icon">🛡️</span>
+                    <span class="label">Eventos REP (Tipo 6)</span>
+                </li>
+            </ul>
+        </nav>
 
-        </div>
+        <!-- Conteúdo Principal -->
+        <main class="main-content">
+            <div class="container">
+                <h2>Buscador Global para Arquivo Fonte de Dados (AFD)</h2>
+                <p>Selecione o arquivo exportado do REP. Serão exibidos os registros do sistema.</p>
+                <p>Portarias suportadas: 595, 1510, 671</p>
 
-        <div id="status"></div>
+                <!-- Área de Upload -->
+                <div class="file-upload-box">
+                    <input type="file" id="arquivoAfd" accept=".txt" class="hidden-input">
+                    <label for="arquivoAfd" class="btn btn-primary btn-icon">
+                        <span class="material-symbols-rounded">upload</span>
+                        Selecionar arquivo
+                    </label>
+                    <span id="fileNameDisplay" class="file-name-display">Nenhum arquivo selecionado</span>
+                </div>
 
-        <!-- Esta área só aparece após a leitura do arquivo -->
-        <div id="resumoAFD">
-            <!-- Resumo da AFD via JS-->
+                <div id="status"></div>
 
-        </div>
-        <div id="sessaoResultados">
+                <!-- Resumo Geral do Arquivo -->
+                <div id="resumoAFD"></div>
 
+                <!-- Seção de Resultados Geral -->
+                <div id="sessaoResultados" style="display: none;">
 
-            <div class="header-resultados">
+                    <!-- ABA 1: FUNCIONÁRIOS (TIPO 5) -->
+                    <section id="abaFuncionarios" class="aba-conteudo ativa">
+                        <div class="header-resultados">
+                            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+                                <div>
+                                    <label for="filtroNome" style="font-weight: bold; font-size: 12px; display: block;">Nome:</label>
+                                    <input type="text" id="filtroNome" placeholder="Buscar nome..." style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 140px;">
+                                </div>
+                                <div>
+                                    <label for="filtroCpf" style="font-weight: bold; font-size: 12px; display: block;">CPF / PIS:</label>
+                                    <input type="text" id="filtroCpf" placeholder="Buscar CPF/PIS..." style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 130px;">
+                                </div>
+                                <div>
+                                    <label for="filtroData" style="font-weight: bold; font-size: 12px; display: block;">Data:</label>
+                                    <input type="date" id="filtroData" style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
+                                </div>
+                                <div>
+                                    <label for="ordemData" style="font-weight: bold; font-size: 12px; display: block;">Ordem (Data):</label>
+                                    <select id="ordemData" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                                        <option value="asc" selected>Crescente </option>
+                                        <option value="desc">Decrescente </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="tamanhoPagina" style="font-weight: bold; font-size: 12px; display: block;">Por página:</label>
+                                    <select id="tamanhoPagina" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                                        <option value="10" selected>10</option>
+                                        <option value="20">20</option>
+                                        <option value="30">30</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                        <option value="500">500</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <button id="btnDownload" class="btn" type="button">⬇ Baixar JSON</button>
+                            </div>
+                        </div>
 
-                <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                    <div>
-                        <label for="filtroNome"
-                            style="font-weight: bold; font-size: 12px; display: block;">Nome:</label>
-                        <input type="text" id="filtroNome" placeholder="Buscar nome..."
-                            style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 140px;">
-                    </div>
-                    <div>
-                        <label for="filtroCpf" style="font-weight: bold; font-size: 12px; display: block;">CPF /
-                            PIS:</label>
-                        <input type="text" id="filtroCpf" placeholder="Buscar CPF/PIS..."
-                            style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 130px;">
-                    </div>
-                    <div>
-                        <label for="filtroData"
-                            style="font-weight: bold; font-size: 12px; display: block;">Data:</label>
-                        <input type="date" id="filtroData"
-                            style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
-                    </div>
-                    <!-- NOVO: Select de Ordenação -->
-                    <div>
-                        <label for="ordemData" style="font-weight: bold; font-size: 12px; display: block;">Ordem
-                            (Data):</label>
-                        <select id="ordemData" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
-                            <option value="asc" selected>Crescente</option>
-                            <option value="desc">Decrescente</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="tamanhoPagina" style="font-weight: bold; font-size: 12px; display: block;">Por
-                            página:</label>
-                        <select id="tamanhoPagina" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
-                            <option value="10" selected>10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                            <option value="500">500</option>
-                        </select>
-                    </div>
+                        <!-- Resumo Dinâmico do Filtro Operacional -->
+                        <div id="resumoValores" style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap;"></div>
+
+                        <!-- Tabela de Funcionários -->
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Hora</th>
+                                    <th>Operação</th>
+                                    <th>CPF / PIS</th>
+                                    <th>Colaborador (Nome)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelaCorpo"></tbody>
+                        </table>
+
+                        <!-- Controle de Paginação -->
+                        <div class="paginacao" id="controlesPaginacao" style="display: none;">
+                            <button id="btnAnterior" class="btn-primary">Anterior</button>
+                            <span id="infoPagina" style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>
+                            <button id="btnProximo" class="btn-primary">Proxima</button>
+                        </div>
+                    </section>
+
+                    <!-- ABA 2: AJUSTES DO RELÓGIO (TIPO 4) -->
+                    <section id="abaRelogio" class="aba-conteudo">
+                        <div id="sessaoAjustesRelogio" style="margin-top: 10px;">
+                            <h3 style="color: var(--color-primary-base); border-bottom: 2px solid var(--color-border-outline); padding-bottom: 8px;">
+                                Ajustes do Relógio (Tipo 4) - <span id="qtdAjustes">0</span> eventos
+                            </h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data / Hora Anterior</th>
+                                        <th>Data / Hora Ajustada</th>
+                                        <th>CPF Responsável</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaCorpoAjustes"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <!-- ABA 3: EVENTOS DO REP (TIPO 6) -->
+                    <section id="abaEventos" class="aba-conteudo">
+                        <div style="margin-top: 10px;">
+                            <h3 style="color: var(--color-primary-base); border-bottom: 2px solid var(--color-border-outline); padding-bottom: 8px;">
+                                Eventos do Equipamento (Tipo 6)
+                            </h3>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Data / Hora</th>
+                                        <th>Código / Tipo</th>
+                                        <th>Descrição do Evento</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tabelaCorpoEventos"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
                 </div>
             </div>
-
-            <div id="resumoValores"
-                style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap;"></div>
-            <!-- Resumo inserido via JS -->
-        </div>
-        <table>
-            <thead>
-                <tr>
-                    <th>Data</th>
-                    <th>Hora</th>
-                    <th>Operação</th>
-                    <th>CPF / PIS</th> <!-- Alterado aqui -->
-                    <th>Colaborador (Nome)</th> <!-- Alterado aqui -->
-                </tr>
-            </thead>
-            <tbody id="tabelaCorpo">
-                <!-- Linhas inseridas via JS -->
-            </tbody>
-        </table>
-        <div id="sessaoAjustesRelogio" style="display: none; margin-top: 30px;">
-            <h3
-                style="color: var(--color-primary-base); border-bottom: 2px solid var(--color-border-outline); padding-bottom: 8px;">
-                ⏱️ Ajustes do Relógio (Tipo 4) - <span id="qtdAjustes">0</span> eventos
-            </h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data / Hora Anterior</th>
-                        <th>Data / Hora Ajustada</th>
-                        <th>CPF Responsável</th>
-                    </tr>
-                </thead>
-                <tbody id="tabelaCorpoAjustes">
-                    <!-- Inserido via JS -->
-                </tbody>
-            </table>
-        </div>
-
-        <div class="paginacao" id="controlesPaginacao" style="display: none;">
-            <button id="btnAnterior" class="btn-primary">Anterior</button>
-            <span id="infoPagina" style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>
-            <button id="btnProximo" class="btn-primary">Proxima </button>
-        </div>
-        <div>
-            <button id="btnDownload" class="btn" type="button">⬇ Baixar JSON</button>
-        </div>
-    </div>
+        </main>
     </div>
 
     <script src="index.js"></script>

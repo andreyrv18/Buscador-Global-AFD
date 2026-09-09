@@ -10,13 +10,17 @@ self.onmessage = function (event) {
             porData: {},
             porCPF: {}, // Funciona tanto para CPF (671) quanto PIS (1510/595)
             porOperacao: { 'Inclusão': 0, 'Alteração': 0, 'Exclusão': 0 },
-            ajustesRelogio: [] // Armazena eventos de ajuste do relógio (Tipo 4)
+            ajustesRelogio: [], // Armazena eventos de ajuste do relógio (Tipo 4)
+            eventosRep: []      // Armazena eventos sensíveis do relógio (Tipo 6)
         };
 
         for (const linha of linhas) {
             // Filtra apenas as linhas do Tipo 5 de qualquer portaria (Posição 10)[cite: 1, 2, 3]
-
+            if (linha.length < 20) continue;
+            
             const tipoRegistro = linha.charAt(9);
+
+            // --- REGISTRO TIPO 4: Ajuste do Relógio ---
             if (tipoRegistro === '4') {
                 try {
                     let dataAntes, horaAntes, dataDepois, horaDepois, cpfResponsavel;
@@ -56,7 +60,7 @@ self.onmessage = function (event) {
                 continue;
             }
 
-
+            // --- REGISTRO TIPO 5: Cadastro de Funcionário ---
             if (linha.length >= 50 && tipoRegistro === '5') {
                 try {
                     let dataStr, horaStr, codigoOp, identificador, nome;
@@ -123,6 +127,28 @@ self.onmessage = function (event) {
                 } catch (err) {
                     // Ignora silenciosamente erros de linha corrompida
                 }
+            }
+
+            // --- REGISTRO TIPO 6: Eventos Sensíveis ---
+            if (tipoRegistro === '6') {
+                try {
+                    let dataStr, horaStr, tipoEvento;
+
+                    if (linha.length >= 35 && linha.charAt(10) === 'T') {
+                        dataStr = linha.substring(10, 20);
+                        horaStr = linha.substring(21, 29);
+                        tipoEvento = linha.substring(35, 37).trim();
+                    } else {
+                        const dBruta = linha.substring(10, 18);
+                        const hBruta = linha.substring(18, 22);
+                        dataStr = `${dBruta.substring(4, 8)}-${dBruta.substring(2, 4)}-${dBruta.substring(0, 2)}`;
+                        horaStr = `${hBruta.substring(0, 2)}:${hBruta.substring(2, 4)}:00`;
+                        tipoEvento = linha.substring(22, 24).trim();
+                    }
+
+                    relatorio.eventosRep.push({ dataHora: `${dataStr} ${horaStr}`, codigo: tipoEvento, descricao: `Evento do equipamento (Tipo ${tipoEvento})` });
+                } catch (err) { }
+                continue;
             }
         }
 
