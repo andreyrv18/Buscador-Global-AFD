@@ -314,3 +314,14 @@ tr.zebra-impar {
 tbody tr:hover {
     background-color: #e2eafc !important;
 }
+
+/* Estilo para a Tabela de Ajustes do Relógio */
+.hora-antiga {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.hora-ajustada {
+    color: #28a745;
+    font-weight: 600;
+}

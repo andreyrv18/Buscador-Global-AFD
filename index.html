@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard - Filtro AFD</title>
+    <title>Buscador Global AFD</title>
     <link rel="stylesheet" href="style.css">
-
+    <link rel="icon" type="image/png" sizes="48x48" href="icons/icon48.png">
 </head>
 
 <body>
@@ -97,6 +97,25 @@
                 <!-- Linhas inseridas via JS -->
             </tbody>
         </table>
+        <div id="sessaoAjustesRelogio" style="display: none; margin-top: 30px;">
+            <h3
+                style="color: var(--color-primary-base); border-bottom: 2px solid var(--color-border-outline); padding-bottom: 8px;">
+                ⏱️ Ajustes do Relógio (Tipo 4) - <span id="qtdAjustes">0</span> eventos
+            </h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data / Hora Anterior</th>
+                        <th>Data / Hora Ajustada</th>
+                        <th>CPF Responsável</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaCorpoAjustes">
+                    <!-- Inserido via JS -->
+                </tbody>
+            </table>
+        </div>
+
         <div class="paginacao" id="controlesPaginacao" style="display: none;">
             <button id="btnAnterior" class="btn-primary">Anterior</button>
             <span id="infoPagina" style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>

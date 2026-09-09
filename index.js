@@ -123,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
         paginaAtual = 1;
         if (registrosFiltrados.length > 0) renderizarPagina();
     });
-
     function renderizarPagina() {
         tabelaCorpo.innerHTML = '';
 
@@ -135,8 +134,23 @@ document.addEventListener('DOMContentLoaded', () => {
         if (registrosPagina.length === 0) {
             tabelaCorpo.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-label);">Nenhum registro encontrado para os filtros selecionados.</td></tr>`;
         } else {
+            // Variáveis para controlar a alternância de cores por grupo de data
+            let ultimaData = null;
+            let grupoPar = true;
+
             registrosPagina.forEach(reg => {
                 const tr = document.createElement('tr');
+
+                // Troca a cor da linha apenas quando a data do registro muda
+                if (reg.dataHora !== ultimaData) {
+                    if (ultimaData !== null) {
+                        grupoPar = !grupoPar; // Inverte o estado da cor
+                    }
+                    ultimaData = reg.dataHora;
+                }
+
+                // Aplica a classe correspondente ao grupo atual
+                tr.classList.add(grupoPar ? 'zebra-par' : 'zebra-impar');
 
                 let classeOp = '';
                 if (reg.operacao === 'Inclusão') classeOp = 'op-inclusao';
@@ -147,12 +161,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
 
                 tr.innerHTML = `
-                    <td>${dataFormatada}</td>
-                    <td>${reg.horaFormatada}</td>
-                    <td class="${classeOp}">${reg.operacao}</td>
-                    <td>${reg.cpfPis}</td>
-                    <td>${reg.detalhes}</td>
-                `;
+                <td>${dataFormatada}</td>
+                <td>${reg.horaFormatada}</td>
+                <td class="${classeOp}">${reg.operacao}</td>
+                <td>${reg.cpfPis}</td>
+                <td>${reg.detalhes}</td>
+            `;
                 tabelaCorpo.appendChild(tr);
             });
         }
@@ -161,7 +175,6 @@ document.addEventListener('DOMContentLoaded', () => {
         btnAnterior.disabled = paginaAtual === 1;
         btnProximo.disabled = paginaAtual >= totalPaginas || totalPaginas === 0;
     }
-
     btnAnterior.addEventListener('click', () => {
         if (paginaAtual > 1) {
             paginaAtual--;
@@ -203,6 +216,40 @@ document.addEventListener('DOMContentLoaded', () => {
         ordemData.value = 'asc';
         paginaAtual = 1;
 
+
+        function renderizarAjustesRelogio(ajustes) {
+            const sessaoAjustes = document.getElementById('sessaoAjustesRelogio');
+            const tabelaAjustes = document.getElementById('tabelaCorpoAjustes');
+            const qtdAjustes = document.getElementById('qtdAjustes');
+
+            tabelaAjustes.innerHTML = '';
+
+            if (!ajustes || ajustes.length === 0) {
+                sessaoAjustes.style.display = 'none';
+                return;
+            }
+
+            qtdAjustes.textContent = ajustes.length;
+            sessaoAjustes.style.display = 'block';
+
+            ajustes.forEach(ajuste => {
+                const tr = document.createElement('tr');
+
+                const formatarData = (dStr) => {
+                    if (!dStr || !dStr.includes('-')) return dStr;
+                    const p = dStr.split('-');
+                    return `${p[2]}/${p[1]}/${p[0]}`;
+                };
+
+                tr.innerHTML = `
+            <td class="hora-antiga">${formatarData(ajuste.dataAntes)} ${ajuste.horaAntes}</td>
+            <td class="hora-ajustada">${formatarData(ajuste.dataDepois)} ${ajuste.horaDepois}</td>
+            <td>${ajuste.cpfResponsavel}</td>
+        `;
+                tabelaAjustes.appendChild(tr);
+            });
+        }
+
         statusDiv.innerHTML = "Processando arquivo... ⏳ Isso pode levar alguns segundos.";
 
         const worker = new Worker('worker.js');
@@ -215,7 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             relatorioFinal = e.data.resultado;
-
+            renderizarAjustesRelogio(relatorioFinal.ajustesRelogio);
             for (const [data, registros] of Object.entries(relatorioFinal.porData)) {
                 todosRegistros.push(...registros);
             }
