@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Analisador AFD",
-  "version": "3.1",
+  "name": "Buscador Global AFD",
+  "version": "3.3",
   "description": "Lê e analisa localmente arquivos AFD (Portarias 595, 1510 e 671).",
   "action": {
     "default_title": "Abrir Analisador",

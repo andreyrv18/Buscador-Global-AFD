@@ -100,15 +100,17 @@ self.onmessage = function (event) {
                 } catch (err) { }
             }
 
-            if (tipoRegistro === '6') {
+          if (tipoRegistro === '6') {
                 try {
                     let dataStr, horaStr, tipoEvento;
 
-                    if (linha.length >= 35 && linha.charAt(10) === 'T') {
-                        dataStr = linha.substring(10, 20);
-                        horaStr = linha.substring(21, 29);
-                        tipoEvento = linha.substring(35, 37).trim();
+                    // O 'T' na data ISO da Portaria 671 fica no índice 20 (ex: 2024-03-26T15:30:00)
+                    if (linha.length >= 36 && linha.charAt(20) === 'T') {
+                        dataStr = linha.substring(10, 20); // Captura YYYY-MM-DD
+                        horaStr = linha.substring(21, 29); // Captura HH:mm:ss
+                        tipoEvento = linha.substring(34, 36).trim(); // Posições 35 e 36 do layout
                     } else {
+                        // Fallback para leitura de layout antigo (se houver)
                         const dBruta = linha.substring(10, 18);
                         const hBruta = linha.substring(18, 22);
                         dataStr = `${dBruta.substring(4, 8)}-${dBruta.substring(2, 4)}-${dBruta.substring(0, 2)}`;
@@ -118,20 +120,21 @@ self.onmessage = function (event) {
 
                     const descricoesEventos = {
                         "01": "Abertura do REP por manutenção ou violação (somente REP-C)",
-                        "02": "Retorno de energia (REP-C)",
+                        "02": "Retorno de energia (REP-C ou REP-P)",
                         "03": "Introdução de dispositivo externo de memória na Porta Fiscal (somente REP-C)",
                         "04": "Retirada de dispositivo externo de memória na Porta Fiscal (somente REP-C)",
                         "05": "Emissão da Relação Instantânea de Marcações (somente REP-C)",
                         "06": "Erro de impressão (somente REP-C)"
                     };
+
                     const descricaoMapeada = descricoesEventos[tipoEvento] || "Evento não mapeado/desconhecido";
 
-                    relatorio.eventosRep.push({
-                        dataHora: `${dataStr} ${horaStr}`,
-                        codigo: tipoEvento,
-                        descricao: descricaoMapeada
+                    relatorio.eventosRep.push({ 
+                        dataHora: `${dataStr} ${horaStr}`, 
+                        codigo: tipoEvento, 
+                        descricao: descricaoMapeada 
                     });
-                } catch (err) { }
+                } catch (err) {}
                 continue;
             }
         }

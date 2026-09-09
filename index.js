@@ -204,25 +204,38 @@ document.addEventListener('DOMContentLoaded', () => {
         if (registrosPagina.length === 0) {
             tabelaCorpo.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum registro encontrado.</td></tr>`;
         } else {
-            registrosPagina.forEach(reg => {
-                const tr = document.createElement('tr');
-                let classeOp = '';
-                if (reg.operacao === 'Inclusão') classeOp = 'op-inclusao';
-                if (reg.operacao === 'Alteração') classeOp = 'op-alteracao';
-                if (reg.operacao === 'Exclusão') classeOp = 'op-exclusao';
+            const datasUnicas = [...new Set(registrosFiltrados.map(r => r.dataHora))];
 
-                const partesData = reg.dataHora.split('-');
-                const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+            if (registrosPagina.length === 0) {
+                tabelaCorpo.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum registro encontrado.</td></tr>`;
+            } else {
+                registrosPagina.forEach(reg => {
+                    const tr = document.createElement('tr');
 
-                tr.innerHTML = `
+                    // Aplica a regra de zebra baseada no agrupamento da data
+                    const isZebra = datasUnicas.indexOf(reg.dataHora) % 2 !== 0;
+                    if (isZebra) {
+                        tr.classList.add('linha-zebra');
+                    }
+
+                    let classeOp = '';
+                    if (reg.operacao === 'Inclusão') classeOp = 'op-inclusao';
+                    if (reg.operacao === 'Alteração') classeOp = 'op-alteracao';
+                    if (reg.operacao === 'Exclusão') classeOp = 'op-exclusao';
+
+                    const partesData = reg.dataHora.split('-');
+                    const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+
+                    tr.innerHTML = `
                     <td>${dataFormatada}</td>
                     <td>${reg.horaFormatada}</td>
                     <td class="${classeOp}">${reg.operacao}</td>
                     <td>${reg.cpfPis}</td>
                     <td>${reg.detalhes}</td>
                 `;
-                tabelaCorpo.appendChild(tr);
-            });
+                    tabelaCorpo.appendChild(tr);
+                });
+            }
         }
 
         infoPagina.innerText = `Página ${paginaAtual} de ${totalPaginas || 1}`;
@@ -316,8 +329,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const fim = inicio + registrosPorPaginaEventos;
         const eventosPagina = todosEventos.slice(inicio, fim);
 
+        // Mapeia todas as datas únicas para garantir que a cor (Zebra) seja consistente entre as páginas
+        const datasUnicas = [...new Set(todosEventos.map(e => e.dataHora.split(' ')[0]))];
+
         eventosPagina.forEach(e => {
             const tr = document.createElement('tr');
+
+            // Pega apenas a data e verifica se o índice dela é par ou ímpar
+            const dataSomente = e.dataHora.split(' ')[0];
+            const isZebra = datasUnicas.indexOf(dataSomente) % 2 !== 0;
+
+            if (isZebra) {
+                tr.classList.add('linha-zebra');
+            }
+
             tr.innerHTML = `
                 <td>${e.dataHora}</td>
                 <td style="font-weight: bold; color: var(--color-primary-base);">Tipo ${e.codigo}</td>
