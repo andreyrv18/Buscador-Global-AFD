@@ -1,0 +1,257 @@
+/* Importação das Fontes e Ícones da Google */
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200');
+
+:root {
+    /* =========================================================
+     COLOR TOKENS
+     ========================================================= */
+    --color-primary-base: #3379BC;
+    --color-primary-hover: #40A5DD;
+    --color-primary-light: #C8E5F4;
+
+    --color-bg-primary: #FFFFFF;
+    --color-bg-secondary: #f9fafa;
+
+    --color-border-outline: #EBEDEE;
+    --color-text-disabled: #C8C8C8;
+    --color-text-placeholder: #AFAFAF;
+    --color-text-label: #9B9B9B;
+    --color-text-body: #7A7A7A;
+    --color-text-tooltip: #525252;
+    --color-text-highlight: #000000;
+
+    /* =========================================================
+     TYPOGRAPHY TOKENS
+     ========================================================= */
+    --font-family-base: 'Open Sans', sans-serif;
+
+    /* Font Weights */
+    --font-weight-regular: 400;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* Font Sizes */
+    --font-size-page-title: 35px;
+    --font-size-modal-title: 20px;
+    --font-size-subtitle: 16px;
+    --font-size-body-inner: 14px;
+    --font-size-button: 14px;
+    --font-size-field-title: 10px;
+}
+
+/* Base global usando a tipografia padrão */
+body {
+    font-family: var(--font-family-base);
+    color: var(--color-text-body);
+    margin: 0;
+    padding: 40px;
+    background-color: var(--color-bg-primary);
+}
+
+/* Helper para Ícones Material Symbols (Peso 600, Rounded Filled) */
+.material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    font-size: 24px;
+    display: inline-block;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: normal;
+    white-space: nowrap;
+    direction: ltr;
+
+    /* Configuração especificada na imagem: Peso 600, Rounded Filled */
+    font-variation-settings:
+        'FILL' 1,
+        'wght' 600,
+        'GRAD' 0,
+        'opsz' 24;
+}
+
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: var(--color-bg-primary);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    margin-top: 0;
+    color: var(--color-primary-base);
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 10px;
+}
+
+
+.hidden-input {
+    position: absolute;
+    opacity: 0;
+    width: 0.1px;
+    height: 0.1px;
+    z-index: -1;
+}
+
+
+.file-upload-box {
+    border: 2px dashed var(--color-primary-base);
+    /* Azul Leve */
+    padding: 30px;
+
+    text-align: center;
+    border-radius: 8px;
+    background-color: var(--color-primary-light);
+
+    margin: 20px 0;
+    transition: border-color 0.2s;
+}
+
+
+.file-upload-box:hover {
+    border-color: var(--color-primary-base);
+    background-color: #f0f7fc;
+    transition: background-color 0.2s;
+
+}
+
+
+/* Estilos dos Botões e Resumo */
+.header-resultados {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #f8f9fa;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #dee2e6;
+}
+
+
+
+.btn-primary {
+    background-color: var(--color-primary-base);
+    /* Azul Base */
+    color: var(--color-bg-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    /* Espaço entre ícone e texto */
+    padding: 10px 24px;
+    border-radius: 6px;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    /* Texto do Botão -> Bold */
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    border: 2px solid transparent;
+}
+
+.btn-primary:hover {
+    background-color: var(--color-primary-hover);
+    /* Azul Hover */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(51, 121, 188, 0.2);
+}
+
+.btn-primary:active {
+    background-color: #2b679f;
+    /* Azul Pressionado */
+    transform: translateY(0);
+}
+
+.btn-primary .material-symbols-rounded {
+    font-size: 20px;
+    /* Ajuste fino do ícone */
+}
+
+.file-name-display {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--color-text-grey);
+    /* Cinza Tooltip/Texto */
+    background: transparent;
+}
+
+
+
+
+/* Estilos da Tabela */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th,
+td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #004085;
+    color: white;
+    position: sticky;
+    top: 0;
+}
+
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Cores das Operações */
+.op-inclusao {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.op-alteracao {
+    color: #fd7e14;
+    font-weight: bold;
+}
+
+.op-exclusao {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+#sessaoResultados {
+    display: none;
+    margin-top: 30px;
+}
+
+#status {
+    font-size: 16px;
+    font-weight: bold;
+    color: #004085;
+    text-align: center;
+}
+
+.btn:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+}
+
+.paginacao {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}

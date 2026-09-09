@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const resumoValores = document.getElementById('resumoValores');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
     const btnDownload = document.getElementById('btnDownload');
-    
+
     // Elementos da Paginação
     const controlesPaginacao = document.getElementById('controlesPaginacao');
     const btnAnterior = document.getElementById('btnAnterior');
@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     selectTamanhoPagina.addEventListener('change', (event) => {
         registrosPorPagina = parseInt(event.target.value);
         paginaAtual = 1; // Força a voltar para a página 1 ao mudar o limite
-        
+
         // Só tenta redesenhar se já houver registros carregados
         if (todosRegistros.length > 0) {
             renderizarPagina();
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Atualiza os textos e estado dos botões
-        infoPagina.innerText = `Página ${paginaAtual} de ${totalPaginas || 1} (Total: ${todosRegistros.length} registros)`;
+        infoPagina.innerText = `Página ${paginaAtual} de ${totalPaginas || 1}`;
         btnAnterior.disabled = paginaAtual === 1;
         btnProximo.disabled = paginaAtual >= totalPaginas;
 
@@ -92,6 +92,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Evento de Leitura do Arquivo
     fileInput.addEventListener('change', (event) => {
+        const fileNameDisplay = document.getElementById('fileNameDisplay');
+
         const file = event.target.files[0];
         if (!file) return;
 
@@ -127,7 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             resumoValores.innerHTML = `
-                <strong>Total Encontrado:</strong><br>
+                <strong>Total Encontrado: ${todosRegistros.length}</strong><br>
                 <span style="color: #28a745;">Inclusões: ${relatorioFinal.porOperacao['Inclusão']}</span> | 
                 <span style="color: #fd7e14;">Alterações: ${relatorioFinal.porOperacao['Alteração']}</span> | 
                 <span style="color: #dc3545;">Exclusões: ${relatorioFinal.porOperacao['Exclusão']}</span>
@@ -144,6 +146,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             worker.terminate();
         };
+        if (file) {
+            fileNameDisplay.textContent = file.name; // Exibe o nome do arquivo
+        } else {
+            fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+        }
+
     });
 
     // Função de Download
