@@ -1,7 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // =========================================================
-    // 1. ALTERNÂNCIA DAS ABAS DO MENU LATERAL (SIDEBAR)
-    // =========================================================
     const menuItems = document.querySelectorAll('.sidebar .menu-item');
     const abasConteudo = document.querySelectorAll('.aba-conteudo');
 
@@ -9,11 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
         item.addEventListener('click', () => {
             const abaAlvo = item.getAttribute('data-aba');
 
-            // Remove a classe 'ativo/ativa' de todos
             menuItems.forEach(m => m.classList.remove('ativo'));
             abasConteudo.forEach(a => a.classList.remove('ativa'));
 
-            // Adiciona na aba clicada
             item.classList.add('ativo');
             const elementoAba = document.getElementById(abaAlvo);
             if (elementoAba) {
@@ -22,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Elementos da Interface
     const fileInput = document.getElementById('arquivoAfd');
     const statusDiv = document.getElementById('status');
     const sessaoResultados = document.getElementById('sessaoResultados');
@@ -30,13 +24,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaCorpo = document.getElementById('tabelaCorpo');
     const btnDownload = document.getElementById('btnDownload');
 
-    // Filtros e Ordenação
     const filtroNome = document.getElementById('filtroNome');
     const filtroCpf = document.getElementById('filtroCpf');
     const filtroData = document.getElementById('filtroData');
     const ordemData = document.getElementById('ordemData');
 
-    // Paginação
     const controlesPaginacao = document.getElementById('controlesPaginacao');
     const btnAnterior = document.getElementById('btnAnterior');
     const btnProximo = document.getElementById('btnProximo');
@@ -50,9 +42,19 @@ document.addEventListener('DOMContentLoaded', () => {
     let registrosPorPagina = parseInt(selectTamanhoPagina.value);
     let operacaoSelecionada = 'Todas';
 
-    // =========================================================
-    // 2. PROCESSAMENTO DO ARQUIVO (WORKER)
-    // =========================================================
+
+    const controlesPaginacaoEventos = document.getElementById('controlesPaginacaoEventos');
+    const btnAnteriorEventos = document.getElementById('btnAnteriorEventos');
+    const btnProximoEventos = document.getElementById('btnProximoEventos');
+    const infoPaginaEventos = document.getElementById('infoPaginaEventos');
+    const selectTamanhoPaginaEventos = document.getElementById('tamanhoPaginaEventos');
+    const qtdEventos = document.getElementById('qtdEventos');
+
+    let todosEventos = [];
+    let paginaAtualEventos = 1;
+    let registrosPorPaginaEventos = 10;
+
+
     fileInput.addEventListener('change', (event) => {
         const fileNameDisplay = document.getElementById('fileNameDisplay');
         const file = event.target.files[0];
@@ -75,8 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
         filtroData.value = '';
         ordemData.value = 'asc';
         paginaAtual = 1;
-
-        statusDiv.innerHTML = "Processando arquivo... ⏳ Isso pode levar alguns segundos.";
+        controlesPaginacaoEventos.style.display = 'none';
+        statusDiv.innerHTML = "Processando arquivo, aguarde.";
 
         const worker = new Worker('worker.js');
         worker.postMessage(file);
@@ -89,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             relatorioFinal = e.data.resultado;
 
-            // Une todos os registros do Tipo 5 em um array único
             for (const [data, registros] of Object.entries(relatorioFinal.porData)) {
                 todosRegistros.push(...registros);
             }
@@ -97,13 +98,11 @@ document.addEventListener('DOMContentLoaded', () => {
             statusDiv.innerHTML = "";
             sessaoResultados.style.display = 'block';
 
-            // Aplica os filtros na tabela Tipo 5
             aplicarFiltrosEOrdenacao();
-
-            // RENDERIZA AS OUTRAS ABAS (Tipo 4 e Tipo 6)
             renderizarAjustesRelogio(relatorioFinal.ajustesRelogio || []);
-            renderizarEventosRep(relatorioFinal.eventosRep || []);
-
+            todosEventos = relatorioFinal.eventosRep || [];
+            paginaAtualEventos = 1;
+            renderizarPaginaEventos();
             if (todosRegistros.length > 0) {
                 controlesPaginacao.style.display = 'flex';
             }
@@ -112,9 +111,6 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     });
 
-    // =========================================================
-    // 3. LÓGICA DE FILTRAGEM E RESUMO (FUNCIONÁRIOS - TIPO 5)
-    // =========================================================
     function aplicarFiltrosEOrdenacao() {
         const valNome = filtroNome.value.toLowerCase().trim();
         const valCpf = filtroCpf.value.toLowerCase().replace(/\D/g, '');
@@ -134,8 +130,8 @@ document.addEventListener('DOMContentLoaded', () => {
         registrosFiltrados.sort((a, b) => {
             const dateTimeA = a.dataHora + a.horaFormatada;
             const dateTimeB = b.dataHora + b.horaFormatada;
-            return direcaoOrdem === 'asc' 
-                ? dateTimeA.localeCompare(dateTimeB) 
+            return direcaoOrdem === 'asc'
+                ? dateTimeA.localeCompare(dateTimeB)
                 : dateTimeB.localeCompare(dateTimeA);
         });
 
@@ -167,7 +163,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <span style="color: #bbb; margin: 0 6px;">|</span>
                 <span style="color: #dc3545;">Exclusões: ${relatorioFinal.porOperacao['Exclusão'] || 0}</span>
             </div>
-
             <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; width: 100%;">
                 <div class="card-filtro-op todos ${operacaoSelecionada === 'Todas' ? 'ativo' : ''}" data-op="Todas">
                     Encontrados na Busca: <strong>${totalFiltrado}</strong>
@@ -192,9 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // =========================================================
-    // 4. TABELA DE FUNCIONÁRIOS E PAGINAÇÃO (TIPO 5)
-    // =========================================================
     selectTamanhoPagina.addEventListener('change', (event) => {
         registrosPorPagina = parseInt(event.target.value);
         paginaAtual = 1;
@@ -210,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const registrosPagina = registrosFiltrados.slice(inicio, fim);
 
         if (registrosPagina.length === 0) {
-            tabelaCorpo.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum registro encontrado para os filtros selecionados.</td></tr>`;
+            tabelaCorpo.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhum registro encontrado.</td></tr>`;
         } else {
             registrosPagina.forEach(reg => {
                 const tr = document.createElement('tr');
@@ -253,11 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // =========================================================
-    // 5. RENDERIZAÇÃO DAS OUTRAS ABAS (TIPO 4 E TIPO 6)
-    // =========================================================
-
-    // Renderiza a Tabela da Aba de Ajustes de Relógio (Tipo 4)
     function renderizarAjustesRelogio(ajustes) {
         const tabelaAjustes = document.getElementById('tabelaCorpoAjustes');
         const qtdAjustes = document.getElementById('qtdAjustes');
@@ -266,13 +253,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qtdAjustes) qtdAjustes.textContent = ajustes.length;
 
         if (ajustes.length === 0) {
-            tabelaAjustes.innerHTML = `<tr><td colspan="3" style="text-align: center;">Nenhum evento de ajuste de relógio encontrado no arquivo.</td></tr>`;
+            tabelaAjustes.innerHTML = `<tr><td colspan="3" style="text-align: center;">Sem eventos de ajuste.</td></tr>`;
             return;
         }
 
         ajustes.forEach(a => {
             const tr = document.createElement('tr');
-            
             const formatarData = (dStr) => {
                 if (!dStr || !dStr.includes('-')) return dStr;
                 const p = dStr.split('-');
@@ -288,36 +274,71 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Renderiza a Tabela da Aba de Eventos do REP (Tipo 6)
-    function renderizarEventosRep(eventos) {
+
+    selectTamanhoPaginaEventos.addEventListener('change', (event) => {
+        registrosPorPaginaEventos = parseInt(event.target.value);
+        paginaAtualEventos = 1;
+        renderizarPaginaEventos();
+    });
+
+    btnAnteriorEventos.addEventListener('click', () => {
+        if (paginaAtualEventos > 1) {
+            paginaAtualEventos--;
+            renderizarPaginaEventos();
+        }
+    });
+
+    btnProximoEventos.addEventListener('click', () => {
+        const totalPaginas = Math.ceil(todosEventos.length / registrosPorPaginaEventos);
+        if (paginaAtualEventos < totalPaginas) {
+            paginaAtualEventos++;
+            renderizarPaginaEventos();
+        }
+    });
+
+    function renderizarPaginaEventos() {
         const tabelaEventos = document.getElementById('tabelaCorpoEventos');
         if (!tabelaEventos) return;
         tabelaEventos.innerHTML = '';
 
-        if (eventos.length === 0) {
-            tabelaEventos.innerHTML = `<tr><td colspan="3" style="text-align: center;">Nenhum evento de equipamento (Tipo 6) encontrado no arquivo.</td></tr>`;
+        if (qtdEventos) qtdEventos.textContent = todosEventos.length;
+
+        if (todosEventos.length === 0) {
+            tabelaEventos.innerHTML = `<tr><td colspan="3" style="text-align: center;">Sem eventos registrados.</td></tr>`;
+            controlesPaginacaoEventos.style.display = 'none';
             return;
         }
 
-        eventos.forEach(e => {
+        controlesPaginacaoEventos.style.display = 'flex';
+
+        const totalPaginas = Math.ceil(todosEventos.length / registrosPorPaginaEventos);
+        const inicio = (paginaAtualEventos - 1) * registrosPorPaginaEventos;
+        const fim = inicio + registrosPorPaginaEventos;
+        const eventosPagina = todosEventos.slice(inicio, fim);
+
+        eventosPagina.forEach(e => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${e.dataHora}</td>
-                <td>Tipo ${e.codigo}</td>
+                <td style="font-weight: bold; color: var(--color-primary-base);">Tipo ${e.codigo}</td>
                 <td>${e.descricao}</td>
             `;
             tabelaEventos.appendChild(tr);
         });
+
+        infoPaginaEventos.innerText = `Página ${paginaAtualEventos} de ${totalPaginas || 1}`;
+        btnAnteriorEventos.disabled = paginaAtualEventos === 1;
+        btnProximoEventos.disabled = paginaAtualEventos >= totalPaginas || totalPaginas === 0;
     }
 
-    // Download JSON
+
     btnDownload.addEventListener('click', () => {
         if (!relatorioFinal) return;
         const blob = new Blob([JSON.stringify(relatorioFinal, null, 2)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `Auditoria_AFD_${Date.now()}.json`;
+        a.download = `auditoria_afd_${Date.now()}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);

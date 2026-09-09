@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Analisador de AFD - Suporte",
-  "version": "2.8",
-  "description": "Lê e agrupa arquivos AFD (Portaria 595, 1510, 671) localmente em tela cheia.",
+  "name": "Analisador AFD",
+  "version": "3.1",
+  "description": "Lê e analisa localmente arquivos AFD (Portarias 595, 1510 e 671).",
   "action": {
-    "default_title": "Abrir Analisador AFD",
+    "default_title": "Abrir Analisador",
     "default_icon": {
       "48": "icons/icon48.png"
     }

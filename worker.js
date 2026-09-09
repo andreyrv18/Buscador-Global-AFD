@@ -8,31 +8,27 @@ self.onmessage = function (event) {
 
         const relatorio = {
             porData: {},
-            porCPF: {}, // Funciona tanto para CPF (671) quanto PIS (1510/595)
+            porCPF: {},
             porOperacao: { 'Inclusão': 0, 'Alteração': 0, 'Exclusão': 0 },
-            ajustesRelogio: [], // Armazena eventos de ajuste do relógio (Tipo 4)
-            eventosRep: []      // Armazena eventos sensíveis do relógio (Tipo 6)
+            ajustesRelogio: [],
+            eventosRep: []
         };
 
         for (const linha of linhas) {
-            // Filtra apenas as linhas do Tipo 5 de qualquer portaria (Posição 10)[cite: 1, 2, 3]
             if (linha.length < 20) continue;
-            
+
             const tipoRegistro = linha.charAt(9);
 
-            // --- REGISTRO TIPO 4: Ajuste do Relógio ---
             if (tipoRegistro === '4') {
                 try {
                     let dataAntes, horaAntes, dataDepois, horaDepois, cpfResponsavel;
                     if (linha.length >= 50 && linha.charAt(10) === 'T') {
-                        // Layout Portaria 671 (Formato ISO: AAAA-MM-DDThh:mm:ss...)
                         dataAntes = linha.substring(10, 20);
                         horaAntes = linha.substring(21, 29);
                         dataDepois = linha.substring(35, 45);
                         horaDepois = linha.substring(46, 54);
                         cpfResponsavel = "N/A";
                     } else {
-                        // Layout Portarias 1510 / 595 (Formatos ddmmaaaa + hhmm)
                         const dAntes = linha.substring(10, 18);
                         const hAntes = linha.substring(18, 22);
                         const dDepois = linha.substring(22, 30);
@@ -48,55 +44,34 @@ self.onmessage = function (event) {
                     }
 
                     relatorio.ajustesRelogio.push({
-                        dataAntes,
-                        horaAntes,
-                        dataDepois,
-                        horaDepois,
-                        cpfResponsavel
+                        dataAntes, horaAntes, dataDepois, horaDepois, cpfResponsavel
                     });
-                } catch (err) {
-                    // Ignora linha corrompida
-                }
+                } catch (err) { }
                 continue;
             }
 
-            // --- REGISTRO TIPO 5: Cadastro de Funcionário ---
             if (linha.length >= 50 && tipoRegistro === '5') {
                 try {
                     let dataStr, horaStr, codigoOp, identificador, nome;
 
-                    // Detecta o Layout verificando onde o código da operação (I, A, E) está posicionado.
-                    // Na 671 fica no índice 34 (posição 35)[cite: 1].
-                    // Na 1510/595 fica no índice 22 (posição 23)[cite: 2, 3].
                     if (linha.charAt(34) === 'I' || linha.charAt(34) === 'A' || linha.charAt(34) === 'E') {
-
-                        // --- LAYOUT PORTARIA 671 ---
-                        const dataHora = linha.substring(10, 34); // Formato: AAAA-MM-ddThh:mm...[cite: 1]
+                        const dataHora = linha.substring(10, 34);
                         dataStr = dataHora.substring(0, 10);
                         horaStr = dataHora.substring(11, 19);
-                        codigoOp = linha.substring(34, 35); // Posição 35[cite: 1]
-                        identificador = linha.substring(35, 47).trim(); // CPF na posição 36 a 47[cite: 1]
-                        nome = linha.substring(47, 99).trim(); // Nome na posição 48 a 99[cite: 1]
-
+                        codigoOp = linha.substring(34, 35);
+                        identificador = linha.substring(35, 47).trim();
+                        nome = linha.substring(47, 99).trim();
                     }
                     else if (linha.charAt(22) === 'I' || linha.charAt(22) === 'A' || linha.charAt(22) === 'E') {
+                        const dataBruta = linha.substring(10, 18);
+                        const horaBruta = linha.substring(18, 22);
 
-                        // --- LAYOUT PORTARIAS 1510 e 595 ---
-                        const dataBruta = linha.substring(10, 18); // Formato: ddmmaaaa[cite: 2, 3]
-                        const horaBruta = linha.substring(18, 22); // Formato: hhmm[cite: 2, 3]
-
-                        // Normaliza para o padrão AAAA-MM-DD para facilitar o agrupamento
                         dataStr = `${dataBruta.substring(4, 8)}-${dataBruta.substring(2, 4)}-${dataBruta.substring(0, 2)}`;
-
-                        // Normaliza para HH:MM:00
                         horaStr = `${horaBruta.substring(0, 2)}:${horaBruta.substring(2, 4)}:00`;
-
-                        codigoOp = linha.substring(22, 23); // Posição 23[cite: 2, 3]
-                        identificador = linha.substring(23, 35).trim(); // PIS na posição 24 a 35[cite: 2, 3]
-                        nome = linha.substring(35, 87).trim(); // Nome na posição 36 a 87[cite: 2, 3]
-
+                        codigoOp = linha.substring(22, 23);
+                        identificador = linha.substring(23, 35).trim();
+                        nome = linha.substring(35, 87).trim();
                     } else {
-                        // Linha mal formatada ou operação desconhecida
                         continue;
                     }
 
@@ -113,23 +88,18 @@ self.onmessage = function (event) {
                         detalhes: nome
                     };
 
-                    // Agrupamentos
                     if (!relatorio.porData[dataStr]) relatorio.porData[dataStr] = [];
                     relatorio.porData[dataStr].push(registro);
 
-                    // Agrupamento centralizado (Serve tanto para busca por CPF quanto PIS)
                     if (!relatorio.porCPF[identificador]) relatorio.porCPF[identificador] = [];
                     relatorio.porCPF[identificador].push(registro);
 
                     if (relatorio.porOperacao[operacao] !== undefined) {
                         relatorio.porOperacao[operacao]++;
                     }
-                } catch (err) {
-                    // Ignora silenciosamente erros de linha corrompida
-                }
+                } catch (err) { }
             }
 
-            // --- REGISTRO TIPO 6: Eventos Sensíveis ---
             if (tipoRegistro === '6') {
                 try {
                     let dataStr, horaStr, tipoEvento;
@@ -146,7 +116,21 @@ self.onmessage = function (event) {
                         tipoEvento = linha.substring(22, 24).trim();
                     }
 
-                    relatorio.eventosRep.push({ dataHora: `${dataStr} ${horaStr}`, codigo: tipoEvento, descricao: `Evento do equipamento (Tipo ${tipoEvento})` });
+                    const descricoesEventos = {
+                        "01": "Abertura do REP por manutenção ou violação (somente REP-C)",
+                        "02": "Retorno de energia (REP-C)",
+                        "03": "Introdução de dispositivo externo de memória na Porta Fiscal (somente REP-C)",
+                        "04": "Retirada de dispositivo externo de memória na Porta Fiscal (somente REP-C)",
+                        "05": "Emissão da Relação Instantânea de Marcações (somente REP-C)",
+                        "06": "Erro de impressão (somente REP-C)"
+                    };
+                    const descricaoMapeada = descricoesEventos[tipoEvento] || "Evento não mapeado/desconhecido";
+
+                    relatorio.eventosRep.push({
+                        dataHora: `${dataStr} ${horaStr}`,
+                        codigo: tipoEvento,
+                        descricao: descricaoMapeada
+                    });
                 } catch (err) { }
                 continue;
             }
@@ -156,7 +140,7 @@ self.onmessage = function (event) {
     };
 
     reader.onerror = function () {
-        self.postMessage({ erro: "Falha ao ler o arquivo selecionado." });
+        self.postMessage({ erro: "Falha de I/O na leitura do arquivo." });
     };
 
     reader.readAsText(file);
