@@ -35,13 +35,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoPagina = document.getElementById('infoPagina');
     const selectTamanhoPagina = document.getElementById('tamanhoPagina');
 
-    let relatorioFinal = null;
-    let todosRegistros = [];
-    let registrosFiltrados = [];
-    let paginaAtual = 1;
-    let registrosPorPagina = parseInt(selectTamanhoPagina.value);
-    let operacaoSelecionada = 'Todas';
-
 
     const controlesPaginacaoEventos = document.getElementById('controlesPaginacaoEventos');
     const btnAnteriorEventos = document.getElementById('btnAnteriorEventos');
@@ -49,6 +42,32 @@ document.addEventListener('DOMContentLoaded', () => {
     const infoPaginaEventos = document.getElementById('infoPaginaEventos');
     const selectTamanhoPaginaEventos = document.getElementById('tamanhoPaginaEventos');
     const qtdEventos = document.getElementById('qtdEventos');
+
+    const filtroNomeMarcacoes = document.getElementById('filtroNomeMarcacoes');
+    const filtroCpfMarcacoes = document.getElementById('filtroCpfMarcacoes');
+    const filtroDataMarcacoes = document.getElementById('filtroDataMarcacoes');
+    const ordemDataMarcacoes = document.getElementById('ordemDataMarcacoes');
+
+    const tabelaCorpoMarcacoes = document.getElementById('tabelaCorpoMarcacoes');
+    const resumoValoresMarcacoes = document.getElementById('resumoValoresMarcacoes');
+
+    const controlesPaginacaoMarcacoes = document.getElementById('controlesPaginacaoMarcacoes');
+    const btnAnteriorMarcacoes = document.getElementById('btnAnteriorMarcacoes');
+    const btnProximoMarcacoes = document.getElementById('btnProximoMarcacoes');
+    const infoPaginaMarcacoes = document.getElementById('infoPaginaMarcacoes');
+    const selectTamanhoPaginaMarcacoes = document.getElementById('tamanhoPaginaMarcacoes');
+
+    let todasMarcacoes = [];
+    let marcacoesFiltradas = [];
+    let paginaAtualMarcacoes = 1;
+    let registrosPorPaginaMarcacoes = 10;
+
+    let relatorioFinal = null;
+    let todosRegistros = [];
+    let registrosFiltrados = [];
+    let paginaAtual = 1;
+    let registrosPorPagina = parseInt(selectTamanhoPagina.value);
+    let operacaoSelecionada = 'Todas';
 
     let todosEventos = [];
     let paginaAtualEventos = 1;
@@ -88,8 +107,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusDiv.innerHTML = `<span style="color: red;">Erro: ${e.data.erro}</span>`;
                 return;
             }
-
+            
             relatorioFinal = e.data.resultado;
+
+            todasMarcacoes = relatorioFinal.marcacoes || [];
+            filtroNomeMarcacoes.value = '';
+            filtroCpfMarcacoes.value = '';
+            filtroDataMarcacoes.value = '';
+            ordemDataMarcacoes.value = 'asc';
+            aplicarFiltrosEOrdenacaoMarcacoes();
+
 
             for (const [data, registros] of Object.entries(relatorioFinal.porData)) {
                 todosRegistros.push(...registros);
@@ -369,4 +396,92 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     });
+
+
+    function aplicarFiltrosEOrdenacaoMarcacoes() {
+        const valNome = filtroNomeMarcacoes.value.toLowerCase().trim();
+        const valCpf = filtroCpfMarcacoes.value.toLowerCase().replace(/\D/g, '');
+        const valData = filtroDataMarcacoes.value;
+        const direcaoOrdem = ordemDataMarcacoes.value;
+
+        marcacoesFiltradas = todasMarcacoes.filter(reg => {
+            const bateNome = !valNome || reg.nome.toLowerCase().includes(valNome);
+            const cpfLimpo = reg.cpfPis.replace(/\D/g, '');
+            const bateCpf = !valCpf || cpfLimpo.includes(valCpf);
+            const bateData = !valData || reg.dataHora === valData;
+
+            return bateNome && bateCpf && bateData;
+        });
+
+        marcacoesFiltradas.sort((a, b) => {
+            const dateTimeA = a.dataHora + a.horaFormatada;
+            const dateTimeB = b.dataHora + b.horaFormatada;
+            return direcaoOrdem === 'asc' ? dateTimeA.localeCompare(dateTimeB) : dateTimeB.localeCompare(dateTimeA);
+        });
+
+        paginaAtualMarcacoes = 1;
+        resumoValoresMarcacoes.innerHTML = `Total de Marcações: <span style="color: var(--color-primary-base);">${todasMarcacoes.length}</span> <span style="color: #bbb; margin: 0 6px;">|</span> Encontradas: <span style="color: var(--color-primary-base);">${marcacoesFiltradas.length}</span>`;
+        renderizarPaginaMarcacoes();
+    }
+
+    function renderizarPaginaMarcacoes() {
+        tabelaCorpoMarcacoes.innerHTML = '';
+
+        if (marcacoesFiltradas.length === 0) {
+            tabelaCorpoMarcacoes.innerHTML = `<tr><td colspan="5" style="text-align: center;">Nenhuma marcação encontrada.</td></tr>`;
+            controlesPaginacaoMarcacoes.style.display = 'none';
+            return;
+        }
+
+        controlesPaginacaoMarcacoes.style.display = 'flex';
+        const totalPaginas = Math.ceil(marcacoesFiltradas.length / registrosPorPaginaMarcacoes);
+        const inicio = (paginaAtualMarcacoes - 1) * registrosPorPaginaMarcacoes;
+        const registrosPagina = marcacoesFiltradas.slice(inicio, inicio + registrosPorPaginaMarcacoes);
+
+        // Agrupamento para manter o Zebra Stripe por dias
+        const datasUnicas = [...new Set(marcacoesFiltradas.map(r => r.dataHora))];
+
+        registrosPagina.forEach(reg => {
+            const tr = document.createElement('tr');
+            if (datasUnicas.indexOf(reg.dataHora) % 2 !== 0) tr.classList.add('linha-zebra');
+
+            const partes = reg.dataHora.split('-');
+
+            tr.innerHTML = `
+                <td>${partes[2]}/${partes[1]}/${partes[0]}</td>
+                <td style="font-weight: 600; color: var(--color-primary-base);">${reg.horaFormatada}</td>
+                <td>${reg.nsr}</td>
+                <td>${reg.cpfPis}</td>
+                <td>${reg.nome}</td>
+            `;
+            tabelaCorpoMarcacoes.appendChild(tr);
+        });
+
+        infoPaginaMarcacoes.innerText = `Página ${paginaAtualMarcacoes} de ${totalPaginas || 1}`;
+        btnAnteriorMarcacoes.disabled = paginaAtualMarcacoes === 1;
+        btnProximoMarcacoes.disabled = paginaAtualMarcacoes >= totalPaginas || totalPaginas === 0;
+    }
+
+
+    filtroNomeMarcacoes.addEventListener('input', aplicarFiltrosEOrdenacaoMarcacoes);
+    filtroCpfMarcacoes.addEventListener('input', aplicarFiltrosEOrdenacaoMarcacoes);
+    filtroDataMarcacoes.addEventListener('change', aplicarFiltrosEOrdenacaoMarcacoes);
+    ordemDataMarcacoes.addEventListener('change', aplicarFiltrosEOrdenacaoMarcacoes);
+
+    selectTamanhoPaginaMarcacoes.addEventListener('change', (e) => {
+        registrosPorPaginaMarcacoes = parseInt(e.target.value);
+        paginaAtualMarcacoes = 1;
+        renderizarPaginaMarcacoes();
+    });
+
+    btnAnteriorMarcacoes.addEventListener('click', () => {
+        if (paginaAtualMarcacoes > 1) { paginaAtualMarcacoes--; renderizarPaginaMarcacoes(); }
+    });
+
+    btnProximoMarcacoes.addEventListener('click', () => {
+        const total = Math.ceil(marcacoesFiltradas.length / registrosPorPaginaMarcacoes);
+        if (paginaAtualMarcacoes < total) { paginaAtualMarcacoes++; renderizarPaginaMarcacoes(); }
+    });
+
+
 });

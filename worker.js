@@ -6,18 +6,32 @@ self.onmessage = function (event) {
         const conteudo = e.target.result;
         const linhas = conteudo.split(/\r?\n/);
 
+        const cpfsNomes = {}; // Dicionário para salvar os nomes
         const relatorio = {
             porData: {},
             porCPF: {},
             porOperacao: { 'Inclusão': 0, 'Alteração': 0, 'Exclusão': 0 },
             ajustesRelogio: [],
-            eventosRep: []
+            eventosRep: [],
+            marcacoes: [] // Array das marcações (Tipo 3 e Tipo 7)
         };
 
         for (const linha of linhas) {
             if (linha.length < 20) continue;
 
             const tipoRegistro = linha.charAt(9);
+            if (tipoRegistro === '3') {
+                try {
+                    const nsr = linha.substring(0, 9);
+                    const dBruta = linha.substring(10, 18);
+                    const hBruta = linha.substring(18, 22);
+                    const dataStr = `${dBruta.substring(4, 8)}-${dBruta.substring(2, 4)}-${dBruta.substring(0, 2)}`;
+                    const horaStr = `${hBruta.substring(0, 2)}:${hBruta.substring(2, 4)}:00`;
+                    const pis = linha.substring(22, 34).trim();
+                    relatorio.marcacoes.push({ nsr, dataHora: dataStr, horaFormatada: horaStr, cpfPis: pis });
+                } catch (err) { }
+                continue;
+            }
 
             if (tipoRegistro === '4') {
                 try {
@@ -80,6 +94,11 @@ self.onmessage = function (event) {
                     else if (codigoOp === 'A') operacao = 'Alteração';
                     else if (codigoOp === 'E') operacao = 'Exclusão';
 
+
+                    const limpoId = identificador.replace(/\D/g, '');
+                    if (limpoId) cpfsNomes[limpoId] = nome;
+
+
                     const registro = {
                         dataHora: dataStr,
                         horaFormatada: horaStr,
@@ -100,7 +119,7 @@ self.onmessage = function (event) {
                 } catch (err) { }
             }
 
-          if (tipoRegistro === '6') {
+            if (tipoRegistro === '6') {
                 try {
                     let dataStr, horaStr, tipoEvento;
 
@@ -129,15 +148,53 @@ self.onmessage = function (event) {
 
                     const descricaoMapeada = descricoesEventos[tipoEvento] || "Evento não mapeado/desconhecido";
 
-                    relatorio.eventosRep.push({ 
-                        dataHora: `${dataStr} ${horaStr}`, 
-                        codigo: tipoEvento, 
-                        descricao: descricaoMapeada 
+                    relatorio.eventosRep.push({
+                        dataHora: `${dataStr} ${horaStr}`,
+                        codigo: tipoEvento,
+                        descricao: descricaoMapeada
                     });
-                } catch (err) {}
+                } catch (err) { }
+                continue;
+            }
+
+            if (tipoRegistro === '7') {
+                try {
+                    const nsr = linha.substring(0, 9);
+                    let dataStr, horaStr, cpf;
+                    if (linha.length >= 45 && linha.charAt(20) === 'T') {
+                        dataStr = linha.substring(10, 20);
+                        horaStr = linha.substring(21, 29);
+                        cpf = linha.substring(34, 45).trim();
+                    } else {
+                        const dBruta = linha.substring(10, 18);
+                        const hBruta = linha.substring(18, 22);
+                        dataStr = `${dBruta.substring(4, 8)}-${dBruta.substring(2, 4)}-${dBruta.substring(0, 2)}`;
+                        horaStr = `${hBruta.substring(0, 2)}:${hBruta.substring(2, 4)}:00`;
+                        cpf = linha.substring(22, 33).trim();
+                    }
+                    relatorio.marcacoes.push({ nsr, dataHora: dataStr, horaFormatada: horaStr, cpfPis: cpf });
+                } catch (err) { }
                 continue;
             }
         }
+
+        relatorio.marcacoes.forEach(m => {
+            const limpoId = m.cpfPis.replace(/\D/g, '');
+            let foundName = "Desconhecido (Não consta no Tipo 5)";
+
+            if (cpfsNomes[limpoId]) {
+                foundName = cpfsNomes[limpoId];
+            } else {
+                const strippedId = limpoId.replace(/^0+/, '');
+                for (const key in cpfsNomes) {
+                    if (key.replace(/^0+/, '') === strippedId) {
+                        foundName = cpfsNomes[key];
+                        break;
+                    }
+                }
+            }
+            m.nome = foundName;
+        });
 
         self.postMessage({ resultado: relatorio });
     };

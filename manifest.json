@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Buscador Global AFD",
-  "version": "3.3",
+  "version": "3.4",
   "description": "Lê e analisa localmente arquivos AFD (Portarias 595, 1510 e 671).",
   "action": {
-    "default_title": "Abrir Analisador",
+    "default_title": "Abrir Buscador Global",
     "default_icon": {
       "48": "icons/icon48.png"
     }
