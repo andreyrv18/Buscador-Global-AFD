@@ -4,3 +4,4 @@ chrome.action.onClicked.addListener(() => {
         url: chrome.runtime.getURL("index.html")
     });
 });
+

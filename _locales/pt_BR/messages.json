@@ -1,0 +1,10 @@
+{
+  "extName": {
+    "message": "Buscador Global AFD",
+    "description": "Nome principal da extensão"
+  },
+  "clientNameLabel": {
+    "message": "Nome do Cliente",
+    "description": "Rótulo utilizado para extração de texto"
+  }
+}

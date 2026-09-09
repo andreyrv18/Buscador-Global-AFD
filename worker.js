@@ -10,25 +10,58 @@ self.onmessage = function (event) {
         const relatorio = {
             porData: {},
             porCPF: {},
-            porOperacao: { 'Inclusão': 0, 'Alteração': 0, 'Exclusão': 0 },
-            ajustesRelogio: [],
-            eventosRep: [],
-            marcacoes: [] // Array das marcações (Tipo 3 e Tipo 7)
+            porOperacao: { 'Inclusão': 0, 'Alteração': 0, 'Exclusão': 0 }, // do empregado no REP (Tipo 5)
+            ajustesRelogio: [], // Ajuste do relógio (Tipo 4)
+            eventosRep: [], //  Eventos sensíveis do REP (Tipo 6)
+            marcacoes: [],  // Array das marcações (Tipo 3 e Tipo 7)
+            porEmpregador: { 'Inclusão': 0, 'Alteração': 0 }, // da Empresa no REP (Tipo 2)
+
         };
 
         for (const linha of linhas) {
             if (linha.length < 20) continue;
 
             const tipoRegistro = linha.charAt(9);
+
+            // if (tipoRegistro === '2') {
+            //     let tipoIdentificadorEmpregador, identificadorEmpregador, cno, razaoSocialOuNomeEmpregador, dtInicialRegistrosArquivo, dtFinalRegistrosArquivo, dtHoraGeracaoArquivo, versaoLeiaute, identificadorFabricante, CnpjCpfFabricante, modeloRepC = '';
+
+            //     if (linha.charAt(49) === '1' || linha.charAt(34) === '2') {
+
+            //         const dtHoraGeracaoArquivo = linha.substring(11, 34);
+            //     }
+
+            //     let operacao = 'Desconhecida';
+            //     if (tipoIdentificadorEmpregador === '1') operacao = "CNPJ";
+            //     else if (tipoIdentificadorEmpregador === '2') operacao = "CPF";
+
+
+            //     const id1 = tipoIdentificadorEmpregador.replace(/\D/g, '');
+            //     if (id1) porEmpregador[id1] = nome;
+
+            // }
+
+
             if (tipoRegistro === '3') {
                 try {
                     const nsr = linha.substring(0, 9);
-                    const dBruta = linha.substring(10, 18);
-                    const hBruta = linha.substring(18, 22);
-                    const dataStr = `${dBruta.substring(4, 8)}-${dBruta.substring(2, 4)}-${dBruta.substring(0, 2)}`;
-                    const horaStr = `${hBruta.substring(0, 2)}:${hBruta.substring(2, 4)}:00`;
-                    const pis = linha.substring(22, 34).trim();
-                    relatorio.marcacoes.push({ nsr, dataHora: dataStr, horaFormatada: horaStr, cpfPis: pis });
+                    let dataStr, horaStr, identificador;
+
+                    // Valida se possui o 'T' (Padrão Portaria 671 / REP-A)
+                    if (linha.length >= 45 && linha.charAt(20) === 'T') {
+                        dataStr = linha.substring(10, 20); // YYYY-MM-DD
+                        horaStr = linha.substring(21, 29); // HH:mm:ss
+                        identificador = linha.substring(34, 45).trim(); // CPF
+                    } else {
+                        // Fallback: Padrão antigo Portaria 1510
+                        const dBruta = linha.substring(10, 18);
+                        const hBruta = linha.substring(18, 22);
+                        dataStr = `${dBruta.substring(4, 8)}-${dBruta.substring(2, 4)}-${dBruta.substring(0, 2)}`;
+                        horaStr = `${hBruta.substring(0, 2)}:${hBruta.substring(2, 4)}:00`;
+                        identificador = linha.substring(22, 34).trim(); // PIS
+                    }
+
+                    relatorio.marcacoes.push({ nsr, dataHora: dataStr, horaFormatada: horaStr, cpfPis: identificador });
                 } catch (err) { }
                 continue;
             }
@@ -64,27 +97,31 @@ self.onmessage = function (event) {
                 continue;
             }
 
-            if (linha.length >= 50 && tipoRegistro === '5') {
+            if (linha.length >= 45 && tipoRegistro === '5') {
                 try {
-                    let dataStr, horaStr, codigoOp, identificador, nome;
+                    let dataStr, horaStr, codigoOp, identificador, nome, docAdicional = '';
 
                     if (linha.charAt(34) === 'I' || linha.charAt(34) === 'A' || linha.charAt(34) === 'E') {
+                        // Layout Portaria 671 (REP-A / REP-C / REP-P)
                         const dataHora = linha.substring(10, 34);
                         dataStr = dataHora.substring(0, 10);
                         horaStr = dataHora.substring(11, 19);
                         codigoOp = linha.substring(34, 35);
-                        identificador = linha.substring(35, 47).trim();
-                        nome = linha.substring(47, 99).trim();
+                        identificador = linha.substring(35, 46).trim(); // CPF (11 dígitos)
+                        nome = linha.substring(46, 98).trim();
+                        docAdicional = linha.length >= 109 ? linha.substring(98, 109).trim() : ''; // PIS secundário
                     }
                     else if (linha.charAt(22) === 'I' || linha.charAt(22) === 'A' || linha.charAt(22) === 'E') {
+                        // Layout Portaria 1510
                         const dataBruta = linha.substring(10, 18);
                         const horaBruta = linha.substring(18, 22);
 
                         dataStr = `${dataBruta.substring(4, 8)}-${dataBruta.substring(2, 4)}-${dataBruta.substring(0, 2)}`;
                         horaStr = `${horaBruta.substring(0, 2)}:${horaBruta.substring(2, 4)}:00`;
                         codigoOp = linha.substring(22, 23);
-                        identificador = linha.substring(23, 35).trim();
+                        identificador = linha.substring(23, 35).trim(); // PIS (12 caracteres)
                         nome = linha.substring(35, 87).trim();
+                        docAdicional = linha.length >= 98 ? linha.substring(87, 98).trim() : ''; // CPF secundário
                     } else {
                         continue;
                     }
@@ -94,10 +131,14 @@ self.onmessage = function (event) {
                     else if (codigoOp === 'A') operacao = 'Alteração';
                     else if (codigoOp === 'E') operacao = 'Exclusão';
 
+                    // Registra no dicionário tanto CPF quanto PIS apontando para o mesmo nome
+                    const id1 = identificador.replace(/\D/g, '');
+                    if (id1) cpfsNomes[id1] = nome;
 
-                    const limpoId = identificador.replace(/\D/g, '');
-                    if (limpoId) cpfsNomes[limpoId] = nome;
-
+                    if (docAdicional) {
+                        const id2 = docAdicional.replace(/\D/g, '');
+                        if (id2) cpfsNomes[id2] = nome;
+                    }
 
                     const registro = {
                         dataHora: dataStr,
