@@ -255,3 +255,32 @@ tr:hover {
     border-radius: 8px;
     border: 1px solid #dee2e6;
 }
+
+
+/* Estilos para os Botões Filtro do Resumo Operacional */
+.card-filtro-op {
+    border: 1px solid #dee2e6;
+    background: #ffffff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.card-filtro-op:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.card-filtro-op.ativo {
+    border-width: 2px;
+    box-shadow: 0 0 0 2px rgba(51, 121, 188, 0.25);
+}
+
+.card-filtro-op.todos.ativo { border-color: #004085; background-color: #e2eafc; }
+.card-filtro-op.inclusao.ativo { border-color: #28a745; background-color: #e8f5e9; }
+.card-filtro-op.alteracao.ativo { border-color: #fd7e14; background-color: #fff3e0; }
+.card-filtro-op.exclusao.ativo { border-color: #dc3545; background-color: #ffebee; }

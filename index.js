@@ -6,7 +6,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const tabelaCorpo = document.getElementById('tabelaCorpo');
     const btnDownload = document.getElementById('btnDownload');
 
-    // Elementos da Paginação
+    // Filtros e Ordenação
+    const filtroNome = document.getElementById('filtroNome');
+    const filtroCpf = document.getElementById('filtroCpf');
+    const filtroData = document.getElementById('filtroData');
+    const ordemData = document.getElementById('ordemData');
+
+    // Paginação
     const controlesPaginacao = document.getElementById('controlesPaginacao');
     const btnAnterior = document.getElementById('btnAnterior');
     const btnProximo = document.getElementById('btnProximo');
@@ -14,67 +20,128 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectTamanhoPagina = document.getElementById('tamanhoPagina');
 
     let relatorioFinal = null;
-
-    // Variáveis de controle de página
     let todosRegistros = [];
+    let registrosFiltrados = [];
     let paginaAtual = 1;
     let registrosPorPagina = parseInt(selectTamanhoPagina.value);
+    let operacaoSelecionada = 'Todas'; // Estado do filtro por tipo ('Todas', 'Inclusão', 'Alteração', 'Exclusão')
 
     // =========================================================
-    // CORREÇÃO: Evento que escuta a mudança no Select de páginas
+    // LÓGICA DE FILTRAGEM E ORDENAÇÃO
+    // =========================================================
+    function aplicarFiltrosEOrdenacao() {
+        const valNome = filtroNome.value.toLowerCase().trim();
+        const valCpf = filtroCpf.value.toLowerCase().replace(/\D/g, '');
+        const valData = filtroData.value;
+        const direcaoOrdem = ordemData.value;
+
+        // 1. Filtra registros
+        registrosFiltrados = todosRegistros.filter(reg => {
+            const bateNome = !valNome || reg.detalhes.toLowerCase().includes(valNome);
+            const cpfLimpo = reg.cpfPis.replace(/\D/g, '');
+            const bateCpf = !valCpf || cpfLimpo.includes(valCpf);
+            const bateData = !valData || reg.dataHora === valData;
+            const bateOperacao = operacaoSelecionada === 'Todas' || reg.operacao === operacaoSelecionada;
+
+            return bateNome && bateCpf && bateData && bateOperacao;
+        });
+
+        // 2. Ordena por Data + Hora (Crescente / Decrescente)
+        registrosFiltrados.sort((a, b) => {
+            const dateTimeA = a.dataHora + a.horaFormatada;
+            const dateTimeB = b.dataHora + b.horaFormatada;
+            
+            return direcaoOrdem === 'asc' 
+                ? dateTimeA.localeCompare(dateTimeB) 
+                : dateTimeB.localeCompare(dateTimeA);
+        });
+
+        paginaAtual = 1;
+        renderizarPagina();
+    }
+
+    // Escutadores dos inputs
+    filtroNome.addEventListener('input', aplicarFiltrosEOrdenacao);
+    filtroCpf.addEventListener('input', aplicarFiltrosEOrdenacao);
+    filtroData.addEventListener('change', aplicarFiltrosEOrdenacao);
+    ordemData.addEventListener('change', aplicarFiltrosEOrdenacao);
+
+    // Renderiza a barra de resumo interativa com botões de operação
+    function renderizarResumo() {
+        if (!relatorioFinal) return;
+
+        resumoValores.innerHTML = `
+            <div class="card-filtro-op todos ${operacaoSelecionada === 'Todas' ? 'ativo' : ''}" data-op="Todas">
+                Total: <strong>${todosRegistros.length}</strong>
+            </div>
+            <div class="card-filtro-op inclusao ${operacaoSelecionada === 'Inclusão' ? 'ativo' : ''}" data-op="Inclusão" style="color: #28a745;">
+                Inclusões: <strong>${relatorioFinal.porOperacao['Inclusão'] || 0}</strong>
+            </div>
+            <div class="card-filtro-op alteracao ${operacaoSelecionada === 'Alteração' ? 'ativo' : ''}" data-op="Alteração" style="color: #fd7e14;">
+                Alterações: <strong>${relatorioFinal.porOperacao['Alteração'] || 0}</strong>
+            </div>
+            <div class="card-filtro-op exclusao ${operacaoSelecionada === 'Exclusão' ? 'ativo' : ''}" data-op="Exclusão" style="color: #dc3545;">
+                Exclusões: <strong>${relatorioFinal.porOperacao['Exclusão'] || 0}</strong>
+            </div>
+        `;
+
+        // Atribui evento de clique para filtrar por tipo
+        resumoValores.querySelectorAll('.card-filtro-op').forEach(btn => {
+            btn.addEventListener('click', () => {
+                operacaoSelecionada = btn.getAttribute('data-op');
+                renderizarResumo(); // Atualiza estilo ativo
+                aplicarFiltrosEOrdenacao(); // Refiltra tabela
+            });
+        });
+    }
+
+    // =========================================================
+    // PAGINAÇÃO E RENDERIZAÇÃO
     // =========================================================
     selectTamanhoPagina.addEventListener('change', (event) => {
         registrosPorPagina = parseInt(event.target.value);
-        paginaAtual = 1; // Força a voltar para a página 1 ao mudar o limite
-
-        // Só tenta redesenhar se já houver registros carregados
-        if (todosRegistros.length > 0) {
-            renderizarPagina();
-        }
+        paginaAtual = 1;
+        if (registrosFiltrados.length > 0) renderizarPagina();
     });
 
-    // Função que desenha apenas a página solicitada
     function renderizarPagina() {
-        tabelaCorpo.innerHTML = ''; // Limpa as linhas antigas
+        tabelaCorpo.innerHTML = '';
 
-        const totalPaginas = Math.ceil(todosRegistros.length / registrosPorPagina);
+        const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
         const inicio = (paginaAtual - 1) * registrosPorPagina;
         const fim = inicio + registrosPorPagina;
+        const registrosPagina = registrosFiltrados.slice(inicio, fim);
 
-        // Pega apenas a "fatia" dos registros atuais
-        const registrosPagina = todosRegistros.slice(inicio, fim);
+        if (registrosPagina.length === 0) {
+            tabelaCorpo.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--color-text-label);">Nenhum registro encontrado para os filtros selecionados.</td></tr>`;
+        } else {
+            registrosPagina.forEach(reg => {
+                const tr = document.createElement('tr');
 
-        registrosPagina.forEach(reg => {
-            const tr = document.createElement('tr');
+                let classeOp = '';
+                if (reg.operacao === 'Inclusão') classeOp = 'op-inclusao';
+                if (reg.operacao === 'Alteração') classeOp = 'op-alteracao';
+                if (reg.operacao === 'Exclusão') classeOp = 'op-exclusao';
 
-            let classeOp = '';
-            if (reg.operacao === 'Inclusão') classeOp = 'op-inclusao';
-            if (reg.operacao === 'Alteração') classeOp = 'op-alteracao';
-            if (reg.operacao === 'Exclusão') classeOp = 'op-exclusao';
+                const partesData = reg.dataHora.split('-');
+                const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
 
-            const partesData = reg.dataHora.split('-');
-            const dataFormatada = `${partesData[2]}/${partesData[1]}/${partesData[0]}`;
+                tr.innerHTML = `
+                    <td>${dataFormatada}</td>
+                    <td>${reg.horaFormatada}</td>
+                    <td class="${classeOp}">${reg.operacao}</td>
+                    <td>${reg.cpfPis}</td>
+                    <td>${reg.detalhes}</td>
+                `;
+                tabelaCorpo.appendChild(tr);
+            });
+        }
 
-            tr.innerHTML = `
-                <td>${dataFormatada}</td>
-                <td>${reg.horaFormatada}</td>
-                <td class="${classeOp}">${reg.operacao}</td>
-                <td>${reg.cpfPis}</td>
-                <td>${reg.detalhes}</td>
-            `;
-            tabelaCorpo.appendChild(tr);
-        });
-
-        // Atualiza os textos e estado dos botões
         infoPagina.innerText = `Página ${paginaAtual} de ${totalPaginas || 1}`;
         btnAnterior.disabled = paginaAtual === 1;
-        btnProximo.disabled = paginaAtual >= totalPaginas;
-
-        // Rola a tela de volta para o topo da tabela
-        document.querySelector('.header-resultados').scrollIntoView({ behavior: 'smooth' });
+        btnProximo.disabled = paginaAtual >= totalPaginas || totalPaginas === 0;
     }
 
-    // Controles de clique da paginação
     btnAnterior.addEventListener('click', () => {
         if (paginaAtual > 1) {
             paginaAtual--;
@@ -83,24 +150,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     btnProximo.addEventListener('click', () => {
-        const totalPaginas = Math.ceil(todosRegistros.length / registrosPorPagina);
+        const totalPaginas = Math.ceil(registrosFiltrados.length / registrosPorPagina);
         if (paginaAtual < totalPaginas) {
             paginaAtual++;
             renderizarPagina();
         }
     });
 
-    // Evento de Leitura do Arquivo
+    // =========================================================
+    // LEITURA DO ARQUIVO
+    // =========================================================
     fileInput.addEventListener('change', (event) => {
         const fileNameDisplay = document.getElementById('fileNameDisplay');
-
         const file = event.target.files[0];
-        if (!file) return;
 
+        if (!file) {
+            fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
+            return;
+        }
+
+        fileNameDisplay.textContent = file.name;
         sessaoResultados.style.display = 'none';
         controlesPaginacao.style.display = 'none';
         tabelaCorpo.innerHTML = '';
+
         todosRegistros = [];
+        registrosFiltrados = [];
+        operacaoSelecionada = 'Todas';
+        filtroNome.value = '';
+        filtroCpf.value = '';
+        filtroData.value = '';
+        ordemData.value = 'asc';
         paginaAtual = 1;
 
         statusDiv.innerHTML = "Processando arquivo... ⏳ Isso pode levar alguns segundos.";
@@ -116,45 +196,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             relatorioFinal = e.data.resultado;
 
-            // Converte os dados agrupados por data em uma única lista plana (Array) para facilitar a paginação
             for (const [data, registros] of Object.entries(relatorioFinal.porData)) {
                 todosRegistros.push(...registros);
             }
 
-            // Opcional: Garante que a lista geral está em ordem cronológica exata
-            todosRegistros.sort((a, b) => {
-                const dateTimeA = a.dataHora + a.horaFormatada;
-                const dateTimeB = b.dataHora + b.horaFormatada;
-                return dateTimeA.localeCompare(dateTimeB);
-            });
-
-            resumoValores.innerHTML = `
-                <strong>Total Encontrado: ${todosRegistros.length}</strong><br>
-                <span style="color: #28a745;">Inclusões: ${relatorioFinal.porOperacao['Inclusão']}</span> | 
-                <span style="color: #fd7e14;">Alterações: ${relatorioFinal.porOperacao['Alteração']}</span> | 
-                <span style="color: #dc3545;">Exclusões: ${relatorioFinal.porOperacao['Exclusão']}</span>
-            `;
-
             statusDiv.innerHTML = "";
             sessaoResultados.style.display = 'block';
 
-            // Só mostra a barra de paginação se houver algum registro
+            renderizarResumo();
+            aplicarFiltrosEOrdenacao();
+
             if (todosRegistros.length > 0) {
                 controlesPaginacao.style.display = 'flex';
-                renderizarPagina(); // Aciona a função que desenha os primeiros X registros
             }
 
             worker.terminate();
         };
-        if (file) {
-            fileNameDisplay.textContent = file.name; // Exibe o nome do arquivo
-        } else {
-            fileNameDisplay.textContent = 'Nenhum arquivo selecionado';
-        }
-
     });
 
-    // Função de Download
+    // Download JSON
     btnDownload.addEventListener('click', () => {
         if (!relatorioFinal) return;
         const blob = new Blob([JSON.stringify(relatorioFinal, null, 2)], { type: 'application/json' });

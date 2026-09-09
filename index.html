@@ -30,8 +30,6 @@
         <div id="sessaoResultados">
 
             <div class="header-resultados">
-
-                <!-- NOVO: Controles da direita (Seletor + Download) -->
                 <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                     <div>
                         <label for="filtroNome"
@@ -51,6 +49,15 @@
                         <input type="date" id="filtroData"
                             style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
                     </div>
+                    <!-- NOVO: Select de Ordenação -->
+                    <div>
+                        <label for="ordemData" style="font-weight: bold; font-size: 12px; display: block;">Ordem
+                            (Data):</label>
+                        <select id="ordemData" style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
+                            <option value="asc" selected>Crescente ⬆️</option>
+                            <option value="desc">Decrescente ⬇️</option>
+                        </select>
+                    </div>
                     <div>
                         <label for="tamanhoPagina" style="font-weight: bold; font-size: 12px; display: block;">Por
                             página:</label>
@@ -65,32 +72,33 @@
                     </div>
                 </div>
                 <div>
-                    <button id="btnDownload" class="btn" type="file">⬇️ Baixar JSON</button>
+                    <button id="btnDownload" class="btn" type="button">⬇️ Baixar JSON</button>
                 </div>
             </div>
-            <div id="resumoValores">
-                <!-- Resumo inserido via JS -->
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Data</th>
-                        <th>Hora</th>
-                        <th>Operação</th>
-                        <th>CPF / PIS</th> <!-- Alterado aqui -->
-                        <th>Colaborador (Nome)</th> <!-- Alterado aqui -->
-                    </tr>
-                </thead>
-                <tbody id="tabelaCorpo">
-                    <!-- Linhas inseridas via JS -->
-                </tbody>
-            </table>
-            <div class="paginacao" id="controlesPaginacao" style="display: none;">
-                <button id="btnAnterior" class="btn-primary">Anterior</button>
-                <span id="infoPagina" style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>
-                <button id="btnProximo" class="btn-primary">Proxima </button>
-            </div>
+            <div id="resumoValores"
+                style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap;"></div>
+            <!-- Resumo inserido via JS -->
         </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Hora</th>
+                    <th>Operação</th>
+                    <th>CPF / PIS</th> <!-- Alterado aqui -->
+                    <th>Colaborador (Nome)</th> <!-- Alterado aqui -->
+                </tr>
+            </thead>
+            <tbody id="tabelaCorpo">
+                <!-- Linhas inseridas via JS -->
+            </tbody>
+        </table>
+        <div class="paginacao" id="controlesPaginacao" style="display: none;">
+            <button id="btnAnterior" class="btn-primary">Anterior</button>
+            <span id="infoPagina" style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>
+            <button id="btnProximo" class="btn-primary">Proxima </button>
+        </div>
+    </div>
     </div>
 
     <script src="index.js"></script>
