@@ -1,6 +1,68 @@
 {
-  "search_string": {
-    "message": "Hola Quieres café com Hielo?",
-    "description": "Cafezito con hielito y azucar"
-  }
+  "extName": { "message": "Buscador AFD" },
+  "extDescription": { "message": "Auditoría del Archivo Fuente de Datos (AFD) — Ordenanzas 595, 1510 y 671." },
+
+  "sidebar_employees": { "message": "Empleados (Tipo 5)" },
+  "sidebar_clock":    { "message": "Ajustes de Reloj (Tipo 4)" },
+  "sidebar_events":   { "message": "Eventos REP (Tipo 6)" },
+  "sidebar_marks":    { "message": "Marcaciones (Tipo 3/7)" },
+
+  "hero_title":       { "message": "Buscador Global - Archivo Fuente de Datos (AFD)" },
+  "hero_subtitle":    { "message": "Seleccione el archivo exportado del REP. Ordenanzas soportadas: 595, 1510, 671." },
+  "btn_select_file":  { "message": "Seleccionar archivo" },
+  "no_file_selected": { "message": "Ningún archivo seleccionado" },
+  "processing":       { "message": "Procesando archivo, espere." },
+
+  "filter_name":      { "message": "Nombre:" },
+  "filter_name_t5":   { "message": "Nombre (Vía Tipo 5):" },
+  "filter_cpf":       { "message": "CPF / PIS:" },
+  "filter_date":      { "message": "Fecha:" },
+  "filter_order":     { "message": "Orden (Fecha):" },
+  "order_asc":        { "message": "Ascendente" },
+  "order_desc":       { "message": "Descendente" },
+  "page_size":        { "message": "Registros/página:" },
+  "btn_export_json":  { "message": "Exportar JSON" },
+
+  "col_date":         { "message": "Fecha" },
+  "col_time":         { "message": "Hora" },
+  "col_operation":    { "message": "Operación" },
+  "col_employee":     { "message": "Empleado" },
+  "col_nsr":          { "message": "NSR" },
+  "col_code":         { "message": "Código" },
+  "col_description":  { "message": "Descripción" },
+  "col_prev_dt":      { "message": "Fecha/Hora Anterior" },
+  "col_next_dt":      { "message": "Fecha/Hora Ajustada" },
+  "col_responsible":  { "message": "CPF Responsable" },
+
+  "section_clock":    { "message": "Ajustes del Reloj (Tipo 4) - $count$ eventos", "placeholders": { "count": { "content": "$1" } } },
+  "section_events":   { "message": "Eventos del Equipo (Tipo 6) - $count$ eventos", "placeholders": { "count": { "content": "$1" } } },
+
+  "no_records":       { "message": "Ningún registro encontrado." },
+  "no_adjustments":   { "message": "Sin eventos de ajuste." },
+  "no_events":        { "message": "Sin eventos registrados." },
+  "no_marks":         { "message": "Ninguna marcación encontrada." },
+
+  "summary_total":    { "message": "Total del Archivo:" },
+  "summary_records":  { "message": "registros" },
+  "summary_inclusions":{ "message": "Inclusiones:" },
+  "summary_changes":  { "message": "Alteraciones:" },
+  "summary_deletions":{ "message": "Exclusiones:" },
+  "summary_found":    { "message": "Encontrados en la Búsqueda:" },
+  "summary_marks_total":{ "message": "Total de Marcaciones:" },
+  "summary_marks_found":{ "message": "Encontradas:" },
+
+  "op_all":           { "message": "Todas" },
+  "op_inclusion":     { "message": "Inclusión" },
+  "op_change":        { "message": "Alteración" },
+  "op_deletion":      { "message": "Exclusión" },
+
+  "unknown_employee": { "message": "Desconocido (No consta en Tipo 5)" },
+  "io_error":         { "message": "Fallo de E/S al leer el archivo." },
+
+  "notif_title":      { "message": "¡AFD Completada!" },
+  "notif_body":       { "message": "El procesamiento del archivo finalizó con éxito." },
+
+  "page_of":          { "message": "Página $current$ de $total$", "placeholders": { "current": { "content": "$1" }, "total": { "content": "$2" } } },
+  "btn_prev":         { "message": "Anterior" },
+  "btn_next":         { "message": "Siguiente" }
 }

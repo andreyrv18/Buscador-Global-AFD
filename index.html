@@ -1,264 +1,191 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
     <meta charset="UTF-8">
-    <title>Buscador AFD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="extName">Buscador AFD</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/png" sizes="48x48" href="icons/icon48.png">
 </head>
-
 <body>
-    <div class="app-container">
-        <nav class="sidebar">
-            <div class="logo">
-                <span>Buscador AFD</span>
-            </div>
-            <ul class="menu">
-                <li class="menu-item ativo" data-aba="abaFuncionarios">
-                    <span class="material-symbols-outlined">person</span>
-                    <span class="label">Funcionários (Tipo 5)</span>
-                </li>
-                <li class="menu-item" data-aba="abaRelogio">
-                    <span class="material-symbols-outlined">schedule</span>
-                    <span class="label">Ajustes Relógio (Tipo 4)</span>
-                </li>
-                <li class="menu-item" data-aba="abaEventos">
-                    <span class="material-symbols-outlined">shield</span>
-                    <span class="label">Eventos REP (Tipo 6)</span>
-                </li>
-                <li class="menu-item" data-aba="abaMarcacoes">
-                    <span class="material-symbols-outlined">fingerprint</span>
-                    <span class="label">Marcações (Tipo 3/7)</span>
-                </li>
-            </ul>
-        </nav>
+<div class="app-container">
 
-        <main class="main-content">
-            <div class="container">
-                <h2>Buscador Global - Arquivo Fonte de Dados (AFD)</h2>
-                <p>Selecione o arquivo exportado do REP. Portarias suportadas: 595, 1510, 671.</p>
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="logo" data-i18n="extName">Buscador AFD</div>
 
-                <div class="file-upload-box">
-                    <input type="file" id="arquivoAfd" accept=".txt" class="hidden-input">
-                    <label for="arquivoAfd" class="btn btn-primary btn-icon">
-                        <span class="material-symbols-outlined">upload</span>
-                        Selecionar arquivo
-                    </label>
-                    <span id="fileNameDisplay" class="file-name-display">Nenhum arquivo selecionado</span>
+        <!-- SELETOR DE IDIOMAS -->
+        <div class="lang-selector">
+            <select id="langSelect" class="lang-select">
+                <option value="pt_BR">Português (BR)</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+            </select>
+        </div>
+
+        <ul class="menu">
+            <li class="menu-item ativo" data-aba="abaFuncionarios">
+                <span class="material-symbols-outlined">person</span>
+                <span class="label" data-i18n="sidebar_employees">Funcionários (Tipo 5)</span>
+            </li>
+            <li class="menu-item" data-aba="abaAjustes">
+                <span class="material-symbols-outlined">schedule</span>
+                <span class="label" data-i18n="sidebar_clock">Ajustes Relógio (Tipo 4)</span>
+            </li>
+            <li class="menu-item" data-aba="abaEventos">
+                <span class="material-symbols-outlined">shield</span>
+                <span class="label" data-i18n="sidebar_events">Eventos REP (Tipo 6)</span>
+            </li>
+            <li class="menu-item" data-aba="abaMarcacoes">
+                <span class="material-symbols-outlined">fingerprint</span>
+                <span class="label" data-i18n="sidebar_marks">Marcações (Tipo 3/7)</span>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+        <h1 data-i18n="hero_title">Buscador Global - Arquivo Fonte de Dados (AFD)</h1>
+        <p data-i18n="hero_subtitle">Selecione o arquivo exportado do REP. Portarias suportadas: 595, 1510, 671.</p>
+
+        <label class="file-upload-box">
+            <span class="material-symbols-outlined">upload</span>
+            <span class="btn-primary" data-i18n="btn_select_file">Selecionar arquivo</span>
+            <span id="fileNameDisplay" class="file-name-display" data-i18n="no_file_selected">Nenhum arquivo selecionado</span>
+            <input id="arquivoAfd" type="file" class="hidden-input" accept=".afd,.txt">
+        </label>
+
+        <div id="status"></div>
+
+        <section id="sessaoResultados">
+
+            <!-- ABA FUNCIONÁRIOS (apenas Tipo 5) -->
+            <div id="abaFuncionarios" class="aba-conteudo ativa">
+                <div class="filtros-grid">
+                    <label data-i18n="filter_name">Nome:</label>
+                    <input id="filtroNome" type="text">
+                    <label data-i18n="filter_cpf">CPF / PIS:</label>
+                    <input id="filtroCpf" type="text">
+                    <label data-i18n="filter_date">Data:</label>
+                    <input id="filtroData" type="date">
+                    <label data-i18n="filter_order">Ordem (Data):</label>
+                    <select id="ordemData">
+                        <option value="asc"  data-i18n="order_asc">Crescente</option>
+                        <option value="desc" data-i18n="order_desc">Decrescente</option>
+                    </select>
+                    <label data-i18n="page_size">Registros/página:</label>
+                    <select id="tamanhoPagina">
+                        <option>10</option><option>20</option><option>50</option><option>100</option><option>500</option>
+                    </select>
+                    <button id="btnDownload" class="btn-primary" data-i18n="btn_export_json">Exportar JSON</button>
                 </div>
 
-                <div id="status"></div>
-                <div id="resumoAFD"></div>
+                <div id="resumoValores" class="resumo-container"></div>
 
-                <div id="sessaoResultados" style="display: none;">
-                    <section id="abaFuncionarios" class="aba-conteudo ativa">
-                        <div class="header-resultados">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                                <div>
-                                    <label for="filtroNome"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Nome:</label>
-                                    <input type="text" id="filtroNome" placeholder="Buscar nome..."
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 140px;">
-                                </div>
-                                <div>
-                                    <label for="filtroCpf"
-                                        style="font-weight: bold; font-size: 12px; display: block;">CPF / PIS:</label>
-                                    <input type="text" id="filtroCpf" placeholder="Buscar documento..."
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 130px;">
-                                </div>
-                                <div>
-                                    <label for="filtroData"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Data:</label>
-                                    <input type="date" id="filtroData"
-                                        style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
-                                </div>
-                                <div>
-                                    <label for="ordemData"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Ordem
-                                        (Data):</label>
-                                    <select id="ordemData"
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
-                                        <option value="asc" selected>Crescente</option>
-                                        <option value="desc">Decrescente</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="tamanhoPagina"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Registros/página:</label>
-                                    <select id="tamanhoPagina"
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
-                                        <option value="10" selected>10</option>
-                                        <option value="20">20</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                        <option value="500">500</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <button id="btnDownload" class="btn" type="button">Exportar JSON</button>
-                            </div>
-                        </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th data-i18n="col_date">Data</th>
+                        <th data-i18n="col_time">Hora</th>
+                        <th data-i18n="col_operation">Operação</th>
+                        <th data-i18n="filter_cpf">CPF / PIS</th>
+                        <th data-i18n="col_employee">Colaborador</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabelaCorpo"></tbody>
+                </table>
 
-                        <div id="resumoValores"
-                            style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap;">
-                        </div>
-
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Hora</th>
-                                    <th>Operação</th>
-                                    <th>CPF / PIS</th>
-                                    <th>Colaborador</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaCorpo"></tbody>
-                        </table>
-
-                        <div class="paginacao" id="controlesPaginacao" style="display: none;">
-                            <button id="btnAnterior" class="btn-primary">Anterior</button>
-                            <span id="infoPagina" style="font-size: 16px; font-weight: bold; color: #004085;">Página 1
-                                de 1</span>
-                            <button id="btnProximo" class="btn-primary">Próxima</button>
-                        </div>
-                    </section>
-
-                    <section id="abaRelogio" class="aba-conteudo">
-                        <div id="sessaoAjustesRelogio" style="margin-top: 10px;">
-                            <h3
-                                style="color: var(--color-primary-base); border-bottom: 2px solid var(--color-border-outline); padding-bottom: 8px;">
-                                Ajustes do Relógio (Tipo 4) - <span id="qtdAjustes">0</span> eventos
-                            </h3>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Data/Hora Anterior</th>
-                                        <th>Data/Hora Ajustada</th>
-                                        <th>CPF Responsável</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaCorpoAjustes"></tbody>
-                            </table>
-                        </div>
-                    </section>
-
-                    <section id="abaEventos" class="aba-conteudo">
-                        <div style="margin-top: 10px;">
-                            <div class="header-resultados"
-                                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--color-border-outline); padding-bottom: 8px; margin-bottom: 15px;">
-                                <h3 style="color: var(--color-primary-base); margin: 0;">
-                                    Eventos do Equipamento (Tipo 6) - <span id="qtdEventos">0</span> eventos
-                                </h3>
-                                <div>
-                                    <label for="tamanhoPaginaEventos"
-                                        style="font-weight: bold; font-size: 12px; margin-right: 5px;">Registros/página:</label>
-                                    <select id="tamanhoPaginaEventos"
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
-                                        <option value="10" selected>10</option>
-                                        <option value="20">20</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Data/Hora</th>
-                                        <th>Código</th>
-                                        <th>Descrição</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="tabelaCorpoEventos"></tbody>
-                            </table>
-                            <div class="paginacao" id="controlesPaginacaoEventos" style="display: none;">
-                                <button id="btnAnteriorEventos" class="btn-primary">Anterior</button>
-                                <span id="infoPaginaEventos"
-                                    style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>
-                                <button id="btnProximoEventos" class="btn-primary">Próxima</button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section id="abaMarcacoes" class="aba-conteudo">
-                        <div class="header-resultados">
-                            <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-                                <div>
-                                    <label for="filtroNomeMarcacoes"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Nome (Via Tipo
-                                        5):</label>
-                                    <input type="text" id="filtroNomeMarcacoes" placeholder="Buscar nome..."
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 140px;">
-                                </div>
-                                <div>
-                                    <label for="filtroCpfMarcacoes"
-                                        style="font-weight: bold; font-size: 12px; display: block;">CPF / PIS:</label>
-                                    <input type="text" id="filtroCpfMarcacoes" placeholder="Buscar documento..."
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc; width: 130px;">
-                                </div>
-                                <div>
-                                    <label for="filtroDataMarcacoes"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Data:</label>
-                                    <input type="date" id="filtroDataMarcacoes"
-                                        style="padding: 5px; border-radius: 4px; border: 1px solid #ccc;">
-                                </div>
-                                <div>
-                                    <label for="ordemDataMarcacoes"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Ordem
-                                        (Data):</label>
-                                    <select id="ordemDataMarcacoes"
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
-                                        <option value="asc" selected>Crescente</option>
-                                        <option value="desc">Decrescente</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label for="tamanhoPaginaMarcacoes"
-                                        style="font-weight: bold; font-size: 12px; display: block;">Registros/página:</label>
-                                    <select id="tamanhoPaginaMarcacoes"
-                                        style="padding: 6px; border-radius: 4px; border: 1px solid #ccc;">
-                                        <option value="10" selected>10</option>
-                                        <option value="20">20</option>
-                                        <option value="50">50</option>
-                                        <option value="100">100</option>
-                                        <option value="500">500</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div id="resumoValoresMarcacoes"
-                            style="display: flex; gap: 10px; margin-bottom: 15px; align-items: center; flex-wrap: wrap; font-size: 13px; font-weight: 600;">
-                        </div>
-
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Data</th>
-                                    <th>Hora</th>
-                                    <th>NSR</th>
-                                    <th>CPF / PIS</th>
-                                    <th>Colaborador</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tabelaCorpoMarcacoes"></tbody>
-                        </table>
-
-                        <div class="paginacao" id="controlesPaginacaoMarcacoes" style="display: none;">
-                            <button id="btnAnteriorMarcacoes" class="btn-primary">Anterior</button>
-                            <span id="infoPaginaMarcacoes"
-                                style="font-size: 16px; font-weight: bold; color: #004085;">Página 1 de 1</span>
-                            <button id="btnProximoMarcacoes" class="btn-primary">Próxima</button>
-                        </div>
-                    </section>
+                <div id="controlesPaginacao" class="paginacao" style="display:none;">
+                    <button id="btnAnterior" class="btn" data-i18n="btn_prev">Anterior</button>
+                    <span id="infoPagina"></span>
+                    <button id="btnProximo" class="btn" data-i18n="btn_next">Próxima</button>
                 </div>
             </div>
-        </main>
-    </div>
-    <script src="index.js"></script>
+
+            <!-- ABA AJUSTES (Tipo 4) -->
+            <div id="abaAjustes" class="aba-conteudo">
+                <h3 id="tituloAjustes" data-i18n="section_clock">Ajustes do Relógio (Tipo 4) - 0 eventos</h3>
+                <table>
+                    <thead>
+                    <tr>
+                        <th data-i18n="col_prev_dt">Data/Hora Anterior</th>
+                        <th data-i18n="col_next_dt">Data/Hora Ajustada</th>
+                        <th data-i18n="col_responsible">CPF Responsável</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabelaCorpoAjustes"></tbody>
+                </table>
+            </div>
+
+            <!-- ABA EVENTOS (Tipo 6) -->
+            <div id="abaEventos" class="aba-conteudo">
+                <h3 id="tituloEventos" data-i18n="section_events">Eventos do Equipamento (Tipo 6) - 0 eventos</h3>
+                <div class="filtros-grid">
+                    <label data-i18n="page_size">Registros/página:</label>
+                    <select id="tamanhoPaginaEventos">
+                        <option>10</option><option>20</option><option>50</option><option>100</option>
+                    </select>
+                </div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th data-i18n="col_date">Data/Hora</th>
+                        <th data-i18n="col_code">Código</th>
+                        <th data-i18n="col_description">Descrição</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabelaCorpoEventos"></tbody>
+                </table>
+                <div id="controlesPaginacaoEventos" class="paginacao" style="display:none;">
+                    <button id="btnAnteriorEventos" class="btn" data-i18n="btn_prev">Anterior</button>
+                    <span id="infoPaginaEventos"></span>
+                    <button id="btnProximoEventos" class="btn" data-i18n="btn_next">Próxima</button>
+                </div>
+            </div>
+
+            <!-- ABA MARCAÇÕES (Tipo 3/7) -->
+            <div id="abaMarcacoes" class="aba-conteudo">
+                <div class="filtros-grid">
+                    <label data-i18n="filter_name_t5">Nome (Via Tipo 5):</label>
+                    <input id="filtroNomeMarcacoes" type="text">
+                    <label data-i18n="filter_cpf">CPF / PIS:</label>
+                    <input id="filtroCpfMarcacoes" type="text">
+                    <label data-i18n="filter_date">Data:</label>
+                    <input id="filtroDataMarcacoes" type="date">
+                    <label data-i18n="filter_order">Ordem (Data):</label>
+                    <select id="ordemDataMarcacoes">
+                        <option value="asc"  data-i18n="order_asc">Crescente</option>
+                        <option value="desc" data-i18n="order_desc">Decrescente</option>
+                    </select>
+                    <label data-i18n="page_size">Registros/página:</label>
+                    <select id="tamanhoPaginaMarcacoes">
+                        <option>10</option><option>20</option><option>50</option><option>100</option><option>500</option>
+                    </select>
+                </div>
+                <div id="resumoValoresMarcacoes" class="resumo-container"></div>
+                <table>
+                    <thead>
+                    <tr>
+                        <th data-i18n="col_date">Data</th>
+                        <th data-i18n="col_time">Hora</th>
+                        <th data-i18n="col_nsr">NSR</th>
+                        <th data-i18n="filter_cpf">CPF / PIS</th>
+                        <th data-i18n="col_employee">Colaborador</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tabelaCorpoMarcacoes"></tbody>
+                </table>
+                <div id="controlesPaginacaoMarcacoes" class="paginacao" style="display:none;">
+                    <button id="btnAnteriorMarcacoes" class="btn" data-i18n="btn_prev">Anterior</button>
+                    <span id="infoPaginaMarcacoes"></span>
+                    <button id="btnProximoMarcacoes" class="btn" data-i18n="btn_next">Próxima</button>
+                </div>
+            </div>
+
+        </section>
+    </main>
+</div>
+
+<script src="i18n.js"></script>
+<script src="index.js" defer></script>
 </body>
-
 </html>

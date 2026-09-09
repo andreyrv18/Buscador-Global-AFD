@@ -1,6 +1,68 @@
 {
-  "search_string": {
-    "message": "hello%20world",
-    "description": "The string we search for. Put %20 between words that go together."
-  }
+  "extName": { "message": "AFD Seeker" },
+  "extDescription": { "message": "AFD (Source Data File) audit — Ordinances 595, 1510 and 671." },
+
+  "sidebar_employees": { "message": "Employees (Type 5)" },
+  "sidebar_clock":    { "message": "Clock Adjustments (Type 4)" },
+  "sidebar_events":   { "message": "REP Events (Type 6)" },
+  "sidebar_marks":    { "message": "Marks (Type 3/7)" },
+
+  "hero_title":       { "message": "Global Seeker - Source Data File (AFD)" },
+  "hero_subtitle":    { "message": "Select the file exported from the REP. Supported ordinances: 595, 1510, 671." },
+  "btn_select_file":  { "message": "Select file" },
+  "no_file_selected": { "message": "No file selected" },
+  "processing":       { "message": "Processing file, please wait." },
+
+  "filter_name":      { "message": "Name:" },
+  "filter_name_t5":   { "message": "Name (Via Type 5):" },
+  "filter_cpf":       { "message": "CPF / PIS:" },
+  "filter_date":      { "message": "Date:" },
+  "filter_order":     { "message": "Order (Date):" },
+  "order_asc":        { "message": "Ascending" },
+  "order_desc":       { "message": "Descending" },
+  "page_size":        { "message": "Records/page:" },
+  "btn_export_json":  { "message": "Export JSON" },
+
+  "col_date":         { "message": "Date" },
+  "col_time":         { "message": "Time" },
+  "col_operation":    { "message": "Operation" },
+  "col_employee":     { "message": "Employee" },
+  "col_nsr":          { "message": "NSR" },
+  "col_code":         { "message": "Code" },
+  "col_description":  { "message": "Description" },
+  "col_prev_dt":      { "message": "Previous Date/Time" },
+  "col_next_dt":      { "message": "Adjusted Date/Time" },
+  "col_responsible":  { "message": "Responsible CPF" },
+
+  "section_clock":    { "message": "Clock Adjustments (Type 4) - $count$ events", "placeholders": { "count": { "content": "$1" } } },
+  "section_events":   { "message": "Equipment Events (Type 6) - $count$ events", "placeholders": { "count": { "content": "$1" } } },
+
+  "no_records":       { "message": "No records found." },
+  "no_adjustments":   { "message": "No adjustment events." },
+  "no_events":        { "message": "No events registered." },
+  "no_marks":         { "message": "No marks found." },
+
+  "summary_total":    { "message": "File Total:" },
+  "summary_records":  { "message": "records" },
+  "summary_inclusions":{ "message": "Inclusions:" },
+  "summary_changes":  { "message": "Changes:" },
+  "summary_deletions":{ "message": "Deletions:" },
+  "summary_found":    { "message": "Found in Search:" },
+  "summary_marks_total":{ "message": "Total Marks:" },
+  "summary_marks_found":{ "message": "Found:" },
+
+  "op_all":           { "message": "All" },
+  "op_inclusion":     { "message": "Inclusion" },
+  "op_change":        { "message": "Change" },
+  "op_deletion":      { "message": "Deletion" },
+
+  "unknown_employee": { "message": "Unknown (Not in Type 5)" },
+  "io_error":         { "message": "I/O failure while reading the file." },
+
+  "notif_title":      { "message": "AFD Completed!" },
+  "notif_body":       { "message": "File processing finished successfully." },
+
+  "page_of":          { "message": "Page $current$ of $total$", "placeholders": { "current": { "content": "$1" }, "total": { "content": "$2" } } },
+  "btn_prev":         { "message": "Previous" },
+  "btn_next":         { "message": "Next" }
 }

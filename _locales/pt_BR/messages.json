@@ -1,10 +1,68 @@
 {
-  "extName": {
-    "message": "Buscador Global AFD",
-    "description": "Nome principal da extensão"
-  },
-  "clientNameLabel": {
-    "message": "Nome do Cliente",
-    "description": "Rótulo utilizado para extração de texto"
-  }
+  "extName": { "message": "Buscador AFD" },
+  "extDescription": { "message": "Auditoria de Arquivo Fonte de Dados (AFD) — Portarias 595, 1510 e 671." },
+
+  "sidebar_employees": { "message": "Funcionários (Tipo 5)" },
+  "sidebar_clock":    { "message": "Ajustes Relógio (Tipo 4)" },
+  "sidebar_events":   { "message": "Eventos REP (Tipo 6)" },
+  "sidebar_marks":    { "message": "Marcações (Tipo 3/7)" },
+
+  "hero_title":       { "message": "Buscador Global - Arquivo Fonte de Dados (AFD)" },
+  "hero_subtitle":    { "message": "Selecione o arquivo exportado do REP. Portarias suportadas: 595, 1510, 671." },
+  "btn_select_file":  { "message": "Selecionar arquivo" },
+  "no_file_selected": { "message": "Nenhum arquivo selecionado" },
+  "processing":       { "message": "Processando arquivo, aguarde." },
+
+  "filter_name":      { "message": "Nome:" },
+  "filter_name_t5":   { "message": "Nome (Via Tipo 5):" },
+  "filter_cpf":       { "message": "CPF / PIS:" },
+  "filter_date":      { "message": "Data:" },
+  "filter_order":     { "message": "Ordem (Data):" },
+  "order_asc":        { "message": "Crescente" },
+  "order_desc":       { "message": "Decrescente" },
+  "page_size":        { "message": "Registros/página:" },
+  "btn_export_json":  { "message": "Exportar JSON" },
+
+  "col_date":         { "message": "Data" },
+  "col_time":         { "message": "Hora" },
+  "col_operation":    { "message": "Operação" },
+  "col_employee":     { "message": "Colaborador" },
+  "col_nsr":          { "message": "NSR" },
+  "col_code":         { "message": "Código" },
+  "col_description":  { "message": "Descrição" },
+  "col_prev_dt":      { "message": "Data/Hora Anterior" },
+  "col_next_dt":      { "message": "Data/Hora Ajustada" },
+  "col_responsible":  { "message": "CPF Responsável" },
+
+  "section_clock":    { "message": "Ajustes do Relógio (Tipo 4) - $count$ eventos", "placeholders": { "count": { "content": "$1" } } },
+  "section_events":   { "message": "Eventos do Equipamento (Tipo 6) - $count$ eventos", "placeholders": { "count": { "content": "$1" } } },
+
+  "no_records":       { "message": "Nenhum registro encontrado." },
+  "no_adjustments":   { "message": "Sem eventos de ajuste." },
+  "no_events":        { "message": "Sem eventos registrados." },
+  "no_marks":         { "message": "Nenhuma marcação encontrada." },
+
+  "summary_total":    { "message": "Total do Arquivo:" },
+  "summary_records":  { "message": "registros" },
+  "summary_inclusions":{ "message": "Inclusões:" },
+  "summary_changes":  { "message": "Alterações:" },
+  "summary_deletions":{ "message": "Exclusões:" },
+  "summary_found":    { "message": "Encontrados na Busca:" },
+  "summary_marks_total":{ "message": "Total de Marcações:" },
+  "summary_marks_found":{ "message": "Encontradas:" },
+
+  "op_all":           { "message": "Todas" },
+  "op_inclusion":     { "message": "Inclusão" },
+  "op_change":        { "message": "Alteração" },
+  "op_deletion":      { "message": "Exclusão" },
+
+  "unknown_employee": { "message": "Desconhecido (Não consta no Tipo 5)" },
+  "io_error":         { "message": "Falha de I/O na leitura do arquivo." },
+
+  "notif_title":      { "message": "AFD Concluída!" },
+  "notif_body":       { "message": "O processamento do arquivo foi finalizado com sucesso." },
+
+  "page_of":          { "message": "Página $current$ de $total$", "placeholders": { "current": { "content": "$1" }, "total": { "content": "$2" } } },
+  "btn_prev":         { "message": "Anterior" },
+  "btn_next":         { "message": "Próxima" }
 }
