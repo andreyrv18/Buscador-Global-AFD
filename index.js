@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const fileInput = document.getElementById('arquivoAfd');
     const statusDiv = document.getElementById('status');
     const sessaoResultados = document.getElementById('sessaoResultados');
+    const resumoAFD = document.getElementById("resumoAFD");
     const resumoValores = document.getElementById('resumoValores');
     const tabelaCorpo = document.getElementById('tabelaCorpo');
     const btnDownload = document.getElementById('btnDownload');
@@ -35,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const valData = filtroData.value;
         const direcaoOrdem = ordemData.value;
 
-        // 1. Filtra registros
         registrosFiltrados = todosRegistros.filter(reg => {
             const bateNome = !valNome || reg.detalhes.toLowerCase().includes(valNome);
             const cpfLimpo = reg.cpfPis.replace(/\D/g, '');
@@ -46,20 +46,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return bateNome && bateCpf && bateData && bateOperacao;
         });
 
-        // 2. Ordena por Data + Hora (Crescente / Decrescente)
         registrosFiltrados.sort((a, b) => {
             const dateTimeA = a.dataHora + a.horaFormatada;
             const dateTimeB = b.dataHora + b.horaFormatada;
-            
-            return direcaoOrdem === 'asc' 
-                ? dateTimeA.localeCompare(dateTimeB) 
+
+            return direcaoOrdem === 'asc'
+                ? dateTimeA.localeCompare(dateTimeB)
                 : dateTimeB.localeCompare(dateTimeA);
         });
 
         paginaAtual = 1;
+        renderizarResumo(); // Atualiza os contadores de busca e estado dos botões a cada tecla/filtro
         renderizarPagina();
     }
-
     // Escutadores dos inputs
     filtroNome.addEventListener('input', aplicarFiltrosEOrdenacao);
     filtroCpf.addEventListener('input', aplicarFiltrosEOrdenacao);
@@ -70,27 +69,48 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderizarResumo() {
         if (!relatorioFinal) return;
 
+        // Calcula os totais baseados nos registros visíveis após os filtros
+        const totalFiltrado = registrosFiltrados.length;
+        const incFiltrado = registrosFiltrados.filter(r => r.operacao === 'Inclusão').length;
+        const altFiltrado = registrosFiltrados.filter(r => r.operacao === 'Alteração').length;
+        const excFiltrado = registrosFiltrados.filter(r => r.operacao === 'Exclusão').length;
+
+        resumoAFD.innerHTML = `
+         <!-- Linha 1: Totais Gerais do AFD -->
+        <div style="width: 100%; font-size: 13px; color: var(--color-text-body); font-weight: 600; margin-bottom: 4px;">
+            Total do Arquivo AFD: <strong>${todosRegistros.length}</strong> registros
+            <span style="color: #bbb; margin: 0 6px;">|</span>
+            <span style="color: #28a745;">Inclusões: ${relatorioFinal.porOperacao['Inclusão'] || 0}</span>
+            <span style="color: #bbb; margin: 0 6px;">|</span>
+            <span style="color: #fd7e14;">Alterações: ${relatorioFinal.porOperacao['Alteração'] || 0}</span>
+            <span style="color: #bbb; margin: 0 6px;">|</span>
+            <span style="color: #dc3545;">Exclusões: ${relatorioFinal.porOperacao['Exclusão'] || 0}</span>
+        </div>
+        `
+
         resumoValores.innerHTML = `
+               <!-- Linha 2: Filtros Interativos com a Quantidade da Busca -->
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center; width: 100%;">
             <div class="card-filtro-op todos ${operacaoSelecionada === 'Todas' ? 'ativo' : ''}" data-op="Todas">
-                Total: <strong>${todosRegistros.length}</strong>
+                Encontrados na Busca: <strong>${totalFiltrado}</strong>
             </div>
             <div class="card-filtro-op inclusao ${operacaoSelecionada === 'Inclusão' ? 'ativo' : ''}" data-op="Inclusão" style="color: #28a745;">
-                Inclusões: <strong>${relatorioFinal.porOperacao['Inclusão'] || 0}</strong>
+                Inclusões: <strong>${incFiltrado}</strong>
             </div>
             <div class="card-filtro-op alteracao ${operacaoSelecionada === 'Alteração' ? 'ativo' : ''}" data-op="Alteração" style="color: #fd7e14;">
-                Alterações: <strong>${relatorioFinal.porOperacao['Alteração'] || 0}</strong>
+                Alterações: <strong>${altFiltrado}</strong>
             </div>
             <div class="card-filtro-op exclusao ${operacaoSelecionada === 'Exclusão' ? 'ativo' : ''}" data-op="Exclusão" style="color: #dc3545;">
-                Exclusões: <strong>${relatorioFinal.porOperacao['Exclusão'] || 0}</strong>
+                Exclusões: <strong>${excFiltrado}</strong>
             </div>
-        `;
+        </div>
+    `;
 
-        // Atribui evento de clique para filtrar por tipo
+        // Reanexa os eventos de clique nos cards de filtro
         resumoValores.querySelectorAll('.card-filtro-op').forEach(btn => {
             btn.addEventListener('click', () => {
                 operacaoSelecionada = btn.getAttribute('data-op');
-                renderizarResumo(); // Atualiza estilo ativo
-                aplicarFiltrosEOrdenacao(); // Refiltra tabela
+                aplicarFiltrosEOrdenacao();
             });
         });
     }

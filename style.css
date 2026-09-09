@@ -272,7 +272,7 @@ tr:hover {
 
 .card-filtro-op:hover {
     transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .card-filtro-op.ativo {
@@ -280,7 +280,22 @@ tr:hover {
     box-shadow: 0 0 0 2px rgba(51, 121, 188, 0.25);
 }
 
-.card-filtro-op.todos.ativo { border-color: #004085; background-color: #e2eafc; }
-.card-filtro-op.inclusao.ativo { border-color: #28a745; background-color: #e8f5e9; }
-.card-filtro-op.alteracao.ativo { border-color: #fd7e14; background-color: #fff3e0; }
-.card-filtro-op.exclusao.ativo { border-color: #dc3545; background-color: #ffebee; }
+.card-filtro-op.todos.ativo {
+    border-color: #004085;
+    background-color: #e2eafc;
+}
+
+.card-filtro-op.inclusao.ativo {
+    border-color: #28a745;
+    background-color: #e8f5e9;
+}
+
+.card-filtro-op.alteracao.ativo {
+    border-color: #fd7e14;
+    background-color: #fff3e0;
+}
+
+.card-filtro-op.exclusao.ativo {
+    border-color: #dc3545;
+    background-color: #ffebee;
+}
