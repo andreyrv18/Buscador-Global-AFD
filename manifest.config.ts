@@ -13,17 +13,14 @@ export default defineManifest({
     default_icon: {
       48: 'public/logo.png',
     },
-    default_popup: 'src/popup/index.html',
+  },
+  "background": {
+    "service_worker": "src/background.ts",
+    "type": "module"
   },
   permissions: [
     'sidePanel',
     'contentSettings',
   ],
-  content_scripts: [{
-    js: ['src/content/main.tsx'],
-    matches: ['https://*/*'],
-  }],
-  side_panel: {
-    default_path: 'src/sidepanel/index.html',
-  },
+
 })
