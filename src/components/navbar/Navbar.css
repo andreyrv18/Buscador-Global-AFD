@@ -1,0 +1,66 @@
+.dixi-navbar {
+    align-items: center;
+    background-color: var(--azul-base);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    left: 0;
+    min-width: 100px;
+    position: fixed;
+    top: 0;
+    width: 100px;
+    z-index: 100;
+}
+
+.dixi-navbar__logo {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    width: 100%;
+}
+
+.dixi-navbar__menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.dixi-navbar__item {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid rgb(255 255 255 / 15%);
+    border-top: 1px solid rgb(255 255 255 / 15%);
+    box-sizing: border-box;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px 8px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    width: 100%;
+}
+
+.dixi-navbar__item:hover {
+    background-color: var(--azul-hover);
+}
+
+.dixi-navbar__item--active {
+    background-color: rgb(0 0 0 / 10%);
+    box-shadow: inset 4px 0 0 #fff;
+}
+
+.dixi-navbar__icon {
+    display: flex;
+    font-size: 24px;
+}
+
+.dixi-navbar__label {
+    color: #fff;
+    font-size: 11px;
+    font-weight: var(--sans-semibold);
+    text-align: center;
+}

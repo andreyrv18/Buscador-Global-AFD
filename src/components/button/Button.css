@@ -1,0 +1,55 @@
+.btn {
+    align-items: center;
+    border: 2px solid var(--azul-base);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: var(--texto-de-botao);
+    font-weight: var(--sans-bold);
+    gap: 8px;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+/* Tamanho Pequeno (Arredondado / Pílula) */
+.btn--small {
+    border-radius: 20px;
+    padding: 6px 16px;
+}
+/* Tamanho Médio (Estilo mais quadrado com leve arredondamento) */
+.btn--medium {
+    border-radius: 6px;
+    padding: 10px 24px;
+}
+/* Botão Contornado */
+.btn--outline {
+    background: var(--background);
+    color: var(--azul-base);
+}
+
+.btn--outline:hover:not(:disabled) {
+    background: var(--azul-leve);
+}
+
+.btn--outline:active:not(:disabled) {
+    background: var(--azul-base);
+    color: var(--background);
+}
+/* Botão Cheio */
+.btn--filled {
+    background: var(--azul-base);
+    color: var(--background);
+}
+
+.btn--filled:hover:not(:disabled) {
+    background: var(--azul-hover);
+    border-color: var(--azul-hover);
+}
+
+.btn--filled:active:not(:disabled) {
+    background: var(--azul-base);
+    border-color: var(--azul-base);
+}
+/* Estado Desabilitado */
+.btn--disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}

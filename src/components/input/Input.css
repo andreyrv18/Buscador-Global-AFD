@@ -1,0 +1,104 @@
+.dixi-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.dixi-input__container {
+    align-items: center;
+    background: var(--background);
+    border: 1px solid var(--outline);
+    border-radius: 6px;
+    display: flex;
+    height: 40px;
+    padding: 0 12px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+/* Label sobrepondo a borda */
+.dixi-input__label {
+    background: var(
+        --background
+    ); /* Esconde a linha da borda que passa por trás */
+    color: var(--titulo-de-campo);
+    font-size: var(--titulo-de-campo-de-texto);
+    font-weight: var(--sans-semibold);
+    left: 8px;
+    padding: 0 4px;
+    position: absolute;
+    top: -7px;
+    transition: color 0.2s ease;
+    z-index: 1;
+}
+
+.dixi-input__field {
+    background: transparent;
+    border: none;
+    color: var(--texto-destaque);
+    flex: 1;
+    font-size: var(--interior-de-campo-de-texto);
+    font-weight: var(--sans-regular);
+    height: 100%;
+    outline: none;
+}
+
+.dixi-input__field::placeholder {
+    color: var(--texto-placeholder);
+}
+
+.dixi-input__icon {
+    color: var(--azul-base);
+    display: flex;
+    font-size: 20px;
+    margin-left: 8px;
+}
+/* Estado de Erro */
+.dixi-input--error .dixi-input__container {
+    border-color: #e53e3e;
+}
+
+.dixi-input--error .dixi-input__label,
+.dixi-input--error .dixi-input__icon {
+    color: #e53e3e;
+}
+
+.dixi-input__error-msg {
+    color: #e53e3e;
+    font-size: 12px;
+    font-weight: var(--sans-semibold);
+    padding-left: 4px;
+}
+/* Estado Desabilitado */
+.dixi-input--disabled .dixi-input__container,
+.dixi-input--disabled .dixi-input__label {
+    background: var(--background-2);
+}
+
+.dixi-input--disabled .dixi-input__container {
+    border-color: var(--trancado-ou-explicativo);
+    cursor: not-allowed;
+}
+
+.dixi-input--disabled .dixi-input__field,
+.dixi-input--disabled .dixi-input__icon,
+.dixi-input--disabled .dixi-input__label {
+    color: var(--trancado-ou-explicativo);
+    cursor: not-allowed;
+}
+/* Hover e Foco (Azul) */
+.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
+    .dixi-input__container:hover,
+.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
+    .dixi-input__container:focus-within {
+    border-color: var(--azul-base);
+}
+
+.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
+    .dixi-input__container:hover
+    .dixi-input__label,
+.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
+    .dixi-input__container:focus-within
+    .dixi-input__label {
+    color: var(--azul-base);
+}
