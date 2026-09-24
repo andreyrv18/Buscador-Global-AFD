@@ -10,12 +10,11 @@
     ],
     "moduleDetection": "force",
     "useDefineForClassFields": true,
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
     "types": [
@@ -23,7 +22,7 @@
       "@crxjs/vite-plugin/client",
       "chrome",
       "vitest/globals",
-      "@testing-library/jest-dom"
+      "@testing-library/jest-dom/vitest"
     ],
     "allowImportingTsExtensions": true,
     "strict": true,
@@ -36,6 +35,7 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "src",
+    "setupTests.ts"
   ]
 }
