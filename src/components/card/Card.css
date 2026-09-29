@@ -1,4 +1,4 @@
-.dixi-card {
+.bga-card {
     background-color: var(--background);
     border: 1px solid var(--outline);
     border-radius: 12px;
@@ -7,13 +7,13 @@
     width: 100%;
 }
 
-.dixi-card__title {
+.bga-card__title {
     color: var(--azul-base);
     font-size: 18px;
     font-weight: var(--sans-bold);
     margin: 0 0 20px;
 }
 
-.dixi-card__content {
+.bga-card__content {
     width: 100%;
 }

@@ -12,11 +12,11 @@ const Button = ({
     ...rest
 }: ButtonProps) => {
     const buttonClasses = [
-        "btn",
-        `btn--${variant}`,
-        `btn--${size}`,
-        icon && "btn--with-icon",
-        disabled && "btn--disabled",
+        "bga-btn",
+        `bga-btn__${variant}`,
+        `bga-btn__${size}`,
+        icon && "bga-btn__with-icon",
+        disabled && "bga-btn__disabled",
         className,
     ]
         .filter(Boolean)
@@ -29,8 +29,8 @@ const Button = ({
             disabled={disabled}
             {...rest}
         >
-            {icon && <span className="btn__icon">{icon}</span>}
-            <span className="btn__text">{children}</span>
+            {icon && <span className="bga-btn__icon">{icon}</span>}
+            <span className="bga-btn__text">{children}</span>
         </button>
     );
 };

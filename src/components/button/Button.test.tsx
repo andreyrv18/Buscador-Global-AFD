@@ -28,7 +28,7 @@ describe('Componente Button', () => {
     render(<Button variant="outline">Fantasma</Button>);
 
     const button = screen.getByRole('button', { name: /fantasma/i });
-    expect(button).toHaveClass('btn--outline');
+    expect(button).toHaveClass('bga-btn__outline');
   });
 
   it('deve desabilitar o botão quando disabled=true', () => {

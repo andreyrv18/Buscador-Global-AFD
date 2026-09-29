@@ -3,23 +3,23 @@ import type { CardProps } from "./Card.types";
 
 const Card = ({ title, action, children }: CardProps) => {
     return (
-        <div className="dixi-card">
+        <div className="bga-card">
             {(title || action) && (
                 <div
-                    className="dixi-card__header"
+                    className="bga-card__header"
                     style={{
                         display: "flex",
                         justifyContent: "space-between",
                         alignItems: "center",
                     }}
                 >
-                    {title && <h3 className="dixi-card__title">{title}</h3>}
+                    {title && <h3 className="bga-card__title">{title}</h3>}
                     {action && (
-                        <div className="dixi-card__action">{action}</div>
+                        <div className="bga-card__action">{action}</div>
                     )}
                 </div>
             )}
-            <div className="dixi-card__body">{children}</div>
+            <div className="bga-card__body">{children}</div>
         </div>
     );
 };
