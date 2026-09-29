@@ -28,8 +28,8 @@ describe('Componente Input', () => {
 
         // Verifica a div envelopadora se aplicou a classe certa
         const inputField = screen.getByPlaceholderText('Digite seu e-mail');
-        const wrapper = inputField.closest('.dixi-input');
-        expect(wrapper).toHaveClass('dixi-input--error');
+        const wrapper = inputField.closest('.bga-input');
+        expect(wrapper).toHaveClass('bga-input__error');
     });
 
     it('deve permitir ser desabilitado', () => {
