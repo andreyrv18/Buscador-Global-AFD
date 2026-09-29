@@ -1,18 +1,19 @@
-.dixi-navbar {
-    align-items: center;
-    background-color: var(--azul-base);
+.bga-navbar {
     display: flex;
     flex-direction: column;
-    height: 100vh;
-    left: 0;
-    min-width: 100px;
-    position: fixed;
-    top: 0;
     width: 220px;
-    z-index: 100;
+    min-width: 220px;
+    max-width: 220px;
+    /* Trava o tamanho exato da sidebar */
+    flex-shrink: 0;
+    /* Garante que o main não vá "esmagar" a navbar */
+    height: 100vh;
+    background-color: var(--background-navbar);
+    box-sizing: border-box;
+
 }
 
-.dixi-navbar__logo {
+.bga-navbar__logo {
     align-items: center;
     display: flex;
     justify-content: center;
@@ -20,20 +21,25 @@
     width: 100%;
 }
 
-.dixi-navbar__menu {
+.bga-navbar__titulo {
+    color: var(--background);
+}
+
+.bga-navbar__menu {
     display: flex;
     flex-direction: column;
     width: 100%;
+
 }
 
-.dixi-navbar__item {
+.bga-navbar__item {
     align-items: center;
     background: transparent;
     border: none;
-    border-bottom: 1px solid rgb(255 255 255 / 15%);
-    border-top: 1px solid rgb(255 255 255 / 15%);
+    border-bottom: 1px solid var(--divisor-itens);
+    border-top: 1px solid var(--divisor-itens);
     box-sizing: border-box;
-    color: #fff;
+    color: var(--background);
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -44,23 +50,71 @@
     width: 100%;
 }
 
-.dixi-navbar__item:hover {
-    background-color: var(--azul-hover);
+.bga-navbar__item:hover {
+    background-color: var(--hover-itens);
 }
 
-.dixi-navbar__item--active {
-    background-color: rgb(0 0 0 / 10%);
-    box-shadow: inset 4px 0 0 #fff;
-}
 
-.dixi-navbar__icon {
+.bga-navbar__icon {
     display: flex;
-    font-size: 24px;
+    font-size: var(--icone-24);
+    color: var(--background-2);
+
 }
 
-.dixi-navbar__label {
-    color: #fff;
-    font-size: 11px;
-    font-weight: var(--sans-semibold);
+.bga-navbar__label {
+    color: var(--background-2);
+
     text-align: center;
 }
+
+
+.bga-navbar__group-list,
+.bga-navbar__sub-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bga-navbar__group-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--group-color, transparent);
+    border: none;
+    cursor: pointer;
+    padding: 10px 12px;
+    color: #ffffff;
+    transition: filter 0.2s ease;
+}
+
+.bga-navbar__group-header:hover {
+    filter: brightness(0.7);
+    /* Escurece levemente no hover */
+}
+
+.bga-navbar__item--active {
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left: 4px solid var(--group-color, );
+    font-weight: bold;
+}
+
+
+.bga-navbar__arrow {
+    margin-left: auto;
+    font-size: 10px;
+}
+
+.bga-navbar__sub-list {
+    padding-left: 16px;
+}
+
+.bga-navbar__item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
