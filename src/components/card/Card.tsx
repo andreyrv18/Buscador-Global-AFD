@@ -1,7 +1,7 @@
 import "./Card.css";
 import type { CardProps } from "./Card.types";
 
-export const Card: React.FC<CardProps> = ({ title, action, children }) => {
+const Card = ({ title, action, children }: CardProps) => {
     return (
         <div className="dixi-card">
             {(title || action) && (
