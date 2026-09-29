@@ -5,6 +5,8 @@ import Combobox from './Combobox';
 const mockOptions = [
     { label: 'Opção 1', value: '1' },
     { label: 'Opção 2', value: '2' },
+    { label: 'Opção 3', value: '3' },
+    { label: 'Opção 4', value: '4' },
 ];
 
 describe('Componente Combobox', () => {
@@ -15,13 +17,13 @@ describe('Componente Combobox', () => {
     });
 
     it('deve exibir a opção selecionada', () => {
-        render(<Combobox options={mockOptions} value="2" onChange={() => {}} />);
-        expect(screen.getByText('Opção 2')).toBeInTheDocument();
+        render(<Combobox options={mockOptions} value="4" onChange={() => {}} />);
+        expect(screen.getByText('Opção 4')).toBeInTheDocument();
     });
 
     it('deve abrir o dropdown ao clicar e emitir onChange ao selecionar', () => {
         const handleChange = vi.fn();
-        render(<Combobox options={mockOptions} value="" onChange={handleChange} />);
+        render(<Combobox options={mockOptions} value="" onChange={handleChange}  />);
         
         // Abre o dropdown clicando no container
         const container = screen.getByText('Selecione Um...').closest('.dixi-combo__container') as HTMLElement;

@@ -77,15 +77,7 @@ const Combobox = ({
                             <AppIcons.Fechar />
                         </span>
                     )}
-                    <svg
-                        className="dixi-combo__arrow"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="currentColor"
-                    >
-                        <path d="M7 10l5 5 5-5z" />
-                    </svg>
+                    <AppIcons.Flecha_ordenar/>
                 </div>
             </div>
 
