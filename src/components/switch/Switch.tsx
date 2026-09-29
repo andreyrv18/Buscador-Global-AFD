@@ -26,9 +26,9 @@ const Switch = ({
     };
 
     const switchClasses = [
-        "switch",
-        currentChecked ? "switch--checked" : "",
-        disabled ? "switch--disabled" : "",
+        "bga-switch",
+        currentChecked ? "bga-switch__checked" : "",
+        disabled ? "bga-switch__disabled" : "",
         className,
     ]
         .filter(Boolean)
@@ -41,12 +41,12 @@ const Switch = ({
                 checked={currentChecked}
                 onChange={handleChange}
                 disabled={disabled}
-                className="switch__input"
+                className="bga-switch__input"
             />
-            <span className="switch__track">
-                <span className="switch__thumb" />
+            <span className="bga-switch__track">
+                <span className="bga-switch__thumb" />
             </span>
-            {label && <span className="switch__label">{label}</span>}
+            {label && <span className="bga-switch__label">{label}</span>}
         </label>
     );
 };
