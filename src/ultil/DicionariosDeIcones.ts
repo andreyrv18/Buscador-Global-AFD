@@ -9,6 +9,9 @@ import {
     MdMeetingRoom,
     MdPerson,
     MdSave,
+    MdFingerprint,
+    MdShield,
+    MdSchedule
 } from "react-icons/md";
 
 import type { IconType } from "react-icons";
@@ -24,6 +27,9 @@ interface DicionarioDeIcones {
     Fechar: IconType;
     Confirmar: IconType;
     Calendario: IconType;
+    Marcacoes: IconType;
+    Eventos_Rep: IconType;
+    Ajustes_Relogio: IconType;
 }
 
 export const AppIcons: DicionarioDeIcones = {
@@ -37,4 +43,7 @@ export const AppIcons: DicionarioDeIcones = {
     Fechar: MdClose,
     Confirmar: MdCheck,
     Calendario: MdCalendarToday,
+    Marcacoes: MdFingerprint,
+    Eventos_Rep: MdShield,
+    Ajustes_Relogio: MdSchedule,
 };
