@@ -22,7 +22,8 @@
       "@crxjs/vite-plugin/client",
       "chrome",
       "vitest/globals",
-      "@testing-library/jest-dom/vitest"
+      "@testing-library/jest-dom/vitest",
+      "node"
     ],
     "allowImportingTsExtensions": true,
     "strict": true,
@@ -36,6 +37,7 @@
   },
   "include": [
     "src",
-    "setupTests.ts"
+    "setupTests.ts",
+    "e2e"
   ]
 }
