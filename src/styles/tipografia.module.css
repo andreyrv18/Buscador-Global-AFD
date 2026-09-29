@@ -1,13 +1,14 @@
 /* stylelint-disable selector-class-pattern */
 .tituloPagina {
-    color: var(--texto-destaque);
+    /* color: var(--texto-destaque); */
     font-size: var(--titulo-de-pagina);
     font-weight: var(--sans-bold);
     line-height: 1.2;
+
 }
 
 .tituloModal {
-    color: var(--texto-destaque);
+    /* color: var(--texto-destaque); */
     font-size: var(--titulo-de-modal);
     font-weight: var(--sans-bold);
     line-height: 1.3;
@@ -21,7 +22,7 @@
 }
 
 .tituloDeCampoDeTexto {
-    color: var(--texto-destaque);
+    /* color: var(--texto-destaque); */
     font-size: var(--titulo-de-campo-de-texto);
     font-weight: var(--sans-semibold);
     letter-spacing: 0.5px;

@@ -2,7 +2,7 @@
     /* Sistema */
     color-scheme: light dark;
     user-select: none;
-    /* Cores */
+    /* Cores Dixi */
     --azul-base: #3379bc;
     --azul-hover: #40a5dd;
     --azul-leve: #c8e5f4;
@@ -15,6 +15,31 @@
     --corpo-de-texto: #7a7a7a;
     --tooltip: #525252;
     --texto-destaque: #000;
+
+    /* CORES BUSCADOR GLOBAL */
+
+    --azul-ativo: #0b5ed7;
+    --divisor-itens: #ffffff1a;
+    --hover-itens: #ffffff1c;
+
+    /* CORES ORDENADOR DE FILA */
+
+    --azul-padrao: #0d6efd;
+    --vermelho-red-stop: #fa2525;
+    --laranja-liquid-lava: #f97316;
+    --amarelo-electric-banana: #fbff00;
+    --verde-venomous-green: #6ff916;
+    --rosa-glamour-pink: #f916ca;
+    --azul-ice-temple: #16f9ec;
+    --roxo-vivid-violet: #a016f9;
+
+
+    /* ICONES */
+
+    --icone-24: 24px;
+    --icone-48: 48px;
+    --icone-128: 128px;
+
     /* Fonte */
     --sans-regular: 400;
     --sans-semibold: 600;
@@ -26,10 +51,15 @@
     --titulo-de-campo-de-texto: 10px;
     --interior-de-campo-de-texto: 14px;
     --texto-de-botao: 14px;
-    @media (width <= 1024px) {
+
+}
+
+@media (width <=1024px) {
+    :root {
         font-size: 16px;
     }
 }
+
 @media (prefers-color-scheme: dark) {
     :root {
         --azul-base: #3379bc;
