@@ -1,11 +1,11 @@
-.dixi-input {
+.bga-input {
     display: flex;
     flex-direction: column;
     gap: 4px;
     width: 100%;
 }
 
-.dixi-input__container {
+.bga-input__container {
     align-items: center;
     background: var(--background);
     border: 1px solid var(--outline);
@@ -16,11 +16,11 @@
     position: relative;
     transition: all 0.2s ease;
 }
+
 /* Label sobrepondo a borda */
-.dixi-input__label {
-    background: var(
-        --background
-    ); /* Esconde a linha da borda que passa por trás */
+.bga-input__label {
+    background: var(--background);
+    /* Esconde a linha da borda que passa por trás */
     color: var(--titulo-de-campo);
     font-size: var(--titulo-de-campo-de-texto);
     font-weight: var(--sans-semibold);
@@ -32,7 +32,7 @@
     z-index: 1;
 }
 
-.dixi-input__field {
+.bga-input__field {
     background: transparent;
     border: none;
     color: var(--texto-destaque);
@@ -43,62 +43,59 @@
     outline: none;
 }
 
-.dixi-input__field::placeholder {
+.bga-input__field::placeholder {
     color: var(--texto-placeholder);
 }
 
-.dixi-input__icon {
+.bga-input__icon {
     color: var(--azul-base);
     display: flex;
     font-size: 20px;
     margin-left: 8px;
 }
+
 /* Estado de Erro */
-.dixi-input--error .dixi-input__container {
-    border-color: #e53e3e;
+.bga-input__error .bga-input__container {
+    border-color: var(--vermelho-red-stop);
 }
 
-.dixi-input--error .dixi-input__label,
-.dixi-input--error .dixi-input__icon {
-    color: #e53e3e;
+.bga-input__error .bga-input__label,
+.bga-input__error .bga-input__icon {
+    color: var(--vermelho-red-stop);
 }
 
-.dixi-input__error-msg {
-    color: #e53e3e;
+.bga-input__error-msg {
+    color: var(--vermelho-red-stop);
     font-size: 12px;
     font-weight: var(--sans-semibold);
     padding-left: 4px;
 }
+
 /* Estado Desabilitado */
-.dixi-input--disabled .dixi-input__container,
-.dixi-input--disabled .dixi-input__label {
+.bga-input__disabled .bga-input__container,
+.bga-input__disabled .bga-input__label {
     background: var(--background-2);
 }
 
-.dixi-input--disabled .dixi-input__container {
+.bga-input__disabled .bga-input__container {
     border-color: var(--trancado-ou-explicativo);
     cursor: not-allowed;
 }
 
-.dixi-input--disabled .dixi-input__field,
-.dixi-input--disabled .dixi-input__icon,
-.dixi-input--disabled .dixi-input__label {
+.bga-input__disabled .bga-input__field,
+.bga-input__disabled .bga-input__icon,
+.bga-input__disabled .bga-input__label {
     color: var(--trancado-ou-explicativo);
     cursor: not-allowed;
 }
+
 /* Hover e Foco (Azul) */
-.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
-    .dixi-input__container:hover,
-.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
-    .dixi-input__container:focus-within {
+.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:hover,
+.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:focus-within {
     border-color: var(--azul-base);
 }
 
-.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
-    .dixi-input__container:hover
-    .dixi-input__label,
-.dixi-input:not(.dixi-input--disabled, .dixi-input--error)
-    .dixi-input__container:focus-within
-    .dixi-input__label {
+.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:hover .bga-input__label,
+.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:focus-within .bga-input__label {
     color: var(--azul-base);
 }

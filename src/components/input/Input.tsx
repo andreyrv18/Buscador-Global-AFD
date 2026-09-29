@@ -10,9 +10,9 @@ const Input = ({
     ...rest
 }: InputProps) => {
     const wrapperClasses = [
-        "dixi-input",
-        error && "dixi-input--error",
-        disabled && "dixi-input--disabled",
+        "bga-input",
+        error && "bga-input__error",
+        disabled && "bga-input__disabled",
         className,
     ]
         .filter(Boolean)
@@ -20,19 +20,19 @@ const Input = ({
 
     return (
         <div className={wrapperClasses}>
-            <div className="dixi-input__container">
-                {label && <label className="dixi-input__label">{label}</label>}
+            <div className="bga-input__container">
+                {label && <label className="bga-input__label">{label}</label>}
 
                 <input
-                    className="dixi-input__field"
+                    className="bga-input__field"
                     disabled={disabled}
                     {...rest}
                 />
 
                 {/* Ícone posicionado à direita conforme referência visual */}
-                {icon && <span className="dixi-input__icon">{icon}</span>}
+                {icon && <span className="bga-input__icon">{icon}</span>}
             </div>
-            {error && <span className="dixi-input__error-msg">{error}</span>}
+            {error && <span className="bga-input__error-msg">{error}</span>}
         </div>
     );
 };
