@@ -11,8 +11,14 @@ import {
     MdSave,
     MdFingerprint,
     MdShield,
-    MdSchedule
+    MdSchedule,
+    MdOutlineKeyboardArrowDown,
+
 } from "react-icons/md";
+
+import { RiPresentationFill } from "react-icons/ri"
+
+import { LuPresentation } from "react-icons/lu"
 
 import type { IconType } from "react-icons";
 
@@ -30,6 +36,9 @@ interface DicionarioDeIcones {
     Marcacoes: IconType;
     Eventos_Rep: IconType;
     Ajustes_Relogio: IconType;
+    Flecha_ordenar: IconType;
+    Show_case: IconType;
+    Show_case_item: IconType;
 }
 
 export const AppIcons: DicionarioDeIcones = {
@@ -46,4 +55,7 @@ export const AppIcons: DicionarioDeIcones = {
     Marcacoes: MdFingerprint,
     Eventos_Rep: MdShield,
     Ajustes_Relogio: MdSchedule,
+    Flecha_ordenar: MdOutlineKeyboardArrowDown,
+    Show_case: RiPresentationFill,
+    Show_case_item: LuPresentation,
 };
