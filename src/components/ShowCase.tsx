@@ -4,7 +4,8 @@ import Input from "../components/input/Input";
 import Combobox from "../components/combobox/Combobox";
 import Switch from "../components/switch/Switch";
 import { AppIcons } from "../ultil/DicionariosDeIcones";
-
+import Card from "./card/Card";
+import ShowcaseTabela from "./ShowCaseTabela";
 const sampleOptions = [
     { value: "1", label: "Opção 1" },
     { value: "2", label: "Opção 2" },
@@ -368,7 +369,7 @@ const Showcase = () => {
                             label="Título De Campo"
                             options={sampleOptions}
                             value=""
-                            onChange={() => {}}
+                            onChange={() => { }}
                             error="* Obrigatório"
                         />
 
@@ -376,11 +377,28 @@ const Showcase = () => {
                             label="Título De Campo"
                             options={sampleOptions}
                             value=""
-                            onChange={() => {}}
+                            onChange={() => { }}
                             disabled
                         />
                     </div>
                 </div>
+            </section>
+
+            {/* ================= 4. Cards ================= */}
+            <section style={{ marginBottom: "48px" }}>
+
+                <Card title="Funcionarios">
+                    <div>
+
+                        <Input label="nome" icon={<AppIcons.Marcacoes></AppIcons.Marcacoes>} ></Input>
+                        <Input label="CPF" icon={<AppIcons.Cargo></AppIcons.Cargo>} ></Input>
+                    </div>
+                </Card>
+            </section>
+
+            {/* ================= 5. Tabelas ================= */}
+            <section style={{ marginBottom: "48px" }}>
+                <ShowcaseTabela></ShowcaseTabela>
             </section>
         </div>
     );
