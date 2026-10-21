@@ -1,7 +1,7 @@
 import path from 'node:path'
 import { crx } from '@crxjs/vite-plugin'
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vitest/config'
+import { configDefaults, defineConfig } from 'vitest/config'
 import zip from 'vite-plugin-zip-pack'
 import manifest from './manifest.config.js'
 import { name, version } from './package.json'
@@ -24,6 +24,8 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './setupTests.ts',
+    // As specs de e2e/ são do Playwright
+    exclude: [...configDefaults.exclude, 'e2e/**'],
     css: true,
     reporters: ['verbose'],
     coverage: {
