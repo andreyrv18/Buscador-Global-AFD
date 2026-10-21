@@ -1,0 +1,2 @@
+# Fixtures AFD: bytes exatos (ISO-8859-1 e finais de linha CRLF/LF de propósito)
+src/afd/__fixtures__/** -text
