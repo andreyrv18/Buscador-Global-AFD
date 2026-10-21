@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi } from 'vitest';
 import Navbar from '../navbar/NavBar';
+import { montarNavGroups } from './Navbar.data';
 import type { NavItemKey } from './Navbar.types';
 
 describe('Componente Navbar (Acordeão)', () => {
@@ -16,32 +17,39 @@ describe('Componente Navbar (Acordeão)', () => {
     ];
 
     it.each(cases)(
-        'deve abrir o grupo "%s" e aplicar a classe ativa no subitem "%s"',
+        'deve marcar como página atual o subitem "%s" dentro do grupo "%s"',
         (activeItemProp, _groupName, expectedSubItemText) => {
             render(<Navbar activeItem={activeItemProp} />);
 
-            // O subitem precisa estar visível (grupo aberto) e ter a classe ativa
-            const activeElement = screen.getByText(expectedSubItemText).closest('li');
-            expect(activeElement).toBeInTheDocument();
+            // O subitem precisa estar visível (grupo aberto) e marcado como atual
+            const activeElement = screen.getByRole('button', { name: expectedSubItemText });
+            expect(activeElement).toHaveAttribute('aria-current', 'page');
             expect(activeElement).toHaveClass('bga-navbar__item--active');
         }
     );
+
+    it('deve renderizar o título com a classe de tipografia, sem "[object Object]"', () => {
+        render(<Navbar activeItem="funcionario" />);
+
+        const titulo = screen.getByRole('heading', { name: 'Buscador Global' });
+        expect(titulo.className).not.toContain('[object Object]');
+        expect(titulo.className).toMatch(/tituloModal/);
+    });
 
     it('deve expandir e recolher o grupo ao clicar no cabeçalho do acordeão', async () => {
         const user = userEvent.setup();
         render(<Navbar activeItem="funcionario" />);
 
         // Por padrão o grupo AFD está aberto (pois "funcionario" pertence a ele)
+        const afdHeader = screen.getByRole('button', { name: /AFD/i });
+        expect(afdHeader).toHaveAttribute('aria-expanded', 'true');
         expect(screen.getByText('Funcionários (Tipo 5)')).toBeInTheDocument();
 
-        // Clica no cabeçalho "AFD" para recolher
-        const afdHeader = screen.getByRole('button', { name: /AFD/i });
         await user.click(afdHeader);
 
-        // O item não deve mais estar visível na tela
+        expect(afdHeader).toHaveAttribute('aria-expanded', 'false');
         expect(screen.queryByText('Funcionários (Tipo 5)')).not.toBeInTheDocument();
 
-        // Clica novamente para reabrir
         await user.click(afdHeader);
         expect(screen.getByText('Funcionários (Tipo 5)')).toBeInTheDocument();
     });
@@ -52,44 +60,57 @@ describe('Componente Navbar (Acordeão)', () => {
 
         render(<Navbar activeItem="funcionario" onSelectItem={handleSelect} />);
 
-        // Clica no subitem 'Ajustes Relógio (Tipo 4)' que está visível no grupo AFD
-        const relogioItem = screen.getByText('Ajustes Relógio (Tipo 4)');
-        await user.click(relogioItem);
+        await user.click(screen.getByRole('button', { name: 'Ajustes Relógio (Tipo 4)' }));
 
         expect(handleSelect).toHaveBeenCalledTimes(1);
         expect(handleSelect).toHaveBeenCalledWith('relogio');
+    });
+
+    it('deve permitir selecionar um subitem pelo teclado', async () => {
+        const user = userEvent.setup();
+        const handleSelect = vi.fn();
+
+        render(<Navbar activeItem="funcionario" onSelectItem={handleSelect} />);
+
+        screen.getByRole('button', { name: 'Eventos REP (Tipo 6)' }).focus();
+        await user.keyboard('{Enter}');
+
+        expect(handleSelect).toHaveBeenCalledWith('eventos');
     });
 
     it('deve permitir abrir outro grupo de menu manualmente', async () => {
         const user = userEvent.setup();
         render(<Navbar activeItem="funcionario" />);
 
-        // Subitem do grupo "Coletor" não deve estar na tela inicialmente
         expect(screen.queryByText('Matrícula')).not.toBeInTheDocument();
 
-        // Clica no cabeçalho do grupo "Coletor" para expandir
-        const coletorHeader = screen.getByRole('button', { name: /Coletor/i });
-        await user.click(coletorHeader);
+        await user.click(screen.getByRole('button', { name: /Coletor/i }));
 
-        // Agora o subitem "Matrícula" deve ser exibido
-        expect(screen.getByText('Matrícula')).toBeInTheDocument();
+        expect(screen.getByRole('button', { name: 'Matrícula' })).toBeInTheDocument();
     });
 
     it('deve manter múltiplos grupos abertos ao mesmo tempo ao clicar neles', async () => {
         const user = userEvent.setup();
         render(<Navbar activeItem="funcionario" />);
 
-        // Inicialmente, grupo AFD está aberto ("Funcionários (Tipo 5)" visível)
         expect(screen.getByText('Funcionários (Tipo 5)')).toBeInTheDocument();
-        // Grupo Coletor está fechado ("Matrícula" oculto)
         expect(screen.queryByText('Matrícula')).not.toBeInTheDocument();
 
-        // Clica no grupo Coletor
-        const coletorHeader = screen.getByRole('button', { name: /Coletor/i });
-        await user.click(coletorHeader);
+        await user.click(screen.getByRole('button', { name: /Coletor/i }));
 
-        // AGORA AMBOS DEVEM ESTAR VISÍVEIS SIMULTANEAMENTE!
         expect(screen.getByText('Funcionários (Tipo 5)')).toBeInTheDocument();
         expect(screen.getByText('Matrícula')).toBeInTheDocument();
+    });
+});
+
+describe('montarNavGroups', () => {
+    it('deve incluir o Show Case quando em desenvolvimento', () => {
+        const chaves = montarNavGroups(true).map((grupo) => grupo.groupKey);
+        expect(chaves).toEqual(['afd', 'coletor', 'showCase']);
+    });
+
+    it('deve omitir o Show Case em produção e manter o Coletor', () => {
+        const chaves = montarNavGroups(false).map((grupo) => grupo.groupKey);
+        expect(chaves).toEqual(['afd', 'coletor']);
     });
 });

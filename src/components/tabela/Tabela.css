@@ -13,7 +13,7 @@
 }
 
 .bga-tabela thead {
-    background-color: #e9ecef;
+    background-color: var(--tabela-cabecalho);
     position: sticky;
     top: 0;
     z-index: 2;
@@ -39,10 +39,10 @@
     background-color: var(--background-2);
 }
 
-.bga-tabela__vazio {
+.bga-tabela td.bga-tabela__vazio {
     color: var(--corpo-de-texto);
-    padding: 24px !important;
-    text-align: center !important;
+    padding: 24px;
+    text-align: center;
 }
 
 .bga-tabela__btn-icon {

@@ -27,8 +27,8 @@ const Switch = ({
 
     const switchClasses = [
         "bga-switch",
-        currentChecked ? "bga-switch__checked" : "",
-        disabled ? "bga-switch__disabled" : "",
+        currentChecked ? "bga-switch--checked" : "",
+        disabled ? "bga-switch--disabled" : "",
         className,
     ]
         .filter(Boolean)

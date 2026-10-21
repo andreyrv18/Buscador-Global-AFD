@@ -10,7 +10,8 @@
     height: 100vh;
     background-color: var(--background-navbar);
     box-sizing: border-box;
-
+    /* Menu de navegação: não há dado do arquivo aqui */
+    user-select: none;
 }
 
 .bga-navbar__logo {
@@ -21,53 +22,16 @@
     width: 100%;
 }
 
+/* A navbar é escura nos dois temas: o texto usa tokens próprios, fixos em claro */
 .bga-navbar__titulo {
-    color: var(--background);
+    color: var(--navbar-texto);
 }
 
 .bga-navbar__menu {
     display: flex;
     flex-direction: column;
     width: 100%;
-
 }
-
-.bga-navbar__item {
-    align-items: center;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--divisor-itens);
-    border-top: 1px solid var(--divisor-itens);
-    box-sizing: border-box;
-    color: var(--background);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    padding: 16px 8px;
-    text-decoration: none;
-    transition: background-color 0.2s ease;
-    width: 100%;
-}
-
-.bga-navbar__item:hover {
-    background-color: var(--hover-itens);
-}
-
-
-.bga-navbar__icon {
-    display: flex;
-    font-size: var(--icone-24);
-    color: var(--background-2);
-
-}
-
-.bga-navbar__label {
-    color: var(--background-2);
-
-    text-align: center;
-}
-
 
 .bga-navbar__group-list,
 .bga-navbar__sub-list {
@@ -84,26 +48,15 @@
     background-color: var(--group-color, transparent);
     border: none;
     cursor: pointer;
+    font: inherit;
     padding: 10px 12px;
-    color: #ffffff;
+    color: var(--navbar-texto);
     transition: filter 0.2s ease;
 }
 
 .bga-navbar__group-header:hover {
-    filter: brightness(0.7);
     /* Escurece levemente no hover */
-}
-
-.bga-navbar__item--active {
-    background-color: rgba(255, 255, 255, 0.15);
-    border-left: 4px solid var(--group-color, );
-    font-weight: bold;
-}
-
-
-.bga-navbar__arrow {
-    margin-left: auto;
-    font-size: 10px;
+    filter: brightness(0.7);
 }
 
 .bga-navbar__sub-list {
@@ -111,10 +64,46 @@
 }
 
 .bga-navbar__item {
-    display: flex;
     align-items: center;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--divisor-itens);
+    border-top: 1px solid var(--divisor-itens);
+    box-sizing: border-box;
+    color: var(--navbar-texto);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    font: inherit;
     gap: 8px;
     padding: 8px 12px;
-    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    width: 100%;
 }
 
+.bga-navbar__item:hover {
+    background-color: var(--hover-itens);
+}
+
+.bga-navbar__item--active {
+    background-color: var(--navbar-item-ativo);
+    border-left: 4px solid var(--group-color, transparent);
+    font-weight: var(--sans-bold);
+}
+
+.bga-navbar__icon {
+    display: flex;
+    font-size: var(--icone-24);
+    color: var(--navbar-texto-secundario);
+}
+
+.bga-navbar__label {
+    color: var(--navbar-texto-secundario);
+    text-align: center;
+}
+
+.bga-navbar__arrow {
+    margin-left: auto;
+    font-size: 10px;
+}

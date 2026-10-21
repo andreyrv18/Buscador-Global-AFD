@@ -82,8 +82,8 @@ describe('Componente Switch', () => {
     const { container } = render(<Switch checked={true} disabled={true} className="custom-class" />);
 
     const switchLabel = container.querySelector('.bga-switch');
-    expect(switchLabel).toHaveClass('bga-switch__checked');
-    expect(switchLabel).toHaveClass('bga-switch__disabled');
+    expect(switchLabel).toHaveClass('bga-switch--checked');
+    expect(switchLabel).toHaveClass('bga-switch--disabled');
     expect(switchLabel).toHaveClass('custom-class');
   });
 });

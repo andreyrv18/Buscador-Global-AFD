@@ -8,7 +8,7 @@
     user-select: none;
 }
 
-.bga-switch__disabled {
+.bga-switch--disabled {
     cursor: not-allowed;
     opacity: 0.5;
 }
@@ -23,8 +23,8 @@
 /* Trilho Neutro (Desmarcado) */
 .bga-switch__track {
     align-items: center;
-    background-color: var(--background, #ffffff);
-    border: 2px solid var(--azul-base, #3379bc);
+    background-color: var(--background);
+    border: 2px solid var(--azul-base);
     border-radius: 12px;
     box-sizing: border-box;
     display: inline-flex;
@@ -37,7 +37,7 @@
 
 /* Bolinha (Thumb) Neutra */
 .bga-switch__thumb {
-    background-color: var(--azul-base, #3379bc);
+    background-color: var(--azul-base);
     border-radius: 50%;
     height: 16px;
     width: 16px;
@@ -45,26 +45,26 @@
 }
 
 /* Hover Desmarcado */
-.bga-switch:hover:not(.bga-switch__disabled) .bga-switch__track {
-    background-color: var(--azul-leve, #c8e5f4);
+.bga-switch:hover:not(.bga-switch--disabled) .bga-switch__track {
+    background-color: var(--azul-leve);
 }
 
 /* --- ESTADO ATIVADO (CHECKED) --- */
 
 /* No estado ativo, a trilho ganha fundo preenchido */
-.bga-switch__checked .bga-switch__track {
-    background-color: var(--azul-base, #3379bc);
-    border-color: var(--azul-base, #3379bc);
+.bga-switch--checked .bga-switch__track {
+    background-color: var(--azul-base);
+    border-color: var(--azul-base);
 }
 
 /* A bolinha vai para a direita e fica BRANCA */
-.bga-switch__checked .bga-switch__thumb {
-    background-color: var(--background, #ffffff);
+.bga-switch--checked .bga-switch__thumb {
+    background-color: var(--background);
     transform: translateX(20px);
 }
 
 /* Hover no estado ativo */
-.bga-switch__checked:hover:not(.bga-switch__disabled) .bga-switch__track {
-    background-color: var(--azul-hover, #40a5dd);
-    border-color: var(--azul-hover, #40a5dd);
+.bga-switch--checked:hover:not(.bga-switch--disabled) .bga-switch__track {
+    background-color: var(--azul-hover);
+    border-color: var(--azul-hover);
 }

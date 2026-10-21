@@ -1,7 +1,9 @@
+import { useId } from "react";
 import "./Input.css";
 import type { InputProps } from "./Input.types";
 
 const Input = ({
+    id,
     label,
     error,
     icon,
@@ -9,10 +11,15 @@ const Input = ({
     className = "",
     ...rest
 }: InputProps) => {
+    // Usa o id recebido ou gera um único, para ligar <label htmlFor> ao campo
+    const idGerado = useId();
+    const inputId = id ?? idGerado;
+    const erroId = `${inputId}-erro`;
+
     const wrapperClasses = [
         "bga-input",
-        error && "bga-input__error",
-        disabled && "bga-input__disabled",
+        error && "bga-input--error",
+        disabled && "bga-input--disabled",
         className,
     ]
         .filter(Boolean)
@@ -21,18 +28,33 @@ const Input = ({
     return (
         <div className={wrapperClasses}>
             <div className="bga-input__container">
-                {label && <label className="bga-input__label">{label}</label>}
+                {label && (
+                    <label className="bga-input__label" htmlFor={inputId}>
+                        {label}
+                    </label>
+                )}
 
                 <input
+                    id={inputId}
                     className="bga-input__field"
                     disabled={disabled}
+                    aria-invalid={error ? true : undefined}
+                    aria-describedby={error ? erroId : undefined}
                     {...rest}
                 />
 
                 {/* Ícone posicionado à direita conforme referência visual */}
-                {icon && <span className="bga-input__icon">{icon}</span>}
+                {icon && (
+                    <span className="bga-input__icon" aria-hidden="true">
+                        {icon}
+                    </span>
+                )}
             </div>
-            {error && <span className="bga-input__error-msg">{error}</span>}
+            {error && (
+                <span id={erroId} className="bga-input__error-msg">
+                    {error}
+                </span>
+            )}
         </div>
     );
 };

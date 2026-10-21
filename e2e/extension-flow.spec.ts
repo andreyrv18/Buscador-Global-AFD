@@ -19,6 +19,7 @@ test.describe('Fluxo Principal da Extensão - Dashboard & Componentes', () => {
         const mainContent = page.locator('.bga-dashboard-content');
         await expect(mainContent).toBeVisible();
         await expect(mainContent).toContainText('Módulo AFD');
+        await expect(page.getByTestId('view-afd-funcionarios')).toBeVisible();
     });
     test('deve alternar entre os grupos da Navbar mantendo o isolamento de visualização', async ({ page }) => {
         // Expande o grupo "Coletor"
@@ -32,27 +33,12 @@ test.describe('Fluxo Principal da Extensão - Dashboard & Componentes', () => {
         await matriculaSubItem.click();
 
         // Garante que o conteúdo foi atualizado para a View selecionada
-        const mainContent = page.locator('.bga-dashboard-content');
-        await expect(mainContent).not.toContainText('Módulo AFD');
+        await expect(page.getByTestId('view-coletor-matricula')).toBeVisible();
+        await expect(page.getByTestId('view-afd-funcionarios')).toHaveCount(0);
     });
 
-    test('deve interagir com o componente Switch e validar alternância de estado', async ({ page }) => {
-        // Caso seu switch esteja em alguma aba/showcase, localiza pelo label
-        const switchLabel = page.locator('.bga-switch');
-        
-        // Se houver um Switch renderizado na tela
-        if (await switchLabel.count() > 0) {
-            const checkbox = page.locator('.bga-switch__input').first();
-            
-            // Estado inicial desmarcado
-            await expect(checkbox).not.toBeChecked();
-
-            // Clica para ativar
-            await switchLabel.first().click();
-
-            // Valida que o checkbox foi marcado e a classe CSS de estado checado foi aplicada
-            await expect(checkbox).toBeChecked();
-            await expect(switchLabel.first()).toHaveClass(/bga-switch__checked/);
-        }
+    test('não deve exibir o Show Case no build de produção, mantendo o Coletor', async ({ page }) => {
+        await expect(page.getByRole('button', { name: /coletor/i })).toBeVisible();
+        await expect(page.getByRole('button', { name: /show case/i })).toHaveCount(0);
     });
 });

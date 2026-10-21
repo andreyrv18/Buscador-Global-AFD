@@ -113,15 +113,34 @@ describe("Componente Tabela (Unidade e Integração)", () => {
             />
         );
 
-        const primeiraLinha = screen.getByText("000000001").closest("tr");
-        expect(primeiraLinha).not.toBeNull();
-
-        if (primeiraLinha) {
-            await user.click(primeiraLinha);
-        }
+        await user.click(screen.getByRole("row", { name: /000000001/ }));
 
         expect(handleRowClick).toHaveBeenCalledTimes(1);
         expect(handleRowClick).toHaveBeenCalledWith(MOCK_DADOS[0]);
+    });
+
+    it("deve exibir campos numéricos e omitir valores que não sejam texto ou número", () => {
+        interface ItemMisto {
+            id: string;
+            total: number;
+            detalhe: { interno: string };
+        }
+        const colunas: ColunaTabela<ItemMisto>[] = [
+            { key: "total", titulo: "Total" },
+            { key: "detalhe", titulo: "Detalhe" },
+            { key: "inexistente", titulo: "Inexistente" },
+        ];
+
+        render(
+            <Tabela<ItemMisto>
+                colunas={colunas}
+                dados={[{ id: "1", total: 42, detalhe: { interno: "x" } }]}
+                keyExtractor={(item) => item.id}
+            />
+        );
+
+        const celulas = screen.getAllByRole("cell");
+        expect(celulas.map((celula) => celula.textContent)).toEqual(["42", "", ""]);
     });
 
     it("deve aplicar o cursor correto na linha dependendo da prop onRowClick", () => {

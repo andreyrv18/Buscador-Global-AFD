@@ -10,13 +10,15 @@ import { FuncionariosColetorView } from "../views/coletor/FuncionariosColetorVie
 import { MatriculaColetorView } from "../views/coletor/MatriculaColetorView";
 import { ShowCaseView } from "@/views/showcase/ShowCaseView";
 
-// Tabela de Roteamento baseada em chave
-export const VIEW_REGISTRY: Record<NavItemKey, ComponentType> = {
+// Tabela de roteamento baseada em chave.
+// O Show Case só é registrado em desenvolvimento: em produção `import.meta.env.DEV`
+// vira `false` no build e a view sai do pacote.
+export const VIEW_REGISTRY: Partial<Record<NavItemKey, ComponentType>> = {
   funcionario: FuncionariosAfdView,
   relogio: RelogioAfdView,
   eventos: EventosAfdView,
   marcacoes: MarcacoesAfdView,
   coletor_funcionario: FuncionariosColetorView,
   coletor_matricula: MatriculaColetorView,
-  show_case: ShowCaseView
+  ...(import.meta.env.DEV ? { show_case: ShowCaseView } : {}),
 };

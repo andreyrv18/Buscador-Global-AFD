@@ -1,9 +1,11 @@
+import type { ReactNode } from "react";
+
 export interface ColunaTabela<T> {
     key: string;
     titulo: string;
     width?: string;
     align?: "left" | "center" | "right";
-    render?: (item: T, index: number) => React.ReactNode;
+    render?: (item: T, index: number) => ReactNode;
 }
 
 export interface TabelaProps<T> {

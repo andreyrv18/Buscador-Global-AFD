@@ -1,7 +1,6 @@
 :root {
     /* Sistema */
     color-scheme: light dark;
-    user-select: none;
     /* Cores Dixi */
     --azul-base: #3379bc;
     --azul-hover: #40a5dd;
@@ -22,6 +21,12 @@
     --divisor-itens: #ffffff1a;
     --hover-itens: #ffffff1c;
     --background-navbar: #2a2a2a;
+    /* Texto da navbar: a navbar é escura nos dois temas, então o texto fica fixo em claro */
+    --navbar-texto: #fff;
+    --navbar-texto-secundario: #f9fafa;
+    --navbar-item-ativo: rgb(255 255 255 / 15%);
+    /* Cabeçalho da tabela */
+    --tabela-cabecalho: #e9ecef;
 
     /* CORES ORDENADOR DE FILA */
 
@@ -75,6 +80,10 @@
         --corpo-de-texto: #e0e0e0;
         --tooltip: #2a2a2a;
         --texto-destaque: #fff;
+        --navbar-texto: #fff;
+        --navbar-texto-secundario: #f9fafa;
+        --navbar-item-ativo: rgb(255 255 255 / 15%);
+        --tabela-cabecalho: #2a2a2a;
     }
 }
 

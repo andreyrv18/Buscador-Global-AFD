@@ -2,11 +2,11 @@ import Showcase from "@/components/ShowCase";
 
 export const ShowCaseView = () => {
     return (
-        <section className="view-container">
+        <section data-testid="view-showcase-componentes">
             <h2>Módulo Show Case</h2>
             <p>Gerenciamento de Componentes do Sistema.</p>
 
-            <Showcase></Showcase>
+            <Showcase />
         </section>
     );
 };

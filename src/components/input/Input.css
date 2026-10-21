@@ -55,12 +55,12 @@
 }
 
 /* Estado de Erro */
-.bga-input__error .bga-input__container {
+.bga-input--error .bga-input__container {
     border-color: var(--vermelho-red-stop);
 }
 
-.bga-input__error .bga-input__label,
-.bga-input__error .bga-input__icon {
+.bga-input--error .bga-input__label,
+.bga-input--error .bga-input__icon {
     color: var(--vermelho-red-stop);
 }
 
@@ -72,30 +72,30 @@
 }
 
 /* Estado Desabilitado */
-.bga-input__disabled .bga-input__container,
-.bga-input__disabled .bga-input__label {
+.bga-input--disabled .bga-input__container,
+.bga-input--disabled .bga-input__label {
     background: var(--background-2);
 }
 
-.bga-input__disabled .bga-input__container {
+.bga-input--disabled .bga-input__container {
     border-color: var(--trancado-ou-explicativo);
     cursor: not-allowed;
 }
 
-.bga-input__disabled .bga-input__field,
-.bga-input__disabled .bga-input__icon,
-.bga-input__disabled .bga-input__label {
+.bga-input--disabled .bga-input__field,
+.bga-input--disabled .bga-input__icon,
+.bga-input--disabled .bga-input__label {
     color: var(--trancado-ou-explicativo);
     cursor: not-allowed;
 }
 
 /* Hover e Foco (Azul) */
-.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:hover,
-.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:focus-within {
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:hover,
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:focus-within {
     border-color: var(--azul-base);
 }
 
-.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:hover .bga-input__label,
-.bga-input:not(.bga-input__disabled, .bga-input__error) .bga-input__container:focus-within .bga-input__label {
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:hover .bga-input__label,
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:focus-within .bga-input__label {
     color: var(--azul-base);
 }

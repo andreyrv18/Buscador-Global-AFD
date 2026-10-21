@@ -1,9 +1,9 @@
 import { useState } from "react";
+import type { CSSProperties } from "react";
 import "./Navbar.css";
 import type { NavbarProps } from "./Navbar.types";
 import { navGroups } from "./Navbar.data";
-import tituloModal from "../../styles/tipografia.module.css";
-import tituloDeCampoDeTexto from "../../styles/tipografia.module.css";
+import tipografia from "../../styles/tipografia.module.css";
 
 export const Navbar = ({ activeItem, onSelectItem }: NavbarProps) => {
     // Inicializa abrindo o grupo que contém o item ativo
@@ -11,61 +11,68 @@ export const Navbar = ({ activeItem, onSelectItem }: NavbarProps) => {
         group.items.some((item) => item.key === activeItem)
     )?.groupKey || navGroups[0]?.groupKey;
 
-    // Estado agora guarda uma LISTA de chaves de grupos abertos[cite: 5]
+    // Lista de chaves dos grupos abertos (vários podem ficar abertos ao mesmo tempo)
     const [openGroups, setOpenGroups] = useState<string[]>(
         initialGroup ? [initialGroup] : []
     );
 
-    // Função Toggle On/Off independente para cada grupo
+    // Abre ou fecha um grupo sem afetar os demais
     const toggleGroup = (groupKey: string) => {
         setOpenGroups((prevGroups) =>
             prevGroups.includes(groupKey)
-                ? prevGroups.filter((key) => key !== groupKey) // Se já estava aberto, fecha (Off)
-                : [...prevGroups, groupKey]                   // Se estava fechado, abre mantendo os outros (On)
+                ? prevGroups.filter((key) => key !== groupKey)
+                : [...prevGroups, groupKey]
         );
     };
 
     return (
         <aside className="bga-navbar">
             <div className="bga-navbar__logo">
-                <h1 className={`bga-navbar__titulo ${tituloModal}`}>Buscador Global</h1>
+                <h1 className={`bga-navbar__titulo ${tipografia.tituloModal}`}>Buscador Global</h1>
             </div>
 
             <nav className="bga-navbar__menu">
                 <ul className="bga-navbar__group-list">
                     {navGroups.map((group) => {
-                        // Verifica se o grupo atual está na lista de abertos
                         const isOpen = openGroups.includes(group.groupKey);
+                        const subListId = `bga-navbar-grupo-${group.groupKey}`;
+                        // Cor do grupo vem dos dados: valor dinâmico, por isso inline
+                        const estiloGrupo = { "--group-color": group.colorVariant } as CSSProperties;
 
                         return (
-                            <li key={group.groupKey} className="bga-navbar__group-item" style={{ "--group-color": group.colorVariant } as React.CSSProperties}>
+                            <li key={group.groupKey} className="bga-navbar__group-item" style={estiloGrupo}>
                                 <button
                                     type="button"
                                     className={`bga-navbar__group-header ${isOpen ? "bga-navbar__group-header--open" : ""}`}
+                                    aria-expanded={isOpen}
+                                    aria-controls={subListId}
                                     onClick={() => toggleGroup(group.groupKey)}
                                 >
-                                    <span className="bga-navbar__icon">{group.icon}</span>
-                                    <span className={`bga-navbar__label ${tituloDeCampoDeTexto}`}>
+                                    <span className="bga-navbar__icon" aria-hidden="true">{group.icon}</span>
+                                    <span className={`bga-navbar__label ${tipografia.tituloDeCampoDeTexto}`}>
                                         {group.groupLabel}
                                     </span>
-                                    <span className="bga-navbar__arrow">{isOpen ? "▲" : "▼"}</span>
+                                    <span className="bga-navbar__arrow" aria-hidden="true">{isOpen ? "▲" : "▼"}</span>
                                 </button>
 
                                 {isOpen && (
-                                    <ul className="bga-navbar__sub-list">
+                                    <ul id={subListId} className="bga-navbar__sub-list">
                                         {group.items.map((subItem) => {
                                             const isActive = activeItem === subItem.key;
 
                                             return (
-                                                <li
-                                                    key={subItem.key}
-                                                    className={`bga-navbar__item ${isActive ? "bga-navbar__item--active" : ""}`}
-                                                    onClick={() => onSelectItem?.(subItem.key)}
-                                                >
-                                                    <span className="bga-navbar__icon">{subItem.icon}</span>
-                                                    <span className={`bga-navbar__label ${tituloDeCampoDeTexto}`}>
-                                                        {subItem.label}
-                                                    </span>
+                                                <li key={subItem.key} className="bga-navbar__sub-item">
+                                                    <button
+                                                        type="button"
+                                                        className={`bga-navbar__item ${isActive ? "bga-navbar__item--active" : ""}`}
+                                                        aria-current={isActive ? "page" : undefined}
+                                                        onClick={() => onSelectItem?.(subItem.key)}
+                                                    >
+                                                        <span className="bga-navbar__icon" aria-hidden="true">{subItem.icon}</span>
+                                                        <span className={`bga-navbar__label ${tipografia.tituloDeCampoDeTexto}`}>
+                                                            {subItem.label}
+                                                        </span>
+                                                    </button>
                                                 </li>
                                             );
                                         })}

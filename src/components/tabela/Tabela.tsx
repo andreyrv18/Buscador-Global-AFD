@@ -1,5 +1,16 @@
-import { TabelaProps } from "./Tabela.types";
-import "./Tabela.css"
+import type { ReactNode } from "react";
+import type { TabelaProps } from "./Tabela.types";
+import "./Tabela.css";
+
+/**
+ * Lê o campo `chave` do item quando a coluna não define `render`.
+ * Só exibe texto e número: qualquer outro valor exige um `render` explícito.
+ */
+const lerCampo = (item: unknown, chave: string): ReactNode => {
+    if (typeof item !== "object" || item === null) return null;
+    const valor: unknown = Reflect.get(item, chave);
+    return typeof valor === "string" || typeof valor === "number" ? valor : null;
+};
 
 export function Tabela<T>({
     colunas,
@@ -46,7 +57,7 @@ export function Tabela<T>({
                                     >
                                         {col.render
                                             ? col.render(item, index)
-                                            : (item as any)[col.key]}
+                                            : lerCampo(item, col.key)}
                                     </td>
                                 ))}
                             </tr>

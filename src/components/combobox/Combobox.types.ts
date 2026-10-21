@@ -4,6 +4,8 @@ export interface ComboboxOption {
 }
 
 export interface ComboboxProps {
+    /** id do campo; se omitido, um id único é gerado */
+    id?: string;
     label?: string;
     options: ComboboxOption[];
     value?: string;

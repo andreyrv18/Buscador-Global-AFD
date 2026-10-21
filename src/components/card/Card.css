@@ -7,6 +7,12 @@
     width: 100%;
 }
 
+.bga-card__header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
 .bga-card__title {
     color: var(--azul-base);
     font-size: 18px;
@@ -14,6 +20,6 @@
     margin: 0 0 20px;
 }
 
-.bga-card__content {
+.bga-card__body {
     width: 100%;
 }

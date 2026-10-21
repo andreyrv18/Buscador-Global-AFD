@@ -5,47 +5,66 @@ import Dashboard from './Dashboard';
 import { VIEW_REGISTRY } from '../routes/viewRegistry';
 
 describe('Componente Dashboard (Integração sem Mocks)', () => {
-  it('deve renderizar a estrutura base do layout', () => {
-    const { container } = render(<Dashboard />);
-
-    expect(container.querySelector('.bga-dashboard-layout')).toBeInTheDocument();
-    expect(container.querySelector('.bga-dashboard-content')).toBeInTheDocument();
-  });
-
-  it('deve renderizar a View padrão de Funcionários', () => {
-    // Garante que a chave 'funcionario' possui um componente mapeado
-    expect(VIEW_REGISTRY.funcionario).toBeDefined();
-
+  it('deve renderizar a navegação e a área principal', () => {
     render(<Dashboard />);
 
-    // Valida pelo texto do título/conteúdo renderizado no container da View
-    const mainContent = screen.getByRole('main');
-    expect(mainContent).toBeInTheDocument();
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    expect(screen.getByRole('main')).toBeInTheDocument();
+  });
+
+  it('deve renderizar a View padrão de Funcionários do AFD', () => {
+    render(<Dashboard />);
+
+    expect(screen.getByTestId('view-afd-funcionarios')).toBeInTheDocument();
   });
 
   it('deve alternar a view ao clicar em um subitem do menu', async () => {
     const user = userEvent.setup();
     render(<Dashboard />);
 
-    // 1. Expande o grupo "Coletor"
-    const coletorHeader = screen.getByRole('button', { name: /Coletor/i });
-    await user.click(coletorHeader);
+    await user.click(screen.getByRole('button', { name: /Coletor/i }));
+    await user.click(screen.getByRole('button', { name: 'Matrícula' }));
 
-    // 2. Clica no subitem "Matrícula"
-    const matriculaItem = screen.getByText('Matrícula');
-    await user.click(matriculaItem);
-
-    // 3. Valida se o conteúdo da Dashboard foi atualizado para a View do Coletor
-    const mainContent = screen.getByRole('main');
-    expect(mainContent).not.toBeEmptyDOMElement();
+    expect(screen.getByTestId('view-coletor-matricula')).toBeInTheDocument();
+    expect(screen.queryByTestId('view-afd-funcionarios')).not.toBeInTheDocument();
   });
 
-  it('deve garantir que todas as views do registro estejam registradas', () => {
+  it.each([
+    ['Funcionários (Tipo 5)', 'view-afd-funcionarios'],
+    ['Ajustes Relógio (Tipo 4)', 'view-afd-relogio'],
+    ['Eventos REP (Tipo 6)', 'view-afd-eventos'],
+    ['Marcações (Tipo 3/7)', 'view-afd-marcacoes'],
+  ])('deve exibir a view correta ao clicar em "%s"', async (rotulo, testId) => {
+    const user = userEvent.setup();
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole('button', { name: rotulo }));
+
+    expect(screen.getByTestId(testId)).toBeInTheDocument();
+  });
+
+  it('deve exibir a view de Funcionários do Coletor com testid próprio', async () => {
+    const user = userEvent.setup();
+    render(<Dashboard />);
+
+    await user.click(screen.getByRole('button', { name: /Coletor/i }));
+    await user.click(screen.getByRole('button', { name: 'Funcionários' }));
+
+    expect(screen.getByTestId('view-coletor-funcionarios')).toBeInTheDocument();
+  });
+
+  it('deve registrar todas as views do AFD e do Coletor', () => {
     const keysRegistradas = Object.keys(VIEW_REGISTRY);
 
-    expect(keysRegistradas).toContain('funcionario');
-    expect(keysRegistradas).toContain('relogio');
-    expect(keysRegistradas).toContain('coletor_funcionario');
-    expect(keysRegistradas).toContain('coletor_matricula');
+    expect(keysRegistradas).toEqual(
+      expect.arrayContaining([
+        'funcionario',
+        'relogio',
+        'eventos',
+        'marcacoes',
+        'coletor_funcionario',
+        'coletor_matricula',
+      ])
+    );
   });
 });

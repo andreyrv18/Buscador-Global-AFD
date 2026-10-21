@@ -4,36 +4,49 @@ import Input from './Input';
 import userEvent from '@testing-library/user-event';
 
 describe('Componente Input', () => {
-    it('deve renderizar a label visualmente', () => {
+    it('deve ligar a label ao campo', () => {
         render(<Input label="E-mail Corporativo" />);
-        expect(screen.getByText('E-mail Corporativo')).toBeInTheDocument();
+        expect(screen.getByLabelText('E-mail Corporativo')).toBeInstanceOf(HTMLInputElement);
     });
 
+    it('deve respeitar o id recebido por prop', () => {
+        render(<Input id="campo-cpf" label="CPF" />);
+        expect(screen.getByLabelText('CPF')).toHaveAttribute('id', 'campo-cpf');
+    });
+
+    it('deve gerar ids distintos para campos diferentes', () => {
+        render(
+            <>
+                <Input label="Nome" />
+                <Input label="CPF" />
+            </>
+        );
+        expect(screen.getByLabelText('Nome').id).not.toBe(screen.getByLabelText('CPF').id);
+    });
 
     it('deve aceitar digitacao', async () => {
         const user = userEvent.setup();
-        render(<Input placeholder="Digite algo..." />);
+        render(<Input label="Busca" placeholder="Digite algo..." />);
 
-        const input = screen.getByPlaceholderText('Digite algo...');
+        const input = screen.getByLabelText('Busca');
         await user.type(input, 'Olá, mundo!');
 
         expect(input).toHaveValue('Olá, mundo!');
     });
-    
-    it('deve renderizar o erro e aplicar a classe de erro', () => {
-        render(<Input error="E-mail inválido" placeholder="Digite seu e-mail" />);
 
-        // Verifica a mensagem visual
-        expect(screen.getByText('E-mail inválido')).toBeInTheDocument();
+    it('deve renderizar o erro, associá-lo ao campo e aplicar o modificador de erro', () => {
+        render(<Input label="E-mail" error="E-mail inválido" />);
 
-        // Verifica a div envelopadora se aplicou a classe certa
-        const inputField = screen.getByPlaceholderText('Digite seu e-mail');
-        const wrapper = inputField.closest('.bga-input');
-        expect(wrapper).toHaveClass('bga-input__error');
+        const campo = screen.getByLabelText('E-mail');
+        expect(campo).toHaveAttribute('aria-invalid', 'true');
+        expect(campo).toHaveAccessibleDescription('E-mail inválido');
+        expect(campo.closest('.bga-input')).toHaveClass('bga-input--error');
     });
 
     it('deve permitir ser desabilitado', () => {
-        render(<Input disabled placeholder="Bloqueado" />);
-        expect(screen.getByPlaceholderText('Bloqueado')).toBeDisabled();
+        render(<Input label="Bloqueado" disabled />);
+        const campo = screen.getByLabelText('Bloqueado');
+        expect(campo).toBeDisabled();
+        expect(campo.closest('.bga-input')).toHaveClass('bga-input--disabled');
     });
 });
