@@ -1,0 +1,61 @@
+.bga-seletor-arquivo {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* Fora da tela, mas ainda focável e anunciado pelo leitor de tela */
+.bga-seletor-arquivo__input {
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.bga-seletor-arquivo__botao {
+    align-items: center;
+    background: var(--azul-base);
+    border: 2px solid var(--azul-base);
+    border-radius: 6px;
+    color: var(--background);
+    cursor: pointer;
+    display: inline-flex;
+    font-size: var(--texto-de-botao);
+    font-weight: var(--sans-bold);
+    gap: 8px;
+    padding: 10px 24px;
+    transition: all 0.2s ease;
+}
+
+.bga-seletor-arquivo__botao:hover {
+    background: var(--azul-hover);
+    border-color: var(--azul-hover);
+}
+
+.bga-seletor-arquivo__input:focus-visible + .bga-seletor-arquivo__botao {
+    outline: 2px solid var(--azul-ativo);
+    outline-offset: 2px;
+}
+
+.bga-seletor-arquivo__icone {
+    font-size: var(--icone-24);
+}
+
+.bga-seletor-arquivo__nome {
+    color: var(--corpo-de-texto);
+    font-size: var(--interior-de-campo-de-texto);
+    overflow-wrap: anywhere;
+}
+
+.bga-seletor-arquivo--disabled .bga-seletor-arquivo__botao {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.bga-seletor-arquivo--disabled .bga-seletor-arquivo__botao:hover {
+    background: var(--azul-base);
+    border-color: var(--azul-base);
+}

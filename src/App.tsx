@@ -4,8 +4,13 @@ import '@fontsource/open-sans/latin-400.css'
 import '@fontsource/open-sans/latin-600.css'
 import '@fontsource/open-sans/latin-700.css'
 import Dashboard from './pages/Dashboard'
+import { AfdProvider } from './state/AfdContext'
 import './styles/index.css'
 
 export default function App() {
-  return <Dashboard />
+  return (
+    <AfdProvider>
+      <Dashboard />
+    </AfdProvider>
+  )
 }

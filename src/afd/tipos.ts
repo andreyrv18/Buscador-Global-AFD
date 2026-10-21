@@ -151,3 +151,19 @@ export interface RelatorioAfd {
   /** Amostra das linhas inválidas, limitada a `LIMITE_LINHAS_INVALIDAS`. */
   linhasInvalidas: LinhaInvalida[]
 }
+
+// ---------------------------------------------------------------------------
+// Protocolo do worker
+// ---------------------------------------------------------------------------
+
+/** Pedido da interface ao worker. O token identifica o upload. */
+export interface PedidoLeituraAfd {
+  token: number
+  arquivo: File
+}
+
+/** Mensagens do worker; todas carregam o token do pedido que as originou. */
+export type RespostaWorkerAfd =
+  | { token: number; tipo: 'progresso'; progresso: number }
+  | { token: number; tipo: 'pronto'; relatorio: RelatorioAfd }
+  | { token: number; tipo: 'erro'; mensagem: string }

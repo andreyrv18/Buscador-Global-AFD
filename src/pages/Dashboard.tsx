@@ -3,6 +3,7 @@ import { useState } from "react";
 import Navbar from "../components/navbar/NavBar";
 import type { NavItemKey } from "../components/navbar/Navbar.types";
 import { VIEW_REGISTRY } from "../routes/viewRegistry";
+import { AreaUploadAfd } from "./AreaUploadAfd";
 import "./Dashboard.css";
 export const Dashboard = () => {
     const [activeItem, setActiveItem] = useState<NavItemKey>("funcionario");
@@ -17,6 +18,9 @@ export const Dashboard = () => {
             />
 
             <main className="bga-dashboard-content">
+                {/* Fora das abas: o mesmo arquivo alimenta todas as views */}
+                <AreaUploadAfd />
+
                 {ActiveViewComponent ? (
                     <ActiveViewComponent />
                 ) : (

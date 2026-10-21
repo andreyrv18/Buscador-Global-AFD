@@ -1,0 +1,50 @@
+.bga-upload-afd {
+    border-bottom: 1px solid var(--outline);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+}
+
+.bga-upload-afd__titulo {
+    color: var(--texto-destaque);
+    font-size: var(--titulo-de-modal);
+    font-weight: var(--sans-bold);
+    margin: 0;
+}
+
+.bga-upload-afd__descricao {
+    color: var(--corpo-de-texto);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 0;
+}
+
+.bga-upload-afd__status {
+    color: var(--corpo-de-texto);
+    display: flex;
+    flex-direction: column;
+    font-size: var(--interior-de-campo-de-texto);
+    gap: 8px;
+}
+
+.bga-upload-afd__status:empty {
+    display: none;
+}
+
+.bga-upload-afd__progresso {
+    accent-color: var(--azul-base);
+    height: 8px;
+    max-width: 480px;
+    width: 100%;
+}
+
+.bga-upload-afd__aviso {
+    color: var(--laranja-liquid-lava);
+}
+
+.bga-upload-afd__erro {
+    color: var(--vermelho-red-stop);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 0;
+}

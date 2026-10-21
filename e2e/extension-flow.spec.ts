@@ -1,4 +1,8 @@
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { test, expect } from './fixtures';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 test.describe('Fluxo Principal da Extensão - Dashboard & Componentes', () => {
     test.beforeEach(async ({ page, extensionId }) => {
@@ -40,5 +44,30 @@ test.describe('Fluxo Principal da Extensão - Dashboard & Componentes', () => {
     test('não deve exibir o Show Case no build de produção, mantendo o Coletor', async ({ page }) => {
         await expect(page.getByRole('button', { name: /coletor/i })).toBeVisible();
         await expect(page.getByRole('button', { name: /show case/i })).toHaveCount(0);
+    });
+});
+test.describe('Leitura do AFD pelo worker', () => {
+    const fixture = (nome: string) => path.resolve(__dirname, '../src/afd/__fixtures__', nome);
+
+    test.beforeEach(async ({ page, extensionId }) => {
+        await page.goto(`chrome-extension://${extensionId}/src/index.html`);
+    });
+
+    test('deve ler um AFD da Portaria 671 e mostrar o resumo', async ({ page }) => {
+        await page.getByLabel('Selecionar arquivo').setInputFiles(fixture('afd-671.txt'));
+
+        await expect(page.getByText('afd-671.txt')).toBeVisible();
+        await expect(page.getByRole('status')).toContainText(/Portaria 671 · \d+ linhas lidas/);
+        await expect(page.getByRole('progressbar')).toHaveCount(0);
+    });
+
+    test('deve manter o resultado do último arquivo ao trocar no meio da leitura', async ({ page }) => {
+        const campo = page.getByLabel('Selecionar arquivo');
+
+        await campo.setInputFiles(fixture('afd-671.txt'));
+        await campo.setInputFiles(fixture('afd-595.txt'));
+
+        await expect(page.getByRole('status')).toContainText('Portaria 595');
+        await expect(page.getByText('afd-595.txt')).toBeVisible();
     });
 });
