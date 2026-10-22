@@ -1,0 +1,108 @@
+.bga-navbar {
+    display: flex;
+    flex-direction: column;
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    /* Trava o tamanho exato da sidebar */
+    flex-shrink: 0;
+    /* Garante que o main não vá "esmagar" a navbar */
+    height: 100vh;
+    background-color: var(--background-navbar);
+    box-sizing: border-box;
+    /* Menu de navegação: não há dado do arquivo aqui */
+    user-select: none;
+}
+
+.bga-navbar__logo {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+    padding: 24px 0;
+    width: 100%;
+}
+
+/* A navbar é azul fixo: o texto usa tokens próprios, fixos em claro */
+.bga-navbar__titulo {
+    color: var(--navbar-texto);
+}
+
+.bga-navbar__menu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.bga-navbar__group-list,
+.bga-navbar__sub-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.bga-navbar__group-header {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: var(--group-color, transparent);
+    border: none;
+    cursor: pointer;
+    font: inherit;
+    padding: 10px 12px;
+    color: var(--navbar-texto);
+    transition: filter 0.2s ease;
+}
+
+.bga-navbar__group-header:hover {
+    /* Escurece levemente no hover */
+    filter: brightness(0.7);
+}
+
+.bga-navbar__sub-list {
+    padding-left: 16px;
+}
+
+.bga-navbar__item {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--divisor-itens);
+    border-top: 1px solid var(--divisor-itens);
+    box-sizing: border-box;
+    color: var(--navbar-texto);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    font: inherit;
+    gap: 8px;
+    padding: 8px 12px;
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+    width: 100%;
+}
+
+.bga-navbar__item:hover {
+    background-color: var(--hover-itens);
+}
+
+.bga-navbar__item--active {
+    background-color: var(--navbar-item-ativo);
+    font-weight: var(--sans-bold);
+}
+
+.bga-navbar__icon {
+    display: flex;
+    font-size: var(--icone-24);
+    color: var(--navbar-texto-secundario);
+}
+
+.bga-navbar__label {
+    color: var(--navbar-texto-secundario);
+    text-align: center;
+}
+
+.bga-navbar__arrow {
+    margin-left: auto;
+    font-size: 10px;
+}

@@ -1,0 +1,153 @@
+/* Ocupa o resto da ilha: só a tabela rola */
+.bga-funcionarios-afd {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.bga-funcionarios-afd__titulo {
+    color: var(--texto-destaque);
+    font-size: var(--titulo-de-modal);
+    font-weight: var(--sans-bold);
+    margin: 0;
+}
+
+.bga-funcionarios-afd__aviso {
+    color: var(--corpo-de-texto);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 0;
+}
+
+.bga-funcionarios-afd__erro {
+    color: var(--operacao-exclusao);
+    font-size: var(--interior-de-campo-de-texto);
+    font-weight: var(--sans-semibold);
+    margin: 0;
+}
+
+/*
+ * Cards de operação: neutros em branco, a cor fica no texto e no estado ativo.
+ * Compactos como na 3.8, em duas linhas: o rótulo em cima, o número e o total
+ * do arquivo lado a lado embaixo.
+ */
+
+.bga-funcionarios-afd__cards {
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+
+.bga-funcionarios-afd__card {
+    --card-cor: var(--azul-destaque);
+    --card-fundo-ativo: var(--card-todas-fundo);
+
+    align-items: baseline;
+    background-color: var(--background);
+    border: 2px solid var(--faixa-borda);
+    border-radius: 8px;
+    color: var(--card-cor);
+    cursor: pointer;
+    display: flex;
+    flex-wrap: wrap;
+    font-family: inherit;
+    gap: 0 6px;
+    padding: 6px 12px;
+    text-align: left;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.bga-funcionarios-afd__card:hover {
+    background-color: var(--faixa-fundo);
+}
+
+.bga-funcionarios-afd__card:focus-visible {
+    outline: 2px solid var(--azul-hover);
+    outline-offset: 2px;
+}
+
+.bga-funcionarios-afd__card--inclusao {
+    --card-cor: var(--operacao-inclusao);
+    --card-fundo-ativo: var(--card-inclusao-fundo);
+}
+
+.bga-funcionarios-afd__card--alteracao {
+    --card-cor: var(--operacao-alteracao);
+    --card-fundo-ativo: var(--card-alteracao-fundo);
+}
+
+.bga-funcionarios-afd__card--exclusao {
+    --card-cor: var(--operacao-exclusao);
+    --card-fundo-ativo: var(--card-exclusao-fundo);
+}
+
+.bga-funcionarios-afd__card--ativo,
+.bga-funcionarios-afd__card--ativo:hover {
+    background-color: var(--card-fundo-ativo);
+    border-color: var(--card-cor);
+}
+
+/* Ocupa a linha inteira: empurra número e total para a segunda linha */
+.bga-funcionarios-afd__card-rotulo {
+    flex-basis: 100%;
+    font-size: 13px;
+    font-weight: var(--sans-semibold);
+}
+
+.bga-funcionarios-afd__card-valor {
+    font-size: 18px;
+    font-weight: var(--sans-bold);
+    line-height: 1.3;
+}
+
+.bga-funcionarios-afd__card-total {
+    color: var(--corpo-de-texto);
+    font-size: 12px;
+}
+
+/* Filtros: faixa interna com fundo próprio */
+
+.bga-funcionarios-afd__filtros {
+    align-items: flex-end;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
+    display: grid;
+    gap: 12px;
+    /* 140px: os seis controles cabem numa linha em 1366px de largura */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    padding: 16px;
+}
+
+.bga-funcionarios-afd__limpar {
+    justify-self: start;
+}
+
+/* Linhas da tabela: zebra por dia */
+
+.bga-funcionarios-afd__linha--zebra {
+    background-color: var(--tabela-zebra);
+}
+
+/* Coluna Operação: a cor da operação fica só na célula */
+
+.bga-funcionarios-afd__operacao {
+    font-weight: var(--sans-bold);
+}
+
+.bga-funcionarios-afd__operacao--inclusao {
+    color: var(--operacao-inclusao);
+}
+
+.bga-funcionarios-afd__operacao--alteracao {
+    color: var(--operacao-alteracao);
+}
+
+.bga-funcionarios-afd__operacao--exclusao {
+    color: var(--operacao-exclusao);
+}
+
+.bga-funcionarios-afd__exportar {
+    justify-self: start;
+}

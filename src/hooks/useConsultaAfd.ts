@@ -1,0 +1,121 @@
+// Liga filtros e paginação ao `consultar()` do AfdContext: cada mudança vira
+// uma consulta ao worker, e a view recebe só a página pronta.
+
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { AbaAfd, FiltrosAfd, OperacaoEmpregado, RegistrosPorAba, ResultadoConsultaAfd } from '../afd/tipos'
+import { ConsultaDescartadaErro } from '../state/AfdContext'
+import { useAfd } from '../state/useAfd'
+import { baixarArquivo } from '../ultil/baixarArquivo'
+import { useFiltrosAfd } from './useFiltrosAfd'
+import type { FiltrosAfdHook } from './useFiltrosAfd'
+import { usePaginacao } from './usePaginacao'
+import type { Paginacao, TamanhoPagina } from './usePaginacao'
+
+export interface ConsultaAfdHook<A extends AbaAfd> {
+  /** A página atual, já filtrada e ordenada pelo worker. */
+  itens: RegistrosPorAba[A][]
+  /** Total de registros que passam nos filtros. */
+  total: number
+  /**
+   * Só na aba de empregados: quantos passam nos demais filtros, por operação.
+   * `null` nas outras abas e antes da primeira resposta.
+   */
+  contagemOperacoes: Record<OperacaoEmpregado, number> | null
+  /** `true` enquanto a consulta da página atual não volta do worker. */
+  carregando: boolean
+  erro: string | null
+  paginacao: Paginacao
+  filtros: FiltrosAfdHook
+  /**
+   * Baixa o CSV da aba com os filtros aplicados e a ordem atual, sem
+   * paginação. O arquivo é montado no worker.
+   */
+  exportarCsv(): void
+  exportando: boolean
+  erroExportacao: string | null
+}
+
+const resultadoVazio = <R extends RegistrosPorAba[AbaAfd]>(): ResultadoConsultaAfd<R> => ({ itens: [], total: 0 })
+
+export function useConsultaAfd<A extends AbaAfd>(
+  aba: A,
+  tamanhoInicial?: TamanhoPagina,
+): ConsultaAfdHook<A> {
+  const { arquivo, status, consultar, exportar } = useAfd()
+  const [resultado, setResultado] = useState(resultadoVazio<RegistrosPorAba[A]>)
+  const [consultando, setConsultando] = useState(false)
+  const [erro, setErro] = useState<string | null>(null)
+
+  const visivel = status === 'pronto' ? resultado : resultadoVazio<RegistrosPorAba[A]>()
+  const paginacao = usePaginacao(visivel.total, tamanhoInicial)
+  const { irPara, offset, limite } = paginacao
+  const voltarParaPrimeira = useCallback(() => irPara(1), [irPara])
+  const filtros = useFiltrosAfd({ aoMudar: voltarParaPrimeira })
+  const { nome, cpfPis, data } = filtros.aplicados
+  const { ordemConsulta, operacao, codigoEvento } = filtros
+  const filtrosConsulta = useMemo<FiltrosAfd>(
+    () => ({ nome, cpfPis, data, operacao: operacao ?? undefined, codigoEvento }),
+    [nome, cpfPis, data, operacao, codigoEvento],
+  )
+  const [exportando, setExportando] = useState(false)
+  const [erroExportacao, setErroExportacao] = useState<string | null>(null)
+
+  // Arquivo novo: volta à página 1 e esquece o resultado do anterior. Os
+  // filtros ficam.
+  const [arquivoAtual, setArquivoAtual] = useState(arquivo)
+  if (arquivo !== arquivoAtual) {
+    setArquivoAtual(arquivo)
+    setResultado(resultadoVazio<RegistrosPorAba[A]>())
+    setErro(null)
+    irPara(1)
+  }
+
+  useEffect(() => {
+    if (status !== 'pronto') return
+    let ativo = true
+    setConsultando(true)
+    setErro(null)
+    consultar({ aba, filtros: filtrosConsulta, ordem: ordemConsulta, offset, limite }).then(
+      (novo) => {
+        if (!ativo) return
+        setResultado(novo)
+        setConsultando(false)
+      },
+      (motivo: unknown) => {
+        if (!ativo) return
+        setConsultando(false)
+        // Substituída por outra consulta: o resultado que vale chega por ela.
+        if (motivo instanceof ConsultaDescartadaErro) return
+        setErro(motivo instanceof Error ? motivo.message : String(motivo))
+      },
+    )
+    return () => {
+      ativo = false
+    }
+  }, [aba, status, consultar, filtrosConsulta, ordemConsulta, offset, limite])
+
+  const exportarCsv = useCallback(() => {
+    setExportando(true)
+    setErroExportacao(null)
+    exportar({ formato: 'csv', criterio: { aba, filtros: filtrosConsulta, ordem: ordemConsulta } })
+      .then(baixarArquivo, (motivo: unknown) => {
+        // Arquivo trocado no meio da exportação: não há o que baixar nem avisar.
+        if (motivo instanceof ConsultaDescartadaErro) return
+        setErroExportacao(motivo instanceof Error ? motivo.message : String(motivo))
+      })
+      .finally(() => setExportando(false))
+  }, [exportar, aba, filtrosConsulta, ordemConsulta])
+
+  return {
+    itens: visivel.itens,
+    total: visivel.total,
+    contagemOperacoes: visivel.contagemOperacoes ?? null,
+    carregando: status === 'pronto' && consultando,
+    erro,
+    paginacao,
+    filtros,
+    exportarCsv,
+    exportando,
+    erroExportacao,
+  }
+}

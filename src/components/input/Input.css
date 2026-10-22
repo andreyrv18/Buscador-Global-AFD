@@ -1,0 +1,101 @@
+.bga-input {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+
+.bga-input__container {
+    align-items: center;
+    background: var(--background);
+    border: 1px solid var(--outline);
+    border-radius: 6px;
+    display: flex;
+    height: 40px;
+    padding: 0 12px;
+    position: relative;
+    transition: all 0.2s ease;
+}
+
+/* Label sobrepondo a borda */
+.bga-input__label {
+    background: var(--background);
+    /* Esconde a linha da borda que passa por trás */
+    color: var(--titulo-de-campo);
+    font-size: var(--titulo-de-campo-de-texto);
+    font-weight: var(--sans-semibold);
+    left: 8px;
+    padding: 0 4px;
+    position: absolute;
+    top: -7px;
+    transition: color 0.2s ease;
+    z-index: 1;
+}
+
+.bga-input__field {
+    background: transparent;
+    border: none;
+    color: var(--texto-destaque);
+    flex: 1;
+    font-size: var(--interior-de-campo-de-texto);
+    font-weight: var(--sans-regular);
+    height: 100%;
+    outline: none;
+}
+
+.bga-input__field::placeholder {
+    color: var(--texto-placeholder);
+}
+
+.bga-input__icon {
+    color: var(--azul-base);
+    display: flex;
+    font-size: 20px;
+    margin-left: 8px;
+}
+
+/* Estado de Erro */
+.bga-input--error .bga-input__container {
+    border-color: var(--vermelho-red-stop);
+}
+
+.bga-input--error .bga-input__label,
+.bga-input--error .bga-input__icon {
+    color: var(--vermelho-red-stop);
+}
+
+.bga-input__error-msg {
+    color: var(--vermelho-red-stop);
+    font-size: 12px;
+    font-weight: var(--sans-semibold);
+    padding-left: 4px;
+}
+
+/* Estado Desabilitado */
+.bga-input--disabled .bga-input__container,
+.bga-input--disabled .bga-input__label {
+    background: var(--background-2);
+}
+
+.bga-input--disabled .bga-input__container {
+    border-color: var(--trancado-ou-explicativo);
+    cursor: not-allowed;
+}
+
+.bga-input--disabled .bga-input__field,
+.bga-input--disabled .bga-input__icon,
+.bga-input--disabled .bga-input__label {
+    color: var(--trancado-ou-explicativo);
+    cursor: not-allowed;
+}
+
+/* Hover e Foco (Azul) */
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:hover,
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:focus-within {
+    border-color: var(--azul-base);
+}
+
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:hover .bga-input__label,
+.bga-input:not(.bga-input--disabled, .bga-input--error) .bga-input__container:focus-within .bga-input__label {
+    color: var(--azul-base);
+}

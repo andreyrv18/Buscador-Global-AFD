@@ -1,0 +1,18 @@
+import type { ReactNode } from "react";
+
+export interface ColunaTabela<T> {
+    key: string;
+    titulo: string;
+    width?: string;
+    align?: "left" | "center" | "right";
+    render?: (item: T, index: number) => ReactNode;
+}
+
+export interface TabelaProps<T> {
+    colunas: ColunaTabela<T>[];
+    dados: T[];
+    keyExtractor: (item: T, index: number) => string;
+    onRowClick?: (item: T) => void;
+    /** Classe extra da linha, para zebra e cor por categoria. */
+    rowClassName?: (item: T, index: number) => string | undefined;
+}

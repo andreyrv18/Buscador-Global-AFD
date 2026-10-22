@@ -1,0 +1,45 @@
+/* stylelint-disable selector-class-pattern */
+.tituloPagina {
+    /* color: var(--texto-destaque); */
+    font-size: var(--titulo-de-pagina);
+    font-weight: var(--sans-bold);
+    line-height: 1.2;
+
+}
+
+.tituloModal {
+    /* color: var(--texto-destaque); */
+    font-size: var(--titulo-de-modal);
+    font-weight: var(--sans-bold);
+    line-height: 1.3;
+}
+
+.subtitulo {
+    color: var(--texto-destaque);
+    font-size: var(--subtitulo);
+    font-weight: var(--sans-semibold);
+    line-height: 1.4;
+}
+
+.tituloDeCampoDeTexto {
+    /* color: var(--texto-destaque); */
+    font-size: var(--titulo-de-campo-de-texto);
+    font-weight: var(--sans-semibold);
+    letter-spacing: 0.5px;
+    line-height: 1.4;
+    text-transform: uppercase;
+}
+
+.interiorDeCampoDeTexto {
+    color: var(--texto-destaque);
+    font-size: var(--interior-de-campo-de-texto);
+    font-weight: var(--sans-regular);
+    line-height: 1.5;
+}
+
+.textoDeBotao {
+    color: var(--texto-destaque);
+    font-size: var(--texto-de-botao);
+    font-weight: var(--sans-bold);
+    line-height: 1;
+}

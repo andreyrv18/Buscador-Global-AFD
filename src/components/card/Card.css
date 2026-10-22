@@ -1,0 +1,25 @@
+.bga-card {
+    background-color: var(--background);
+    border: 1px solid var(--outline);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
+    padding: 24px;
+    width: 100%;
+}
+
+.bga-card__header {
+    align-items: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.bga-card__title {
+    color: var(--azul-base);
+    font-size: 18px;
+    font-weight: var(--sans-bold);
+    margin: 0 0 20px;
+}
+
+.bga-card__body {
+    width: 100%;
+}

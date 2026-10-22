@@ -1,0 +1,85 @@
+/*
+ * Título, divisor e a caixa tracejada da 3.8 com o seletor. Sem o espaçamento
+ * da 3.8: a tela não rola, então cada pixel aqui sai da tabela.
+ */
+.bga-upload-afd {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    gap: 12px;
+    margin: 0 0 12px;
+}
+
+.bga-upload-afd__titulo {
+    color: var(--texto-destaque);
+    font-size: var(--titulo-de-modal);
+    font-weight: var(--sans-bold);
+    margin: 0;
+}
+
+/* Título e descrição na mesma linha, com o divisor embaixo, fora da caixa */
+.bga-upload-afd__cabecalho {
+    align-items: baseline;
+    border-bottom: 1px solid var(--outline);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
+    padding-bottom: 8px;
+}
+
+.bga-upload-afd__descricao {
+    color: var(--corpo-de-texto);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 0;
+}
+
+/* Caixa tracejada: seletor, resumo e exportação */
+.bga-upload-afd__controles {
+    align-items: center;
+    background-color: var(--azul-leve);
+    border: 2px dashed var(--azul-base);
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
+    padding: 16px;
+    transition: background-color 0.2s ease;
+}
+
+.bga-upload-afd__controles:hover {
+    background-color: var(--upload-hover);
+}
+
+.bga-upload-afd__status {
+    color: var(--corpo-de-texto);
+    display: flex;
+    flex-direction: column;
+    font-size: var(--interior-de-campo-de-texto);
+    gap: 8px;
+}
+
+.bga-upload-afd__status:empty {
+    display: none;
+}
+
+.bga-upload-afd__progresso {
+    accent-color: var(--azul-base);
+    height: 8px;
+    max-width: 480px;
+    width: 100%;
+}
+
+.bga-upload-afd__aviso {
+    color: var(--laranja-liquid-lava);
+}
+
+.bga-upload-afd__erro {
+    color: var(--vermelho-red-stop);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 0;
+}
+
+.bga-upload-afd__acoes {
+    display: flex;
+    gap: 12px;
+}

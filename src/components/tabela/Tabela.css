@@ -1,0 +1,69 @@
+/*
+ * Sem altura fixa: dentro de um pai flex em coluna, ocupa o espaço que sobra e
+ * rola sozinha. O piso de 132px (cabeçalho e duas linhas) evita que a tabela
+ * suma em janela baixa; abaixo disso quem rola é a ilha.
+ */
+.bga-tabela-container {
+    border-radius: 4px;
+    flex: 1;
+    min-height: 132px;
+    overflow: auto;
+    width: 100%;
+}
+
+.bga-tabela {
+    background-color: var(--background);
+    border-collapse: collapse;
+    font-size: var(--interior-de-campo-de-texto);
+    width: 100%;
+}
+
+.bga-tabela thead {
+    background-color: var(--tabela-cabecalho);
+    position: sticky;
+    top: 0;
+    z-index: 2;
+}
+
+.bga-tabela th {
+    border-bottom: 1px solid var(--outline);
+    color: var(--tabela-cabecalho-texto);
+    font-size: 13px;
+    font-weight: var(--sans-bold);
+    padding: 12px 16px;
+}
+
+.bga-tabela td {
+    border-bottom: 1px solid var(--outline);
+    color: var(--texto-destaque);
+    font-weight: var(--sans-semibold);
+    padding: 12px 16px;
+    vertical-align: middle;
+}
+
+.bga-tabela tbody tr:hover {
+    background-color: var(--linha-hover);
+}
+
+.bga-tabela td.bga-tabela__vazio {
+    color: var(--corpo-de-texto);
+    padding: 24px;
+    text-align: center;
+}
+
+.bga-tabela__btn-icon {
+    align-items: center;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    color: var(--azul-base);
+    cursor: pointer;
+    display: inline-flex;
+    justify-content: center;
+    padding: 4px;
+    transition: background-color 0.2s;
+}
+
+.bga-tabela__btn-icon:hover {
+    background-color: var(--azul-leve);
+}

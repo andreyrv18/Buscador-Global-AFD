@@ -1,0 +1,64 @@
+/* Ocupa o resto da ilha: só a tabela rola */
+.bga-relogio {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.bga-relogio__titulo {
+    color: var(--texto-destaque);
+    margin: 0;
+}
+
+.bga-relogio__aviso,
+.bga-relogio__carregando,
+.bga-relogio__contador {
+    color: var(--corpo-de-texto);
+    margin: 0;
+}
+
+.bga-relogio__contador {
+    font-weight: var(--sans-semibold);
+}
+
+.bga-relogio__erro {
+    color: var(--vermelho-red-stop);
+    margin: 0;
+}
+
+/* Filtros: faixa interna com fundo próprio */
+.bga-relogio__filtros {
+    align-items: flex-end;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    padding: 16px;
+}
+
+.bga-relogio__antes {
+    color: var(--ajuste-antes);
+    font-weight: var(--sans-semibold);
+}
+
+.bga-relogio__depois {
+    color: var(--ajuste-depois);
+    font-weight: var(--sans-semibold);
+}
+
+.bga-relogio__nao-informado {
+    color: var(--corpo-de-texto);
+    font-style: italic;
+}
+
+.bga-relogio__limpar {
+    justify-self: start;
+}
+
+.bga-relogio__exportar {
+    justify-self: start;
+}

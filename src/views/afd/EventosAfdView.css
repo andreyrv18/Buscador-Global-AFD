@@ -1,0 +1,82 @@
+/* Ocupa o resto da ilha: só a tabela rola */
+.bga-eventos {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+}
+
+.bga-eventos__titulo {
+    color: var(--texto-destaque);
+    font-size: var(--titulo-de-modal);
+    font-weight: var(--sans-bold);
+    margin: 0;
+}
+
+.bga-eventos__subtitulo {
+    color: var(--corpo-de-texto);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 4px 0 0;
+}
+
+.bga-eventos__aviso {
+    background-color: var(--background-2);
+    border: 1px dashed var(--outline);
+    border-radius: 8px;
+    color: var(--corpo-de-texto);
+    font-size: var(--subtitulo);
+    margin: 0;
+    padding: 24px;
+    text-align: center;
+}
+
+/* Filtros: faixa interna com fundo próprio */
+.bga-eventos__filtros {
+    align-items: flex-end;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    padding: 16px;
+}
+
+.bga-eventos__filtro {
+    flex: 1 1 180px;
+    min-width: 0;
+}
+
+.bga-eventos__filtro--codigo {
+    flex-basis: 320px;
+}
+
+.bga-eventos__contador {
+    color: var(--corpo-de-texto);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 0;
+}
+
+.bga-eventos__contador strong {
+    color: var(--texto-destaque);
+    font-weight: var(--sans-bold);
+}
+
+.bga-eventos__codigo {
+    color: var(--azul-base);
+    font-weight: var(--sans-bold);
+}
+
+.bga-eventos__carregando {
+    color: var(--titulo-de-campo);
+    font-size: var(--interior-de-campo-de-texto);
+    margin: 0;
+}
+
+.bga-eventos__erro {
+    color: var(--vermelho-red-stop);
+    font-size: var(--interior-de-campo-de-texto);
+    font-weight: var(--sans-semibold);
+    margin: 0;
+}
