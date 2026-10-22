@@ -180,12 +180,12 @@ Prefixo `bga-` e BEM. Elementos clicáveis como `<button>`, `<label>` ligado ao 
 - [x] Barra lateral azul, item ativo `#0b5ed7`
 - [x] Ilha branca sobre `--fundo-area`, uma por aba
 - [x] Área de upload: título e divisor fora da caixa tracejada azul (padding 16px) com o seletor
-- [ ] Upload com borda tracejada azul e fundo `--azul-leve`, em versão compacta
+- [x] Upload com borda tracejada azul e fundo `--azul-leve`, em versão compacta
 - [x] Cabeçalho da tabela azul com texto branco
 - [x] Cor da operação só na coluna, não na linha
 - [x] Hover da linha em `--linha-hover`
 - [x] Destaques: código do evento e hora da marcação em azul
-- [x] Cards de filtro com as cores da 3.8, dimensão da 3.9
+- [x] Cards de filtro com as cores e a densidade da 3.8: duas linhas, rótulo em cima, número e total embaixo
 - [x] Rodapé da paginação como faixa destacada
 - [x] Layout de tela cheia, só a tabela rolando
 - [x] Conferir as quatro abas em 1366×768, a resolução mais apertada de uso comum
