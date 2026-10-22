@@ -16,6 +16,8 @@ export const test = base.extend<ExtensionFixtures>({
     const pathToExtension = path.resolve(__dirname, '../dist');
     
     const context = await chromium.launchPersistentContext('', {
+      // Extensão precisa do navegador com janela; no CI ela é aberta dentro do
+      // xvfb-run (ver .github/workflows/ci.yml).
       headless: false,
       args: [
         `--disable-extensions-except=${pathToExtension}`,

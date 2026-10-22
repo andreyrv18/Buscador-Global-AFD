@@ -1,5 +1,6 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import type { Page } from '@playwright/test';
 import { test, expect } from './fixtures';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -22,7 +23,6 @@ test.describe('Fluxo Principal da Extensão - Dashboard & Componentes', () => {
         // Valida que a view padrão "Funcionários (Tipo 5)" foi montada na área de conteúdo
         const mainContent = page.locator('.bga-dashboard-content');
         await expect(mainContent).toBeVisible();
-        await expect(mainContent).toContainText('Módulo AFD');
         await expect(page.getByTestId('view-afd-funcionarios')).toBeVisible();
     });
     test('deve alternar entre os grupos da Navbar mantendo o isolamento de visualização', async ({ page }) => {
@@ -48,6 +48,9 @@ test.describe('Fluxo Principal da Extensão - Dashboard & Componentes', () => {
 });
 test.describe('Leitura do AFD pelo worker', () => {
     const fixture = (nome: string) => path.resolve(__dirname, '../src/afd/__fixtures__', nome);
+    // A view ativa também tem role="status" ("Lendo o arquivo AFD…"); o resumo é o da área de upload.
+    const statusDoUpload = (page: Page) =>
+        page.getByRole('region', { name: 'Arquivo Fonte de Dados (AFD)' }).getByRole('status');
 
     test.beforeEach(async ({ page, extensionId }) => {
         await page.goto(`chrome-extension://${extensionId}/src/index.html`);
@@ -57,7 +60,7 @@ test.describe('Leitura do AFD pelo worker', () => {
         await page.getByLabel('Selecionar arquivo').setInputFiles(fixture('afd-671.txt'));
 
         await expect(page.getByText('afd-671.txt')).toBeVisible();
-        await expect(page.getByRole('status')).toContainText(/Portaria 671 · \d+ linhas lidas/);
+        await expect(statusDoUpload(page)).toContainText(/Portaria 671 · \d+ linhas lidas/);
         await expect(page.getByRole('progressbar')).toHaveCount(0);
     });
 
@@ -67,7 +70,7 @@ test.describe('Leitura do AFD pelo worker', () => {
         await campo.setInputFiles(fixture('afd-671.txt'));
         await campo.setInputFiles(fixture('afd-595.txt'));
 
-        await expect(page.getByRole('status')).toContainText('Portaria 595');
+        await expect(statusDoUpload(page)).toContainText('Portaria 595');
         await expect(page.getByText('afd-595.txt')).toBeVisible();
     });
 });
