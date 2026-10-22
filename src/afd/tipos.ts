@@ -152,18 +152,91 @@ export interface RelatorioAfd {
   linhasInvalidas: LinhaInvalida[]
 }
 
+/**
+ * O que a interface guarda do relatório: tudo menos as coleções de registros,
+ * que ficam no worker e são pedidas sob demanda com `ConsultaAfd`.
+ */
+export type ResumoAfd = Pick<
+  RelatorioAfd,
+  | 'portaria'
+  | 'leiauteMisto'
+  | 'cabecalho'
+  | 'contagemPorTipo'
+  | 'contagemOperacoes'
+  | 'totalLinhas'
+  | 'linhasIgnoradas'
+  | 'totalLinhasInvalidas'
+  | 'linhasInvalidas'
+>
+
+// ---------------------------------------------------------------------------
+// Consulta aos registros
+// ---------------------------------------------------------------------------
+
+/** Registro devolvido por cada aba. */
+export interface RegistrosPorAba {
+  marcacoes: Marcacao
+  ajustesRelogio: RegistroTipo4
+  empregados: RegistroTipo5
+  eventosRep: RegistroTipo6
+}
+
+export type AbaAfd = keyof RegistrosPorAba
+
+export type RegistroConsultavel = RegistrosPorAba[AbaAfd]
+
+/**
+ * Filtros de uma consulta. Campo vazio ou ausente não filtra; filtro que não
+ * se aplica à aba (nome nos eventos, por exemplo) é ignorado.
+ */
+export interface FiltrosAfd {
+  /** Trecho do nome, sem diferenciar maiúsculas nem acentos. */
+  nome?: string
+  /** Trecho do CPF/PIS do empregado; só os dígitos contam, sem zeros à esquerda. */
+  cpfPis?: string
+  /** Data exata, `AAAA-MM-DD`. */
+  data?: string
+  /** Operação do Tipo 5 (aba de empregados). */
+  operacao?: OperacaoEmpregado
+  /** Código do evento do Tipo 6, dois dígitos (aba de eventos). */
+  codigoEvento?: string
+}
+
+/** `'nome'` só vale para abas com nome; nas demais vale a ordem do arquivo. */
+export type OrdemAfd = 'arquivo' | 'data-crescente' | 'data-decrescente' | 'nome'
+
+export interface ConsultaAfd<A extends AbaAfd = AbaAfd> {
+  aba: A
+  filtros: FiltrosAfd
+  ordem: OrdemAfd
+  /** Índice do primeiro item da página no conjunto filtrado. */
+  offset: number
+  /** Tamanho da página. */
+  limite: number
+}
+
+export interface ResultadoConsultaAfd<R extends RegistroConsultavel = RegistroConsultavel> {
+  /** A página pedida. */
+  itens: R[]
+  /** Total de registros que passam nos filtros. */
+  total: number
+}
+
 // ---------------------------------------------------------------------------
 // Protocolo do worker
 // ---------------------------------------------------------------------------
 
-/** Pedido da interface ao worker. O token identifica o upload. */
-export interface PedidoLeituraAfd {
-  token: number
-  arquivo: File
-}
+/**
+ * Pedido da interface ao worker. O token identifica o upload; o `idConsulta`
+ * identifica a consulta, para descartar a resposta de uma consulta substituída.
+ */
+export type PedidoLeituraAfd =
+  | { tipo: 'ler'; token: number; arquivo: File }
+  | ({ tipo: 'consultar'; token: number; idConsulta: number } & ConsultaAfd)
 
 /** Mensagens do worker; todas carregam o token do pedido que as originou. */
 export type RespostaWorkerAfd =
   | { token: number; tipo: 'progresso'; progresso: number }
-  | { token: number; tipo: 'pronto'; relatorio: RelatorioAfd }
+  | { token: number; tipo: 'pronto'; resumo: ResumoAfd }
   | { token: number; tipo: 'erro'; mensagem: string }
+  | { token: number; tipo: 'resultado'; idConsulta: number; itens: RegistroConsultavel[]; total: number }

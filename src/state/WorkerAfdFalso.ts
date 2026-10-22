@@ -1,14 +1,19 @@
 // Worker falso para testes: guarda os pedidos e deixa o teste responder.
 
+import { criarConsultorAfd, resumirRelatorioAfd } from '../afd/consulta'
 import type { PedidoLeituraAfd, RelatorioAfd, RespostaWorkerAfd } from '../afd/tipos'
 import { parsearAfd } from '../afd/parser'
 import type { WorkerAfd } from './AfdContext'
+
+export type PedidoConsultaAfd = Extract<PedidoLeituraAfd, { tipo: 'consultar' }>
 
 export class WorkerAfdFalso implements WorkerAfd {
   onmessage: ((evento: MessageEvent<RespostaWorkerAfd>) => void) | null = null
   onerror: ((evento: ErrorEvent) => void) | null = null
   pedidos: PedidoLeituraAfd[] = []
   encerrado = false
+  /** Relatório entregue em `concluir`, que responde às consultas. */
+  relatorio: RelatorioAfd | null = null
 
   postMessage(pedido: PedidoLeituraAfd): void {
     this.pedidos.push(pedido)
@@ -25,6 +30,11 @@ export class WorkerAfdFalso implements WorkerAfd {
     return ultimo.token
   }
 
+  /** Pedidos de consulta, na ordem em que chegaram. */
+  get consultas(): PedidoConsultaAfd[] {
+    return this.pedidos.filter((pedido): pedido is PedidoConsultaAfd => pedido.tipo === 'consultar')
+  }
+
   responder(resposta: RespostaWorkerAfd): void {
     this.onmessage?.(new MessageEvent('message', { data: resposta }))
   }
@@ -34,7 +44,15 @@ export class WorkerAfdFalso implements WorkerAfd {
   }
 
   concluir(relatorio: RelatorioAfd = relatorioVazio(), token = this.token): void {
-    this.responder({ token, tipo: 'pronto', relatorio })
+    this.relatorio = relatorio
+    this.responder({ token, tipo: 'pronto', resumo: resumirRelatorioAfd(relatorio) })
+  }
+
+  /** Responde a uma consulta com o relatório entregue em `concluir`. */
+  responderConsulta(pedido: PedidoConsultaAfd): void {
+    if (this.relatorio === null) throw new Error('o worker falso ainda não concluiu a leitura')
+    const { itens, total } = criarConsultorAfd(this.relatorio).consultar(pedido)
+    this.responder({ token: pedido.token, tipo: 'resultado', idConsulta: pedido.idConsulta, itens, total })
   }
 
   falhar(mensagem: string): void {

@@ -2,7 +2,8 @@ import { act, render, renderHook, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { describe, expect, it } from 'vitest'
 import { parsearAfd } from '../afd/parser'
-import { AfdProvider } from './AfdContext'
+import { resumirRelatorioAfd } from '../afd/consulta'
+import { AfdProvider, ConsultaDescartadaErro } from './AfdContext'
 import { useAfd } from './useAfd'
 import { fabricaDeWorkersFalsos, relatorioVazio } from './WorkerAfdFalso'
 
@@ -23,7 +24,7 @@ describe('AfdContext', () => {
 
     expect(result.current).toMatchObject({
       arquivo: null,
-      relatorio: null,
+      resumo: null,
       status: 'ocioso',
       progresso: 0,
       erro: null,
@@ -39,7 +40,7 @@ describe('AfdContext', () => {
     expect(result.current.status).toBe('lendo')
     expect(result.current.arquivo).toBe(afd)
     expect(criados).toHaveLength(1)
-    expect(criados[0].pedidos).toEqual([{ token: expect.any(Number), arquivo: afd }])
+    expect(criados[0].pedidos).toEqual([{ tipo: 'ler', token: expect.any(Number), arquivo: afd }])
   })
 
   it('deve atualizar o progresso com as mensagens do worker', () => {
@@ -52,15 +53,21 @@ describe('AfdContext', () => {
     expect(result.current.status).toBe('lendo')
   })
 
-  it('deve guardar o relatório e encerrar o worker ao concluir', () => {
+  it('deve guardar o resumo e manter o worker vivo ao concluir', () => {
     const { result, criados } = montar()
     const relatorio = parsearAfd('0000000013010120200800123456789012')
     act(() => result.current.carregarArquivo(arquivo('a.txt')))
 
     act(() => criados[0].concluir(relatorio))
 
-    expect(result.current).toMatchObject({ status: 'pronto', progresso: 100, relatorio, erro: null })
-    expect(criados[0].encerrado).toBe(true)
+    expect(result.current).toMatchObject({
+      status: 'pronto',
+      progresso: 100,
+      resumo: resumirRelatorioAfd(relatorio),
+      erro: null,
+    })
+    expect(result.current.resumo).not.toHaveProperty('marcacoes')
+    expect(criados[0].encerrado).toBe(false)
   })
 
   it('deve passar a "erro" e encerrar o worker quando a leitura falha', () => {
@@ -69,7 +76,7 @@ describe('AfdContext', () => {
 
     act(() => criados[0].responder({ token: criados[0].token, tipo: 'erro', mensagem: 'arquivo removido' }))
 
-    expect(result.current).toMatchObject({ status: 'erro', erro: 'arquivo removido', relatorio: null })
+    expect(result.current).toMatchObject({ status: 'erro', erro: 'arquivo removido', resumo: null })
     expect(criados[0].encerrado).toBe(true)
   })
 
@@ -127,7 +134,7 @@ describe('AfdContext', () => {
         criados[0].falhar('tarde demais')
       })
 
-      expect(result.current).toMatchObject({ status: 'lendo', progresso: 0, relatorio: null, erro: null })
+      expect(result.current).toMatchObject({ status: 'lendo', progresso: 0, resumo: null, erro: null })
     })
 
     it('deve descartar mensagem com token antigo, mesmo vinda do worker atual', () => {
@@ -151,7 +158,7 @@ describe('AfdContext', () => {
       act(() => criados[0].concluir(relatorioVazio()))
 
       expect(result.current.status).toBe('pronto')
-      expect(result.current.relatorio).toBe(relatorio)
+      expect(result.current.resumo).toEqual(resumirRelatorioAfd(relatorio))
     })
 
     it('deve limpar o erro anterior ao carregar outro arquivo', () => {
@@ -162,6 +169,92 @@ describe('AfdContext', () => {
       act(() => result.current.carregarArquivo(arquivo('segundo.txt')))
 
       expect(result.current).toMatchObject({ status: 'lendo', erro: null })
+    })
+  })
+
+  describe('consultar', () => {
+    // Três marcações do legado, uma por hora, na ordem do arquivo.
+    const TRES_MARCACOES = ['0800', '0900', '1000'].map(
+      (hora, i) => `00000000${i + 1}3` + '01012020' + hora + `00000000000${i + 1}`,
+    )
+    const pagina = (offset: number) =>
+      ({ aba: 'marcacoes', filtros: {}, ordem: 'arquivo', offset, limite: 1 }) as const
+
+    function montarPronto() {
+      const montado = montar()
+      const relatorio = parsearAfd(TRES_MARCACOES)
+      act(() => montado.result.current.carregarArquivo(arquivo('a.txt')))
+      act(() => montado.criados[0].concluir(relatorio))
+      return { ...montado, worker: montado.criados[0], relatorio }
+    }
+
+    it('deve pedir a página ao worker e devolver os itens e o total', async () => {
+      const { result, worker, relatorio } = montarPronto()
+
+      const consulta = result.current.consultar(pagina(1))
+      worker.responderConsulta(worker.consultas[0])
+
+      await expect(consulta).resolves.toEqual({ itens: [relatorio.marcacoes[1]], total: 3 })
+      expect(worker.consultas[0]).toMatchObject({ tipo: 'consultar', token: worker.pedidos[0].token, ...pagina(1) })
+    })
+
+    it('deve descartar a resposta da consulta substituída que chega por último', async () => {
+      const { result, worker, relatorio } = montarPronto()
+      const antiga = result.current.consultar(pagina(0))
+      const atual = result.current.consultar(pagina(2))
+      const [pedidoAntigo, pedidoAtual] = worker.consultas
+
+      worker.responderConsulta(pedidoAtual)
+      worker.responderConsulta(pedidoAntigo)
+
+      await expect(atual).resolves.toEqual({ itens: [relatorio.marcacoes[2]], total: 3 })
+      await expect(antiga).rejects.toBeInstanceOf(ConsultaDescartadaErro)
+    })
+
+    it('deve descartar a resposta da consulta substituída que chega primeiro', async () => {
+      const { result, worker, relatorio } = montarPronto()
+      const antiga = result.current.consultar(pagina(0))
+      const atual = result.current.consultar(pagina(2))
+      const [pedidoAntigo, pedidoAtual] = worker.consultas
+
+      worker.responderConsulta(pedidoAntigo)
+      worker.responderConsulta(pedidoAtual)
+
+      await expect(atual).resolves.toEqual({ itens: [relatorio.marcacoes[2]], total: 3 })
+      await expect(antiga).rejects.toBeInstanceOf(ConsultaDescartadaErro)
+      expect(pedidoAtual.idConsulta).not.toBe(pedidoAntigo.idConsulta)
+    })
+
+    it('deve rejeitar a consulta antes de o arquivo estar pronto', async () => {
+      const { result, criados } = montar()
+      act(() => result.current.carregarArquivo(arquivo('a.txt')))
+
+      await expect(result.current.consultar(pagina(0))).rejects.toThrow('Nenhum arquivo AFD pronto para consulta.')
+      expect(criados[0].consultas).toHaveLength(0)
+    })
+
+    it('deve rejeitar a consulta pendente e ignorar a resposta dela ao trocar de arquivo', async () => {
+      const { result, worker, criados } = montarPronto()
+      const pendente = result.current.consultar(pagina(0))
+
+      act(() => result.current.carregarArquivo(arquivo('b.txt')))
+      worker.responderConsulta(worker.consultas[0])
+
+      await expect(pendente).rejects.toBeInstanceOf(ConsultaDescartadaErro)
+      expect(worker.encerrado).toBe(true)
+      expect(result.current).toMatchObject({ status: 'lendo', resumo: null })
+      await expect(result.current.consultar(pagina(0))).rejects.toThrow('Nenhum arquivo AFD pronto')
+      expect(criados[1].consultas).toHaveLength(0)
+    })
+
+    it('deve rejeitar a consulta pendente quando o worker quebra', async () => {
+      const { result, worker } = montarPronto()
+      const pendente = result.current.consultar(pagina(0))
+
+      act(() => worker.falhar('sem memória'))
+
+      await expect(pendente).rejects.toBeInstanceOf(ConsultaDescartadaErro)
+      expect(result.current.status).toBe('erro')
     })
   })
 
