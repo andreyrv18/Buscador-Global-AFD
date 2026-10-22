@@ -1,0 +1,43 @@
+.bga-marcacoes-afd {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.bga-marcacoes-afd__titulo {
+    color: var(--texto-destaque);
+    margin: 0;
+}
+
+.bga-marcacoes-afd__aviso,
+.bga-marcacoes-afd__contador {
+    color: var(--corpo-de-texto);
+    margin: 0;
+}
+
+.bga-marcacoes-afd__contador strong {
+    color: var(--texto-destaque);
+    font-weight: var(--sans-bold);
+}
+
+.bga-marcacoes-afd__erro {
+    color: var(--vermelho-red-stop);
+    margin: 0;
+}
+
+.bga-marcacoes-afd__filtros {
+    align-items: flex-end;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.bga-marcacoes-afd__limpar {
+    display: flex;
+    align-items: flex-end;
+}
+
+/* Zebra por dia: alterna a cada mudança de data dentro da página */
+.bga-marcacoes-afd__linha--zebra {
+    background-color: var(--tabela-zebra);
+}
