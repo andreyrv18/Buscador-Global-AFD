@@ -33,6 +33,7 @@ Alterações em `src/styles/index.css`.
 | `--faixa-fundo` | `#f8f9fa` | rodapé da paginação e faixa de filtros |
 | `--faixa-borda` | `#dee2e6` | borda dessas faixas |
 | `--linha-hover` | `#e2eafc` | linha da tabela sob o cursor |
+| `--upload-hover` | `#f0f7fc` | caixa de upload sob o cursor |
 | `--card-todas-fundo` | `#e2eafc` | card de filtro ativo |
 | `--card-inclusao-fundo` | `#e8f5e9` | card de filtro ativo |
 | `--card-alteracao-fundo` | `#fff3e0` | card de filtro ativo |
@@ -71,7 +72,27 @@ Sem `max-width` fixo como os 1000px da 3.8 — a ilha ocupa a largura disponíve
 
 ---
 
-## 4. Tabela
+## 4. Área de upload
+
+Volta a ser uma caixa tracejada em azul claro, como na 3.8 — é o elemento que mais identifica a tela de entrada.
+
+| Propriedade | Valor |
+|---|---|
+| Fundo | `--azul-leve` (`#c8e5f4`) |
+| Borda | `2px dashed var(--azul-base)` |
+| Raio | 8px |
+| Fundo no hover | `--upload-hover` (`#f0f7fc`) |
+| Nome do arquivo | `--corpo-de-texto`, peso regular |
+
+O botão "Selecionar arquivo" continua azul preenchido, como está — já corresponde ao da 3.8.
+
+**Mas sem o espaçamento da 3.8.** Lá a caixa tinha `padding: 30px` e `margin: 20px 0`, quase cem pixels de altura que agora sairiam da tabela. Use `padding` entre 16 e 20px, e margem só embaixo. O comentário no topo de `AreaUploadAfd.css` continua valendo: a tela não rola, então cada pixel gasto aqui some do corpo da tabela.
+
+Com a caixa tracejada de volta, a borda inferior que hoje separa a área de upload do conteúdo fica redundante — a própria caixa já delimita. Remova.
+
+---
+
+## 5. Tabela
 
 **Cabeçalho colorido.** `thead` com fundo `--tabela-cabecalho` e `th` em `--tabela-cabecalho-texto`, negrito. O `position: sticky` continua.
 
@@ -94,9 +115,7 @@ Na 3.8 a coluna Código exibia `Tipo 02`, não só `02`. Se quiser a leitura id�
 
 ---
 
-## 5. Cards de filtro por operação
-
-Mantida a proporção e o tamanho atuais, que ficaram melhores que os da 3.8. Muda a cor.
+## 6. Cards de filtro por operação
 
 Estado neutro: fundo branco, borda `--faixa-borda`, texto na cor da operação. **Sai a borda-esquerda de 4px**; a cor volta para o texto e para o estado ativo, como era.
 
@@ -115,7 +134,7 @@ O foco visível por teclado continua — é ganho da 3.9 e não se perde aqui.
 
 ---
 
-## 6. Rodapé da paginação
+## 7. Rodapé da paginação
 
 Volta a ser uma faixa, não uma linha solta: fundo `--faixa-fundo`, borda `--faixa-borda`, raio 8px, padding 12–16px. "Página X de Y" em `--azul-destaque`, negrito, 16px. Botões Anterior e Próxima em azul preenchido.
 
@@ -123,7 +142,7 @@ A contagem de registros e o seletor de tamanho, que são da 3.9, permanecem dent
 
 ---
 
-## 7. Layout de tela cheia
+## 8. Layout de tela cheia
 
 A tela inteira cabe na janela: **a página não rola, só o corpo da tabela.**
 
@@ -148,7 +167,7 @@ E remover o `max-height: 520px` de `.bga-tabela-container`. A altura passa a vir
 
 ---
 
-## 8. O que não muda
+## 9. O que não muda
 
 Prefixo `bga-` e BEM. Elementos clicáveis como `<button>`, `<label>` ligado ao campo, foco visível. Open Sans empacotada. Os componentes do design system e o `Paginador`. Os registros no worker e a consulta paginada. A zebra calculada por página, que já decidimos manter.
 
@@ -160,6 +179,8 @@ Prefixo `bga-` e BEM. Elementos clicáveis como `<button>`, `<label>` ligado ao 
 - [x] `color-scheme: light` e bloco de tema escuro neutralizado
 - [x] Barra lateral azul, item ativo `#0b5ed7`
 - [x] Ilha branca sobre `--fundo-area`, uma por aba
+- [x] Área de upload: título e divisor fora da caixa tracejada azul (padding 16px) com o seletor
+- [ ] Upload com borda tracejada azul e fundo `--azul-leve`, em versão compacta
 - [x] Cabeçalho da tabela azul com texto branco
 - [x] Cor da operação só na coluna, não na linha
 - [x] Hover da linha em `--linha-hover`

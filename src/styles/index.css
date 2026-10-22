@@ -32,6 +32,8 @@
     /* Faixas internas da ilha: filtros e rodapé da paginação */
     --faixa-fundo: #f8f9fa;
     --faixa-borda: #dee2e6;
+    /* Caixa de upload sob o cursor (o fundo normal é --azul-leve) */
+    --upload-hover: #f0f7fc;
     /* Cabeçalho da tabela */
     --tabela-cabecalho: #3379bc;
     --tabela-cabecalho-texto: #fff;

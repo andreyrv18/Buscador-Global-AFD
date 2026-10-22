@@ -46,6 +46,7 @@
 
 .bga-seletor-arquivo__nome {
     color: var(--corpo-de-texto);
+    font-weight: var(--sans-regular);
     font-size: var(--interior-de-campo-de-texto);
     overflow-wrap: anywhere;
 }
