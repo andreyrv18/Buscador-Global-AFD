@@ -17,6 +17,7 @@ export function Tabela<T>({
     dados,
     keyExtractor,
     onRowClick,
+    rowClassName,
 }: TabelaProps<T>) {
     return (
         <div className="bga-tabela-container">
@@ -47,6 +48,7 @@ export function Tabela<T>({
                         dados.map((item, index) => (
                             <tr
                                 key={keyExtractor(item, index)}
+                                className={rowClassName?.(item, index)}
                                 onClick={() => onRowClick && onRowClick(item)}
                                 style={{ cursor: onRowClick ? "pointer" : "default" }}
                             >

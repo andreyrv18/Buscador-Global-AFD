@@ -120,6 +120,25 @@ describe('criarConsultorAfd', () => {
     })
   })
 
+  describe('contagem de operações', () => {
+    const consultor = criarConsultorAfd(afd671)
+
+    it('deve contar por operação com os demais filtros, ignorando o de operação', () => {
+      const resultado = consultor.consultar(consulta('empregados', { nome: 'maria', operacao: 'I' }))
+
+      expect(nsrs(resultado.itens)).toEqual([3])
+      expect(resultado.contagemOperacoes).toEqual({ I: 1, A: 1, E: 0 })
+    })
+
+    it('deve contar o arquivo todo sem filtros', () => {
+      expect(consultor.consultar(consulta('empregados')).contagemOperacoes).toEqual(afd671.contagemOperacoes)
+    })
+
+    it('não deve contar operações nas outras abas', () => {
+      expect(consultor.consultar(consulta('marcacoes'))).not.toHaveProperty('contagemOperacoes')
+    })
+  })
+
   describe('ordem', () => {
     it('deve ordenar por data e hora, desempatando pela linha', () => {
       const relatorio = parsearAfd([

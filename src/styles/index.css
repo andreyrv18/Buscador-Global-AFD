@@ -27,6 +27,14 @@
     --navbar-item-ativo: rgb(255 255 255 / 15%);
     /* Cabeçalho da tabela */
     --tabela-cabecalho: #e9ecef;
+    /* Fundo das linhas alternadas por dia */
+    --tabela-zebra: #f1f5f9;
+    /* Texto por operação do Tipo 5 e por lado do ajuste do Tipo 4 */
+    --operacao-inclusao: #1e7d32;
+    --operacao-alteracao: #b45309;
+    --operacao-exclusao: #c62828;
+    --ajuste-antes: #c62828;
+    --ajuste-depois: #1e7d32;
 
     /* CORES ORDENADOR DE FILA */
 
@@ -84,6 +92,12 @@
         --navbar-texto-secundario: #f9fafa;
         --navbar-item-ativo: rgb(255 255 255 / 15%);
         --tabela-cabecalho: #2a2a2a;
+        --tabela-zebra: #1b2026;
+        --operacao-inclusao: #6fcf75;
+        --operacao-alteracao: #f5a524;
+        --operacao-exclusao: #ff6b6b;
+        --ajuste-antes: #ff6b6b;
+        --ajuste-depois: #6fcf75;
     }
 }
 

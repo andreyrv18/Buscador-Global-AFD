@@ -14,4 +14,6 @@ export interface ComboboxProps {
     error?: string;
     disabled?: boolean;
     className?: string;
+    /** Mostra o botão "Limpar seleção". Desligue em campo que não pode ficar vazio. */
+    limpavel?: boolean;
 }

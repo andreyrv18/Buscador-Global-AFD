@@ -51,8 +51,8 @@ export class WorkerAfdFalso implements WorkerAfd {
   /** Responde a uma consulta com o relatório entregue em `concluir`. */
   responderConsulta(pedido: PedidoConsultaAfd): void {
     if (this.relatorio === null) throw new Error('o worker falso ainda não concluiu a leitura')
-    const { itens, total } = criarConsultorAfd(this.relatorio).consultar(pedido)
-    this.responder({ token: pedido.token, tipo: 'resultado', idConsulta: pedido.idConsulta, itens, total })
+    const resultado = criarConsultorAfd(this.relatorio).consultar(pedido)
+    this.responder({ ...resultado, token: pedido.token, tipo: 'resultado', idConsulta: pedido.idConsulta })
   }
 
   falhar(mensagem: string): void {

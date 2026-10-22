@@ -1,0 +1,24 @@
+.bga-paginador {
+    align-items: flex-end;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+.bga-paginador__contagem,
+.bga-paginador__pagina {
+    color: var(--corpo-de-texto);
+    font-size: var(--interior-de-campo-de-texto);
+}
+
+.bga-paginador__navegacao {
+    align-items: center;
+    display: flex;
+    gap: 12px;
+}
+
+.bga-paginador__tamanho {
+    flex: 0 0 140px;
+}

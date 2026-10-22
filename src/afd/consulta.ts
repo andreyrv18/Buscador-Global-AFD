@@ -142,12 +142,26 @@ export function criarConsultorAfd(relatorio: RelatorioAfd): ConsultorAfd {
     return registros
   }
 
+  // Contagem dos cards da aba de empregados: os demais filtros valem, a
+  // operação não, para que cada card mostre quantos teria se fosse escolhido.
+  // O Tipo 5 é pequeno perto das marcações; não precisa de cache.
+  const contarOperacoes = (filtrosConsulta: FiltrosAfd): Record<OperacaoEmpregado, number> => {
+    const filtros = { ...normalizarFiltros(filtrosConsulta), operacao: null }
+    const contagem: Record<OperacaoEmpregado, number> = { I: 0, A: 0, E: 0 }
+    for (const empregado of relatorio.empregados) {
+      if (passa(empregado, filtros)) contagem[empregado.operacao]++
+    }
+    return contagem
+  }
+
   return {
     consultar(consulta) {
       const registros = selecionar(consulta)
       const inicio = Math.max(0, Math.trunc(consulta.offset))
       const fim = inicio + Math.max(0, Math.trunc(consulta.limite))
-      return { itens: registros.slice(inicio, fim), total: registros.length }
+      const pagina = { itens: registros.slice(inicio, fim), total: registros.length }
+      if (consulta.aba !== 'empregados') return pagina
+      return { ...pagina, contagemOperacoes: contarOperacoes(consulta.filtros) }
     },
   }
 }

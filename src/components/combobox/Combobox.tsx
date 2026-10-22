@@ -18,6 +18,7 @@ const Combobox = ({
     error,
     disabled = false,
     className = "",
+    limpavel = true,
 }: ComboboxProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -168,7 +169,7 @@ const Combobox = ({
                 </button>
 
                 <div className="bga-combo__actions">
-                    {selectedOption && !disabled && (
+                    {limpavel && selectedOption && !disabled && (
                         <button
                             type="button"
                             className="bga-combo__clear"

@@ -220,6 +220,11 @@ export interface ResultadoConsultaAfd<R extends RegistroConsultavel = RegistroCo
   itens: R[]
   /** Total de registros que passam nos filtros. */
   total: number
+  /**
+   * Só na aba de empregados: quantos passam nos filtros por operação,
+   * ignorando o filtro de operação.
+   */
+  contagemOperacoes?: Record<OperacaoEmpregado, number>
 }
 
 // ---------------------------------------------------------------------------
@@ -239,4 +244,4 @@ export type RespostaWorkerAfd =
   | { token: number; tipo: 'progresso'; progresso: number }
   | { token: number; tipo: 'pronto'; resumo: ResumoAfd }
   | { token: number; tipo: 'erro'; mensagem: string }
-  | { token: number; tipo: 'resultado'; idConsulta: number; itens: RegistroConsultavel[]; total: number }
+  | ({ token: number; tipo: 'resultado'; idConsulta: number } & ResultadoConsultaAfd)

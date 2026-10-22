@@ -140,4 +140,11 @@ describe('Componente Combobox', () => {
         expect(combo).toHaveAttribute('aria-invalid', 'true');
         expect(combo).toHaveAccessibleDescription('Campo obrigatório');
     });
+
+    it('não deve oferecer "Limpar seleção" quando não for limpável', () => {
+        render(<Combobox options={mockOptions} value="2" onChange={() => {}} label="Escolha" limpavel={false} />);
+
+        expect(screen.getByRole('combobox', { name: 'Escolha' })).toHaveTextContent('Opção 2');
+        expect(screen.queryByRole('button', { name: 'Limpar seleção' })).not.toBeInTheDocument();
+    });
 });

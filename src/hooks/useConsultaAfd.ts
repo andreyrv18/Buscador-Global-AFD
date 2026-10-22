@@ -2,7 +2,7 @@
 // uma consulta ao worker, e a view recebe só a página pronta.
 
 import { useCallback, useEffect, useState } from 'react'
-import type { AbaAfd, RegistrosPorAba, ResultadoConsultaAfd } from '../afd/tipos'
+import type { AbaAfd, OperacaoEmpregado, RegistrosPorAba, ResultadoConsultaAfd } from '../afd/tipos'
 import { ConsultaDescartadaErro } from '../state/AfdContext'
 import { useAfd } from '../state/useAfd'
 import { useFiltrosAfd } from './useFiltrosAfd'
@@ -15,6 +15,11 @@ export interface ConsultaAfdHook<A extends AbaAfd> {
   itens: RegistrosPorAba[A][]
   /** Total de registros que passam nos filtros. */
   total: number
+  /**
+   * Só na aba de empregados: quantos passam nos demais filtros, por operação.
+   * `null` nas outras abas e antes da primeira resposta.
+   */
+  contagemOperacoes: Record<OperacaoEmpregado, number> | null
   /** `true` enquanto a consulta da página atual não volta do worker. */
   carregando: boolean
   erro: string | null
@@ -39,7 +44,7 @@ export function useConsultaAfd<A extends AbaAfd>(
   const voltarParaPrimeira = useCallback(() => irPara(1), [irPara])
   const filtros = useFiltrosAfd({ aoMudar: voltarParaPrimeira })
   const { nome, cpfPis, data } = filtros.aplicados
-  const { ordemConsulta } = filtros
+  const { ordemConsulta, operacao, codigoEvento } = filtros
 
   // Arquivo novo: volta à página 1 e esquece o resultado do anterior. Os
   // filtros ficam.
@@ -56,7 +61,8 @@ export function useConsultaAfd<A extends AbaAfd>(
     let ativo = true
     setConsultando(true)
     setErro(null)
-    consultar({ aba, filtros: { nome, cpfPis, data }, ordem: ordemConsulta, offset, limite }).then(
+    const filtrosConsulta = { nome, cpfPis, data, operacao: operacao ?? undefined, codigoEvento }
+    consultar({ aba, filtros: filtrosConsulta, ordem: ordemConsulta, offset, limite }).then(
       (novo) => {
         if (!ativo) return
         setResultado(novo)
@@ -73,11 +79,12 @@ export function useConsultaAfd<A extends AbaAfd>(
     return () => {
       ativo = false
     }
-  }, [aba, status, consultar, nome, cpfPis, data, ordemConsulta, offset, limite])
+  }, [aba, status, consultar, nome, cpfPis, data, operacao, codigoEvento, ordemConsulta, offset, limite])
 
   return {
     itens: visivel.itens,
     total: visivel.total,
+    contagemOperacoes: visivel.contagemOperacoes ?? null,
     carregando: status === 'pronto' && consultando,
     erro,
     paginacao,

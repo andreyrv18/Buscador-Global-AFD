@@ -13,4 +13,6 @@ export interface TabelaProps<T> {
     dados: T[];
     keyExtractor: (item: T, index: number) => string;
     onRowClick?: (item: T) => void;
+    /** Classe extra da linha, para zebra e cor por categoria. */
+    rowClassName?: (item: T, index: number) => string | undefined;
 }

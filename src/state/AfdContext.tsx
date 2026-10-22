@@ -158,7 +158,8 @@ export function AfdProvider({ children, criarWorker = criarWorkerAfd }: AfdProvi
             // Resposta de consulta já substituída: descarta.
             if (pendente === null || pendente.idConsulta !== resposta.idConsulta) return
             consultaRef.current = null
-            pendente.resolver({ itens: resposta.itens, total: resposta.total })
+            const { itens, total, contagemOperacoes } = resposta
+            pendente.resolver(contagemOperacoes ? { itens, total, contagemOperacoes } : { itens, total })
             break
           }
         }

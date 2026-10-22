@@ -16,6 +16,16 @@ const MARCACOES = Array.from({ length: 25 }, (_, i) => {
   return String(n).padStart(9, '0') + '3' + '01012020' + '08' + String(n).padStart(2, '0') + String(n).padStart(12, '0')
 })
 
+// Tipo 5 do legado: duas inclusões e uma alteração.
+const EMPREGADOS = [
+  ['I', 'ANA'],
+  ['I', 'BRUNO'],
+  ['A', 'ANA SILVA'],
+].map(([operacao, nome], i) => {
+  const pis = i === 1 ? '000000000002' : '000000000001'
+  return String(i + 1).padStart(9, '0') + '5' + '01012020' + '0800' + operacao + pis + nome.padEnd(52, ' ')
+})
+
 const arquivo = (nome: string) => new File(['x'], nome)
 
 beforeEach(() => {
@@ -144,6 +154,39 @@ describe('useConsultaAfd', () => {
 
     expect(ultimaConsulta(worker)).toMatchObject({ ordem: 'data-decrescente', offset: 0 })
     expect(result.current.consulta.itens[0].nsr).toBe('000000025')
+  })
+
+  it('não deve ter contagem de operações fora da aba de empregados', async () => {
+    const { result } = await montarPronto()
+
+    expect(result.current.consulta.contagemOperacoes).toBeNull()
+  })
+
+  it('deve filtrar empregados pela operação e expor a contagem por operação', async () => {
+    const fabrica = fabricaDeWorkersFalsos()
+    const wrapper = ({ children }: { children: ReactNode }) => (
+      <AfdProvider criarWorker={fabrica.criarWorker}>{children}</AfdProvider>
+    )
+    const { result } = renderHook(() => ({ afd: useAfd(), consulta: useConsultaAfd('empregados') }), { wrapper })
+    act(() => result.current.afd.carregarArquivo(arquivo('a.txt')))
+    const worker = fabrica.criados[0]
+    act(() => worker.concluir(parsearAfd(EMPREGADOS)))
+    await responder(worker)
+
+    act(() => result.current.consulta.filtros.mudarOperacao('A'))
+    await responder(worker)
+
+    expect(ultimaConsulta(worker)).toMatchObject({ aba: 'empregados', filtros: { operacao: 'A' }, offset: 0 })
+    expect(result.current.consulta.total).toBe(1)
+    expect(result.current.consulta.contagemOperacoes).toEqual({ I: 2, A: 1, E: 0 })
+  })
+
+  it('deve filtrar eventos pelo código', async () => {
+    const { result, worker } = await montarPronto()
+
+    act(() => result.current.consulta.filtros.mudarCodigoEvento('07'))
+
+    expect(ultimaConsulta(worker)).toMatchObject({ filtros: { codigoEvento: '07' }, offset: 0 })
   })
 
   it('deve voltar para a página 1 e esvaziar a lista ao trocar de arquivo, mantendo os filtros', async () => {

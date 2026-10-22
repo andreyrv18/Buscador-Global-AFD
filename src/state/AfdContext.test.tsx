@@ -198,6 +198,22 @@ describe('AfdContext', () => {
       expect(worker.consultas[0]).toMatchObject({ tipo: 'consultar', token: worker.pedidos[0].token, ...pagina(1) })
     })
 
+    it('deve repassar a contagem de operações da aba de empregados', async () => {
+      const { result, worker } = montarPronto()
+
+      const consulta = result.current.consultar({ ...pagina(0), aba: 'empregados' })
+      worker.responder({
+        token: worker.pedidos[0].token,
+        tipo: 'resultado',
+        idConsulta: worker.consultas[0].idConsulta,
+        itens: [],
+        total: 0,
+        contagemOperacoes: { I: 2, A: 1, E: 0 },
+      })
+
+      await expect(consulta).resolves.toEqual({ itens: [], total: 0, contagemOperacoes: { I: 2, A: 1, E: 0 } })
+    })
+
     it('deve descartar a resposta da consulta substituída que chega por último', async () => {
       const { result, worker, relatorio } = montarPronto()
       const antiga = result.current.consultar(pagina(0))

@@ -32,8 +32,8 @@ escopo.onmessage = (evento) => {
       break
     case 'consultar': {
       // A interface só consulta depois do 'pronto'; sem relatório, a página é vazia.
-      const { itens, total } = consultor?.consultar(pedido) ?? { itens: [], total: 0 }
-      escopo.postMessage({ token, tipo: 'resultado', idConsulta: pedido.idConsulta, itens, total })
+      const resultado = consultor?.consultar(pedido) ?? { itens: [], total: 0 }
+      escopo.postMessage({ ...resultado, token, tipo: 'resultado', idConsulta: pedido.idConsulta })
       break
     }
   }

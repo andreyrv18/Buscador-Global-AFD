@@ -2,7 +2,7 @@
 // input) e só chegam à consulta depois de ~200 ms sem digitação.
 
 import { useCallback, useEffect, useRef, useState } from 'react'
-import type { OrdemAfd } from '../afd/tipos'
+import type { OperacaoEmpregado, OrdemAfd } from '../afd/tipos'
 
 export const ATRASO_FILTROS_MS = 200
 
@@ -25,13 +25,21 @@ export interface FiltrosAfdHook {
   ordem: DirecaoOrdem
   /** `ordem` no formato da `ConsultaAfd`. */
   ordemConsulta: OrdemAfd
+  /** Operação do Tipo 5 (cards da aba de empregados); `null` é todas. */
+  operacao: OperacaoEmpregado | null
+  /** Código do evento do Tipo 6; vazio é todos. */
+  codigoEvento: string
   mudarNome(nome: string): void
   /** Descarta tudo que não for dígito. */
   mudarCpfPis(cpfPis: string): void
   mudarData(data: string): void
   /** Aplica na hora, sem debounce. */
   mudarOrdem(ordem: DirecaoOrdem): void
-  /** Esvazia os campos e aplica na hora. */
+  /** Aplica na hora, sem debounce. */
+  mudarOperacao(operacao: OperacaoEmpregado | null): void
+  /** Aplica na hora, sem debounce. */
+  mudarCodigoEvento(codigo: string): void
+  /** Esvazia os campos, a operação e o código, e aplica na hora. */
   limpar(): void
 }
 
@@ -55,6 +63,8 @@ export function useFiltrosAfd({ aoMudar, atrasoMs = ATRASO_FILTROS_MS }: OpcoesF
   const [campos, setCampos] = useState<CamposFiltroAfd>(CAMPOS_VAZIOS)
   const [aplicados, setAplicados] = useState<CamposFiltroAfd>(CAMPOS_VAZIOS)
   const [ordem, setOrdem] = useState<DirecaoOrdem>('asc')
+  const [operacao, setOperacao] = useState<OperacaoEmpregado | null>(null)
+  const [codigoEvento, setCodigoEvento] = useState('')
 
   // O callback pode mudar a cada render; o debounce usa sempre o mais recente.
   const aoMudarRef = useRef(aoMudar)
@@ -85,9 +95,21 @@ export function useFiltrosAfd({ aoMudar, atrasoMs = ATRASO_FILTROS_MS }: OpcoesF
     aoMudarRef.current?.()
   }, [])
 
+  const mudarOperacao = useCallback((nova: OperacaoEmpregado | null) => {
+    setOperacao(nova)
+    aoMudarRef.current?.()
+  }, [])
+
+  const mudarCodigoEvento = useCallback((codigo: string) => {
+    setCodigoEvento(codigo)
+    aoMudarRef.current?.()
+  }, [])
+
   const limpar = useCallback(() => {
     setCampos(CAMPOS_VAZIOS)
     setAplicados(CAMPOS_VAZIOS)
+    setOperacao(null)
+    setCodigoEvento('')
     aoMudarRef.current?.()
   }, [])
 
@@ -96,10 +118,14 @@ export function useFiltrosAfd({ aoMudar, atrasoMs = ATRASO_FILTROS_MS }: OpcoesF
     aplicados,
     ordem,
     ordemConsulta: ORDEM_CONSULTA[ordem],
+    operacao,
+    codigoEvento,
     mudarNome,
     mudarCpfPis,
     mudarData,
     mudarOrdem,
+    mudarOperacao,
+    mudarCodigoEvento,
     limpar,
   }
 }

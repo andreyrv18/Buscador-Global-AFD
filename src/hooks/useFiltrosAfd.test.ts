@@ -95,6 +95,26 @@ describe('useFiltrosAfd', () => {
     expect(aoMudar).toHaveBeenCalledTimes(1)
   })
 
+  it('deve aplicar a operação e o código do evento na hora', () => {
+    const { result, aoMudar } = montar()
+
+    act(() => result.current.mudarOperacao('E'))
+    act(() => result.current.mudarCodigoEvento('07'))
+
+    expect(result.current).toMatchObject({ operacao: 'E', codigoEvento: '07' })
+    expect(aoMudar).toHaveBeenCalledTimes(2)
+  })
+
+  it('deve limpar a operação e o código do evento', () => {
+    const { result } = montar()
+    act(() => result.current.mudarOperacao('A'))
+    act(() => result.current.mudarCodigoEvento('02'))
+
+    act(() => result.current.limpar())
+
+    expect(result.current).toMatchObject({ operacao: null, codigoEvento: '' })
+  })
+
   it('deve limpar os campos e aplicar na hora', () => {
     const { result, aoMudar } = montar()
     act(() => result.current.mudarNome('maria'))

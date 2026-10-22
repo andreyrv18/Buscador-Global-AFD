@@ -167,4 +167,18 @@ describe("Componente Tabela (Unidade e Integração)", () => {
         primeiraLinha = screen.getByText("000000001").closest("tr");
         expect(primeiraLinha).toHaveStyle({ cursor: "pointer" });
     });
+
+    it("deve aplicar a classe que rowClassName devolve para cada linha", () => {
+        render(
+            <Tabela<ItemExemplo>
+                colunas={MOCK_COLUNAS}
+                dados={MOCK_DADOS}
+                keyExtractor={(item) => item.id}
+                rowClassName={(item, index) => (index === 1 ? `linha-${item.id}` : undefined)}
+            />
+        );
+
+        expect(screen.getByText("000000001").closest("tr")).not.toHaveAttribute("class");
+        expect(screen.getByText("000000002").closest("tr")).toHaveClass("linha-2");
+    });
 });
