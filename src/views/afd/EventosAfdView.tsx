@@ -36,7 +36,7 @@ const formatarNumero = (valor: number) => valor.toLocaleString("pt-BR");
 
 export const EventosAfdView = () => {
     const { status, resumo } = useAfd();
-    const { itens, total, carregando, erro, paginacao, filtros } = useConsultaAfd("eventosRep");
+    const { itens, total, carregando, erro, paginacao, filtros, exportarCsv, exportando, erroExportacao } = useConsultaAfd("eventosRep");
     const idBase = useId();
     const idCodigo = `${idBase}-codigo`;
     const idData = `${idBase}-data`;
@@ -101,6 +101,14 @@ export const EventosAfdView = () => {
                             >
                                 Limpar filtros
                             </Button>
+                            <Button
+                                size="small"
+                                variant="filled"
+                                disabled={exportando || total === 0}
+                                onClick={exportarCsv}
+                            >
+                                {exportando ? "Exportando…" : "Exportar CSV"}
+                            </Button>
                         </div>
                     </Card>
 
@@ -118,6 +126,11 @@ export const EventosAfdView = () => {
                     {erro !== null && (
                         <p className="bga-eventos__erro" role="alert">
                             {erro}
+                        </p>
+                    )}
+                    {erroExportacao !== null && (
+                        <p className="bga-eventos__erro" role="alert">
+                            {erroExportacao}
                         </p>
                     )}
 

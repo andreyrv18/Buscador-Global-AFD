@@ -1,8 +1,12 @@
 // Upload do AFD no topo da Dashboard, fora das abas: um arquivo alimenta as quatro views.
 
+import { useState } from "react";
+import Button from "../components/button/Button";
 import SeletorArquivo from "../components/seletor-arquivo/SeletorArquivo";
+import { ConsultaDescartadaErro } from "../state/AfdContext";
 import type { ResumoAfd } from "../afd/tipos";
 import { useAfd } from "../state/useAfd";
+import { baixarArquivo } from "../ultil/baixarArquivo";
 import "./AreaUploadAfd.css";
 
 const contar = (valor: number, singular: string, plural: string) =>
@@ -21,7 +25,22 @@ export function resumirRelatorio(resumo: ResumoAfd): string {
 }
 
 export const AreaUploadAfd = () => {
-    const { arquivo, resumo, status, progresso, erro, carregarArquivo } = useAfd();
+    const { arquivo, resumo, status, progresso, erro, carregarArquivo, exportar } = useAfd();
+    const [exportando, setExportando] = useState(false);
+    const [erroExportacao, setErroExportacao] = useState<string | null>(null);
+
+    // O relatório inteiro é montado no worker; aqui só chega o arquivo pronto.
+    const exportarJson = () => {
+        setExportando(true);
+        setErroExportacao(null);
+        exportar({ formato: "json" })
+            .then(baixarArquivo, (motivo: unknown) => {
+                // Arquivo trocado no meio da exportação: não há o que baixar nem avisar.
+                if (motivo instanceof ConsultaDescartadaErro) return;
+                setErroExportacao(motivo instanceof Error ? motivo.message : String(motivo));
+            })
+            .finally(() => setExportando(false));
+    };
 
     return (
         <section className="bga-upload-afd" aria-labelledby="bga-upload-afd-titulo">
@@ -64,6 +83,19 @@ export const AreaUploadAfd = () => {
                     </>
                 )}
             </div>
+
+            {status === "pronto" && (
+                <div className="bga-upload-afd__acoes">
+                    <Button size="small" variant="filled" disabled={exportando} onClick={exportarJson}>
+                        {exportando ? "Exportando…" : "Exportar relatório (JSON)"}
+                    </Button>
+                </div>
+            )}
+            {status === "pronto" && erroExportacao !== null && (
+                <p className="bga-upload-afd__erro" role="alert">
+                    {erroExportacao}
+                </p>
+            )}
 
             {status === "erro" && (
                 <p className="bga-upload-afd__erro" role="alert">

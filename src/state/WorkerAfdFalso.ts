@@ -1,11 +1,13 @@
 // Worker falso para testes: guarda os pedidos e deixa o teste responder.
 
 import { criarConsultorAfd, resumirRelatorioAfd } from '../afd/consulta'
+import { exportarAfd } from '../afd/exportacao'
 import type { PedidoLeituraAfd, RelatorioAfd, RespostaWorkerAfd } from '../afd/tipos'
 import { parsearAfd } from '../afd/parser'
 import type { WorkerAfd } from './AfdContext'
 
 export type PedidoConsultaAfd = Extract<PedidoLeituraAfd, { tipo: 'consultar' }>
+export type PedidoExportacaoWorker = Extract<PedidoLeituraAfd, { tipo: 'exportar' }>
 
 export class WorkerAfdFalso implements WorkerAfd {
   onmessage: ((evento: MessageEvent<RespostaWorkerAfd>) => void) | null = null
@@ -53,6 +55,18 @@ export class WorkerAfdFalso implements WorkerAfd {
     if (this.relatorio === null) throw new Error('o worker falso ainda não concluiu a leitura')
     const resultado = criarConsultorAfd(this.relatorio).consultar(pedido)
     this.responder({ ...resultado, token: pedido.token, tipo: 'resultado', idConsulta: pedido.idConsulta })
+  }
+
+  /** Pedidos de exportação, na ordem em que chegaram. */
+  get exportacoes(): PedidoExportacaoWorker[] {
+    return this.pedidos.filter((pedido): pedido is PedidoExportacaoWorker => pedido.tipo === 'exportar')
+  }
+
+  /** Responde a uma exportação montando o arquivo de verdade, como o worker. */
+  responderExportacao(pedido: PedidoExportacaoWorker, agora = new Date(0)): void {
+    if (this.relatorio === null) throw new Error('o worker falso ainda não concluiu a leitura')
+    const exportado = exportarAfd(this.relatorio, criarConsultorAfd(this.relatorio), pedido, agora)
+    this.responder({ ...exportado, token: pedido.token, tipo: 'exportado', idExportacao: pedido.idExportacao })
   }
 
   falhar(mensagem: string): void {

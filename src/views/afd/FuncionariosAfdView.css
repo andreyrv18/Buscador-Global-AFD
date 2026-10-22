@@ -122,3 +122,7 @@ tr.bga-funcionarios-afd__linha--alteracao > td {
 tr.bga-funcionarios-afd__linha--exclusao > td {
     color: var(--operacao-exclusao);
 }
+
+.bga-funcionarios-afd__exportar {
+    justify-self: start;
+}

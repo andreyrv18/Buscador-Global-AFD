@@ -67,7 +67,7 @@ const CardOperacao = ({ rotulo, filtrados, totalArquivo, ativo, modificador, aoC
 
 export const FuncionariosAfdView = () => {
     const { status, resumo } = useAfd();
-    const { itens, total, contagemOperacoes, carregando, erro, paginacao, filtros } = useConsultaAfd("empregados");
+    const { itens, total, contagemOperacoes, carregando, erro, paginacao, filtros, exportarCsv, exportando, erroExportacao } = useConsultaAfd("empregados");
     const idBase = useId();
 
     // Zebra por dia: cada data distinta da página recebe um índice, uma vez só.
@@ -174,6 +174,15 @@ export const FuncionariosAfdView = () => {
                 <Button size="small" className="bga-funcionarios-afd__limpar" onClick={filtros.limpar}>
                     Limpar filtros
                 </Button>
+                <Button
+                    size="small"
+                    variant="filled"
+                    className="bga-funcionarios-afd__exportar"
+                    disabled={exportando || total === 0}
+                    onClick={exportarCsv}
+                >
+                    {exportando ? "Exportando…" : "Exportar CSV"}
+                </Button>
             </div>
 
             {carregando && (
@@ -184,6 +193,11 @@ export const FuncionariosAfdView = () => {
             {erro !== null && (
                 <p className="bga-funcionarios-afd__erro" role="alert">
                     {erro}
+                </p>
+            )}
+            {erroExportacao !== null && (
+                <p className="bga-funcionarios-afd__erro" role="alert">
+                    {erroExportacao}
                 </p>
             )}
 

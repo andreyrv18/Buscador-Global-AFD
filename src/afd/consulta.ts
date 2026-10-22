@@ -5,6 +5,7 @@
 import { normalizarDocumento } from './parser'
 import type {
   ConsultaAfd,
+  CriterioAfd,
   FiltrosAfd,
   OperacaoEmpregado,
   OrdemAfd,
@@ -100,6 +101,8 @@ function comparador(
 
 export interface ConsultorAfd {
   consultar(consulta: ConsultaAfd): ResultadoConsultaAfd
+  /** O conjunto inteiro que passa nos filtros, na ordem pedida (para a exportação). */
+  filtrar(criterio: CriterioAfd): readonly RegistroConsultavel[]
 }
 
 /**
@@ -128,7 +131,7 @@ export function criarConsultorAfd(relatorio: RelatorioAfd): ConsultorAfd {
     }
   }
 
-  const selecionar = (consulta: ConsultaAfd): readonly RegistroConsultavel[] => {
+  const selecionar = (consulta: CriterioAfd): readonly RegistroConsultavel[] => {
     const filtros = normalizarFiltros(consulta.filtros)
     const chave = JSON.stringify([consulta.aba, consulta.ordem, filtros])
     if (cache?.chave === chave) return cache.registros
@@ -155,6 +158,7 @@ export function criarConsultorAfd(relatorio: RelatorioAfd): ConsultorAfd {
   }
 
   return {
+    filtrar: selecionar,
     consultar(consulta) {
       const registros = selecionar(consulta)
       const inicio = Math.max(0, Math.trunc(consulta.offset))

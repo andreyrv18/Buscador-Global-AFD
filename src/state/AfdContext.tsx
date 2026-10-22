@@ -5,13 +5,16 @@ import { createContext, useCallback, useEffect, useMemo, useRef, useState } from
 import type { ReactNode } from 'react'
 import type {
   AbaAfd,
+  ArquivoExportadoAfd,
   ConsultaAfd,
+  PedidoExportacaoAfd,
   PedidoLeituraAfd,
   RegistrosPorAba,
   RespostaWorkerAfd,
   ResultadoConsultaAfd,
   ResumoAfd,
 } from '../afd/tipos'
+import { notificarConclusao } from '../ultil/notificacao'
 
 export type StatusAfd = 'ocioso' | 'lendo' | 'pronto' | 'erro'
 
@@ -37,6 +40,12 @@ export interface ValorAfdContext extends EstadoAfd {
    * `ConsultaDescartadaErro`, e a resposta dela é ignorada quando chegar.
    */
   consultar: ConsultarAfd
+  /**
+   * Pede ao worker um arquivo de exportação, montado lá dentro. Várias podem
+   * estar pendentes ao mesmo tempo; trocar de arquivo rejeita todas com
+   * `ConsultaDescartadaErro`.
+   */
+  exportar(pedido: PedidoExportacaoAfd): Promise<ArquivoExportadoAfd>
 }
 
 /** Consulta substituída por outra mais recente, ou cujo arquivo foi trocado. */
@@ -70,6 +79,11 @@ interface ConsultaPendente {
   rejeitar(erro: Error): void
 }
 
+interface ExportacaoPendente {
+  resolver(exportado: ArquivoExportadoAfd): void
+  rejeitar(erro: Error): void
+}
+
 const ESTADO_INICIAL: EstadoAfd = {
   arquivo: null,
   resumo: null,
@@ -89,6 +103,8 @@ export function AfdProvider({ children, criarWorker = criarWorkerAfd }: AfdProvi
   const prontoRef = useRef(false)
   const idConsultaRef = useRef(0)
   const consultaRef = useRef<ConsultaPendente | null>(null)
+  const idExportacaoRef = useRef(0)
+  const exportacoesRef = useRef(new Map<number, ExportacaoPendente>())
 
   const descartarConsulta = useCallback((motivo: string) => {
     const pendente = consultaRef.current
@@ -100,7 +116,10 @@ export function AfdProvider({ children, criarWorker = criarWorkerAfd }: AfdProvi
     workerRef.current?.terminate()
     workerRef.current = null
     prontoRef.current = false
-    descartarConsulta('O processamento do arquivo foi encerrado.')
+    const motivo = 'O processamento do arquivo foi encerrado.'
+    descartarConsulta(motivo)
+    for (const pendente of exportacoesRef.current.values()) pendente.rejeitar(new ConsultaDescartadaErro(motivo))
+    exportacoesRef.current.clear()
   }, [descartarConsulta])
 
   useEffect(
@@ -149,10 +168,23 @@ export function AfdProvider({ children, criarWorker = criarWorkerAfd }: AfdProvi
               status: 'pronto',
               progresso: 100,
             }))
+            notificarConclusao(arquivo.name, resposta.resumo)
             break
           case 'erro':
             falhar(resposta.mensagem)
             break
+          case 'exportado':
+          case 'erroExportacao': {
+            const pendente = exportacoesRef.current.get(resposta.idExportacao)
+            if (pendente === undefined) return
+            exportacoesRef.current.delete(resposta.idExportacao)
+            if (resposta.tipo === 'exportado') {
+              pendente.resolver({ arquivo: resposta.arquivo, nomeArquivo: resposta.nomeArquivo })
+            } else {
+              pendente.rejeitar(new Error(resposta.mensagem))
+            }
+            break
+          }
           case 'resultado': {
             const pendente = consultaRef.current
             // Resposta de consulta já substituída: descarta.
@@ -196,9 +228,21 @@ export function AfdProvider({ children, criarWorker = criarWorkerAfd }: AfdProvi
     [descartarConsulta],
   )
 
+  const exportar = useCallback((pedido: PedidoExportacaoAfd) => {
+    const worker = workerRef.current
+    if (worker === null || !prontoRef.current) {
+      return Promise.reject(new Error('Nenhum arquivo AFD pronto para exportação.'))
+    }
+    const idExportacao = ++idExportacaoRef.current
+    return new Promise<ArquivoExportadoAfd>((resolver, rejeitar) => {
+      exportacoesRef.current.set(idExportacao, { resolver, rejeitar })
+      worker.postMessage({ ...pedido, tipo: 'exportar', token: tokenRef.current, idExportacao })
+    })
+  }, [])
+
   const valor = useMemo<ValorAfdContext>(
-    () => ({ ...estado, carregarArquivo, consultar }),
-    [estado, carregarArquivo, consultar],
+    () => ({ ...estado, carregarArquivo, consultar, exportar }),
+    [estado, carregarArquivo, consultar, exportar],
   )
 
   return <AfdContext.Provider value={valor}>{children}</AfdContext.Provider>

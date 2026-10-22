@@ -1,6 +1,6 @@
 import { act, render, renderHook, screen } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { parsearAfd } from '../afd/parser'
 import { resumirRelatorioAfd } from '../afd/consulta'
 import { AfdProvider, ConsultaDescartadaErro } from './AfdContext'
@@ -271,6 +271,134 @@ describe('AfdContext', () => {
 
       await expect(pendente).rejects.toBeInstanceOf(ConsultaDescartadaErro)
       expect(result.current.status).toBe('erro')
+    })
+  })
+
+  describe('exportar', () => {
+    const LINHA = '0000000013010120200800123456789012'
+
+    function montarPronto() {
+      const montado = montar()
+      act(() => montado.result.current.carregarArquivo(arquivo('a.txt')))
+      act(() => montado.criados[0].concluir(parsearAfd(LINHA)))
+      return { ...montado, worker: montado.criados[0] }
+    }
+
+    it('deve pedir o arquivo ao worker e devolver o Blob montado lá', async () => {
+      const { result, worker } = montarPronto()
+
+      const exportacao = result.current.exportar({ formato: 'json' })
+      worker.responderExportacao(worker.exportacoes[0], new Date(42))
+      const exportado = await exportacao
+
+      expect(worker.exportacoes[0]).toMatchObject({ tipo: 'exportar', formato: 'json', token: worker.pedidos[0].token })
+      expect(exportado.nomeArquivo).toBe('auditoria_afd_42.json')
+      expect(exportado.arquivo).toBeInstanceOf(Blob)
+    })
+
+    it('deve atender exportações simultâneas cada uma com sua resposta', async () => {
+      const { result, worker } = montarPronto()
+      const criterio = { aba: 'marcacoes', filtros: {}, ordem: 'arquivo' } as const
+
+      const json = result.current.exportar({ formato: 'json' })
+      const csv = result.current.exportar({ formato: 'csv', criterio })
+      const [pedidoJson, pedidoCsv] = worker.exportacoes
+      worker.responderExportacao(pedidoCsv)
+      worker.responderExportacao(pedidoJson)
+
+      await expect(csv).resolves.toMatchObject({ nomeArquivo: expect.stringMatching(/^afd_marcacoes_\d+\.csv$/) })
+      await expect(json).resolves.toMatchObject({ nomeArquivo: expect.stringMatching(/^auditoria_afd_\d+\.json$/) })
+    })
+
+    it('não deve descartar a consulta pendente ao exportar', async () => {
+      const { result, worker } = montarPronto()
+
+      const consulta = result.current.consultar({ aba: 'marcacoes', filtros: {}, ordem: 'arquivo', offset: 0, limite: 10 })
+      const exportacao = result.current.exportar({ formato: 'json' })
+      worker.responderExportacao(worker.exportacoes[0])
+      worker.responderConsulta(worker.consultas[0])
+
+      await expect(consulta).resolves.toMatchObject({ total: 1 })
+      await expect(exportacao).resolves.toMatchObject({ nomeArquivo: expect.any(String) })
+    })
+
+    it('deve rejeitar com a mensagem do worker quando a exportação falha', async () => {
+      const { result, worker } = montarPronto()
+
+      const exportacao = result.current.exportar({ formato: 'json' })
+      worker.responder({
+        token: worker.pedidos[0].token,
+        tipo: 'erroExportacao',
+        idExportacao: worker.exportacoes[0].idExportacao,
+        mensagem: 'Não foi possível exportar: sem memória',
+      })
+
+      await expect(exportacao).rejects.toThrow('Não foi possível exportar: sem memória')
+      expect(result.current.status).toBe('pronto')
+    })
+
+    it('deve rejeitar antes de o arquivo estar pronto', async () => {
+      const { result, criados } = montar()
+      act(() => result.current.carregarArquivo(arquivo('a.txt')))
+
+      await expect(result.current.exportar({ formato: 'json' })).rejects.toThrow('Nenhum arquivo AFD pronto para exportação.')
+      expect(criados[0].exportacoes).toHaveLength(0)
+    })
+
+    it('deve rejeitar as exportações pendentes ao trocar de arquivo', async () => {
+      const { result, worker } = montarPronto()
+      const exportacao = result.current.exportar({ formato: 'json' })
+
+      act(() => result.current.carregarArquivo(arquivo('b.txt')))
+      worker.responderExportacao(worker.exportacoes[0])
+
+      await expect(exportacao).rejects.toBeInstanceOf(ConsultaDescartadaErro)
+    })
+  })
+
+  describe('notificação', () => {
+    afterEach(() => {
+      vi.unstubAllGlobals()
+    })
+
+    it('deve notificar a conclusão com o nome do arquivo e a portaria', () => {
+      const create = vi.fn(() => Promise.resolve('id'))
+      vi.stubGlobal('chrome', {
+        notifications: { create },
+        runtime: { getURL: (caminho: string) => `chrome-extension://abc/${caminho}` },
+      })
+      const { result, criados } = montar()
+      act(() => result.current.carregarArquivo(arquivo('AFD0001.txt')))
+
+      act(() => criados[0].concluir(parsearAfd('0000000013010120200800123456789012')))
+
+      expect(create).toHaveBeenCalledTimes(1)
+      expect(create).toHaveBeenCalledWith({
+        type: 'basic',
+        iconUrl: 'chrome-extension://abc/icons/icon48.png',
+        title: 'Processamento do AFD concluído',
+        message: 'AFD0001.txt: Portaria 1510, 1 linha lida.',
+      })
+    })
+
+    it('não deve notificar quando a leitura falha', () => {
+      const create = vi.fn(() => Promise.resolve('id'))
+      vi.stubGlobal('chrome', { notifications: { create }, runtime: { getURL: (caminho: string) => caminho } })
+      const { result, criados } = montar()
+      act(() => result.current.carregarArquivo(arquivo('a.txt')))
+
+      act(() => criados[0].falhar('quebrou'))
+
+      expect(create).not.toHaveBeenCalled()
+    })
+
+    it('deve concluir normalmente sem a API de notificações', () => {
+      const { result, criados } = montar()
+      act(() => result.current.carregarArquivo(arquivo('a.txt')))
+
+      act(() => criados[0].concluir())
+
+      expect(result.current.status).toBe('pronto')
     })
   })
 

@@ -227,6 +227,64 @@ describe('useConsultaAfd', () => {
     expect(result.current.marcacoes).toMatchObject({ carregando: false, total: 25 })
   })
 
+  describe('exportarCsv', () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+
+    it('deve exportar com os filtros aplicados e a ordem atual, sem página, e baixar o arquivo', async () => {
+      const baixados: string[] = []
+      Object.assign(URL, { createObjectURL: () => 'blob:csv', revokeObjectURL: () => {} })
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+        baixados.push(this.download)
+      })
+      const { result, worker } = await montarPronto()
+      act(() => result.current.consulta.filtros.mudarCpfPis('25'))
+      act(() => vi.advanceTimersByTime(ATRASO_FILTROS_MS))
+      act(() => result.current.consulta.filtros.mudarOrdem('desc'))
+
+      act(() => result.current.consulta.exportarCsv())
+      expect(result.current.consulta.exportando).toBe(true)
+      await act(async () => worker.responderExportacao(worker.exportacoes[0], new Date(7)))
+
+      expect(worker.exportacoes[0]).toMatchObject({
+        formato: 'csv',
+        criterio: { aba: 'marcacoes', filtros: { cpfPis: '25' }, ordem: 'data-decrescente' },
+      })
+      expect(worker.exportacoes[0]).not.toHaveProperty('criterio.offset')
+      expect(baixados).toEqual(['afd_marcacoes_7.csv'])
+      expect(result.current.consulta).toMatchObject({ exportando: false, erroExportacao: null })
+    })
+
+    it('deve expor o erro de uma exportação que falha', async () => {
+      const { result, worker } = await montarPronto()
+
+      act(() => result.current.consulta.exportarCsv())
+      await act(async () =>
+        worker.responder({
+          token: worker.pedidos[0].token,
+          tipo: 'erroExportacao',
+          idExportacao: worker.exportacoes[0].idExportacao,
+          mensagem: 'Não foi possível exportar: sem memória',
+        }),
+      )
+
+      expect(result.current.consulta).toMatchObject({
+        exportando: false,
+        erroExportacao: 'Não foi possível exportar: sem memória',
+      })
+    })
+
+    it('não deve mostrar erro quando o arquivo é trocado no meio da exportação', async () => {
+      const { result } = await montarPronto()
+
+      act(() => result.current.consulta.exportarCsv())
+      await act(async () => result.current.afd.carregarArquivo(arquivo('b.txt')))
+
+      expect(result.current.consulta).toMatchObject({ exportando: false, erroExportacao: null })
+    })
+  })
+
   it('deve expor o erro de uma consulta que falha', async () => {
     const consultar: ConsultarAfd = () => Promise.reject(new Error('worker sem resposta'))
     const valor: ValorAfdContext = {
@@ -237,6 +295,7 @@ describe('useConsultaAfd', () => {
       erro: null,
       carregarArquivo: () => {},
       consultar,
+      exportar: () => Promise.reject(new Error('sem exportação neste teste')),
     }
     const wrapper = ({ children }: { children: ReactNode }) => (
       <AfdContext.Provider value={valor}>{children}</AfdContext.Provider>

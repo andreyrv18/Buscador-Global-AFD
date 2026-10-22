@@ -1,10 +1,11 @@
 // Liga filtros e paginação ao `consultar()` do AfdContext: cada mudança vira
 // uma consulta ao worker, e a view recebe só a página pronta.
 
-import { useCallback, useEffect, useState } from 'react'
-import type { AbaAfd, OperacaoEmpregado, RegistrosPorAba, ResultadoConsultaAfd } from '../afd/tipos'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+import type { AbaAfd, FiltrosAfd, OperacaoEmpregado, RegistrosPorAba, ResultadoConsultaAfd } from '../afd/tipos'
 import { ConsultaDescartadaErro } from '../state/AfdContext'
 import { useAfd } from '../state/useAfd'
+import { baixarArquivo } from '../ultil/baixarArquivo'
 import { useFiltrosAfd } from './useFiltrosAfd'
 import type { FiltrosAfdHook } from './useFiltrosAfd'
 import { usePaginacao } from './usePaginacao'
@@ -25,6 +26,13 @@ export interface ConsultaAfdHook<A extends AbaAfd> {
   erro: string | null
   paginacao: Paginacao
   filtros: FiltrosAfdHook
+  /**
+   * Baixa o CSV da aba com os filtros aplicados e a ordem atual, sem
+   * paginação. O arquivo é montado no worker.
+   */
+  exportarCsv(): void
+  exportando: boolean
+  erroExportacao: string | null
 }
 
 const resultadoVazio = <R extends RegistrosPorAba[AbaAfd]>(): ResultadoConsultaAfd<R> => ({ itens: [], total: 0 })
@@ -33,7 +41,7 @@ export function useConsultaAfd<A extends AbaAfd>(
   aba: A,
   tamanhoInicial?: TamanhoPagina,
 ): ConsultaAfdHook<A> {
-  const { arquivo, status, consultar } = useAfd()
+  const { arquivo, status, consultar, exportar } = useAfd()
   const [resultado, setResultado] = useState(resultadoVazio<RegistrosPorAba[A]>)
   const [consultando, setConsultando] = useState(false)
   const [erro, setErro] = useState<string | null>(null)
@@ -45,6 +53,12 @@ export function useConsultaAfd<A extends AbaAfd>(
   const filtros = useFiltrosAfd({ aoMudar: voltarParaPrimeira })
   const { nome, cpfPis, data } = filtros.aplicados
   const { ordemConsulta, operacao, codigoEvento } = filtros
+  const filtrosConsulta = useMemo<FiltrosAfd>(
+    () => ({ nome, cpfPis, data, operacao: operacao ?? undefined, codigoEvento }),
+    [nome, cpfPis, data, operacao, codigoEvento],
+  )
+  const [exportando, setExportando] = useState(false)
+  const [erroExportacao, setErroExportacao] = useState<string | null>(null)
 
   // Arquivo novo: volta à página 1 e esquece o resultado do anterior. Os
   // filtros ficam.
@@ -61,7 +75,6 @@ export function useConsultaAfd<A extends AbaAfd>(
     let ativo = true
     setConsultando(true)
     setErro(null)
-    const filtrosConsulta = { nome, cpfPis, data, operacao: operacao ?? undefined, codigoEvento }
     consultar({ aba, filtros: filtrosConsulta, ordem: ordemConsulta, offset, limite }).then(
       (novo) => {
         if (!ativo) return
@@ -79,7 +92,19 @@ export function useConsultaAfd<A extends AbaAfd>(
     return () => {
       ativo = false
     }
-  }, [aba, status, consultar, nome, cpfPis, data, operacao, codigoEvento, ordemConsulta, offset, limite])
+  }, [aba, status, consultar, filtrosConsulta, ordemConsulta, offset, limite])
+
+  const exportarCsv = useCallback(() => {
+    setExportando(true)
+    setErroExportacao(null)
+    exportar({ formato: 'csv', criterio: { aba, filtros: filtrosConsulta, ordem: ordemConsulta } })
+      .then(baixarArquivo, (motivo: unknown) => {
+        // Arquivo trocado no meio da exportação: não há o que baixar nem avisar.
+        if (motivo instanceof ConsultaDescartadaErro) return
+        setErroExportacao(motivo instanceof Error ? motivo.message : String(motivo))
+      })
+      .finally(() => setExportando(false))
+  }, [exportar, aba, filtrosConsulta, ordemConsulta])
 
   return {
     itens: visivel.itens,
@@ -89,5 +114,8 @@ export function useConsultaAfd<A extends AbaAfd>(
     erro,
     paginacao,
     filtros,
+    exportarCsv,
+    exportando,
+    erroExportacao,
   }
 }

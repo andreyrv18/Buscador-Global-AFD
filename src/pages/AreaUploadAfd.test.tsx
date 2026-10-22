@@ -1,6 +1,6 @@
 import { act, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { parsearAfd } from "../afd/parser";
 import { AfdProvider } from "../state/AfdContext";
 import { fabricaDeWorkersFalsos } from "../state/WorkerAfdFalso";
@@ -61,6 +61,48 @@ describe("AreaUploadAfd", () => {
         act(() => criados[0].concluir(parsearAfd([MARCACAO_671, MARCACAO_LEGADA])));
 
         expect(screen.getByRole("status")).toHaveTextContent(/mistura registros da Portaria 671/);
+    });
+
+    it("deve exportar o relatório em JSON depois da leitura", async () => {
+        const baixados: string[] = [];
+        Object.assign(URL, { createObjectURL: () => "blob:json", revokeObjectURL: () => {} });
+        const clique = vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+            baixados.push(this.download);
+        });
+        const user = userEvent.setup();
+        const { criados } = montar();
+        expect(screen.queryByRole("button", { name: "Exportar relatório (JSON)" })).not.toBeInTheDocument();
+
+        await selecionar();
+        act(() => criados[0].concluir(parsearAfd(MARCACAO_LEGADA)));
+        await user.click(screen.getByRole("button", { name: "Exportar relatório (JSON)" }));
+        expect(screen.getByRole("button", { name: "Exportando…" })).toBeDisabled();
+        await act(async () => criados[0].responderExportacao(criados[0].exportacoes[0], new Date(9)));
+
+        expect(criados[0].exportacoes[0]).toMatchObject({ formato: "json" });
+        expect(baixados).toEqual(["auditoria_afd_9.json"]);
+        expect(screen.getByRole("button", { name: "Exportar relatório (JSON)" })).toBeEnabled();
+        clique.mockRestore();
+    });
+
+    it("deve mostrar o erro de uma exportação em JSON que falha", async () => {
+        const user = userEvent.setup();
+        const { criados } = montar();
+        await selecionar();
+        act(() => criados[0].concluir(parsearAfd(MARCACAO_LEGADA)));
+
+        await user.click(screen.getByRole("button", { name: "Exportar relatório (JSON)" }));
+        const [pedido] = criados[0].exportacoes;
+        await act(async () =>
+            criados[0].responder({
+                token: pedido.token,
+                tipo: "erroExportacao",
+                idExportacao: pedido.idExportacao,
+                mensagem: "Não foi possível exportar: sem memória",
+            }),
+        );
+
+        expect(screen.getByRole("alert")).toHaveTextContent("Não foi possível exportar: sem memória");
     });
 
     it("deve mostrar o erro como alerta", async () => {

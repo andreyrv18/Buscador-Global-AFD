@@ -48,7 +48,7 @@ const COLUNAS_REP_P: ColunaTabela<Marcacao>[] = [
 
 export const MarcacoesAfdView = () => {
     const { status, resumo } = useAfd();
-    const { itens, total, carregando, erro, paginacao, filtros } = useConsultaAfd("marcacoes");
+    const { itens, total, carregando, erro, paginacao, filtros, exportarCsv, exportando, erroExportacao } = useConsultaAfd("marcacoes");
     const idBase = useId();
 
     const totalTipo7 = resumo?.contagemPorTipo["7"] ?? 0;
@@ -132,6 +132,14 @@ export const MarcacoesAfdView = () => {
                     <Button variant="outline" size="small" onClick={filtros.limpar}>
                         Limpar filtros
                     </Button>
+                    <Button
+                        size="small"
+                        variant="filled"
+                        disabled={exportando || total === 0}
+                        onClick={exportarCsv}
+                    >
+                        {exportando ? "Exportando…" : "Exportar CSV"}
+                    </Button>
                 </div>
             </div>
 
@@ -148,6 +156,11 @@ export const MarcacoesAfdView = () => {
             {erro !== null && (
                 <p className="bga-marcacoes-afd__erro" role="alert">
                     Não foi possível consultar as marcações: {erro}
+                </p>
+            )}
+            {erroExportacao !== null && (
+                <p className="bga-marcacoes-afd__erro" role="alert">
+                    {erroExportacao}
                 </p>
             )}
 

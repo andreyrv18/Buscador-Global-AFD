@@ -48,3 +48,8 @@
     font-size: var(--interior-de-campo-de-texto);
     margin: 0;
 }
+
+.bga-upload-afd__acoes {
+    display: flex;
+    gap: 12px;
+}

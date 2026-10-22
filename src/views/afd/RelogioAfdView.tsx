@@ -42,7 +42,7 @@ const formatarNumero = (valor: number) => valor.toLocaleString("pt-BR");
 
 export const RelogioAfdView = () => {
     const { status, resumo } = useAfd();
-    const { itens, total, carregando, erro, paginacao, filtros } = useConsultaAfd("ajustesRelogio");
+    const { itens, total, carregando, erro, paginacao, filtros, exportarCsv, exportando, erroExportacao } = useConsultaAfd("ajustesRelogio");
     const idBase = useId();
     const idData = `${idBase}-data`;
 
@@ -82,6 +82,15 @@ export const RelogioAfdView = () => {
                         <Button size="small" variant="outline" className="bga-relogio__limpar" onClick={filtros.limpar}>
                             Limpar filtros
                         </Button>
+                        <Button
+                            size="small"
+                            variant="filled"
+                            className="bga-relogio__exportar"
+                            disabled={exportando || total === 0}
+                            onClick={exportarCsv}
+                        >
+                            {exportando ? "Exportando…" : "Exportar CSV"}
+                        </Button>
                     </div>
 
                     <p className="bga-relogio__contador">
@@ -96,6 +105,11 @@ export const RelogioAfdView = () => {
                     {erro !== null && (
                         <p role="alert" className="bga-relogio__erro">
                             Não foi possível consultar os ajustes: {erro}
+                        </p>
+                    )}
+                    {erroExportacao !== null && (
+                        <p className="bga-relogio__erro" role="alert">
+                            {erroExportacao}
                         </p>
                     )}
 

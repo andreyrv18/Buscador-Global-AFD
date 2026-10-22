@@ -208,4 +208,58 @@ describe("MarcacoesAfdView", () => {
         const zebradas = linhasDaTabela().map((linha) => linha.classList.contains("bga-marcacoes-afd__linha--zebra"));
         expect(zebradas).toEqual([false, true, false, true]);
     });
+
+    describe("exportação", () => {
+        afterEach(() => {
+            vi.restoreAllMocks();
+        });
+
+        it("deve exportar em CSV as marcações com os filtros aplicados e baixar o arquivo", async () => {
+            const baixados: string[] = [];
+            Object.assign(URL, { createObjectURL: () => "blob:csv", revokeObjectURL: () => {} });
+            vi.spyOn(HTMLAnchorElement.prototype, "click").mockImplementation(function (this: HTMLAnchorElement) {
+                baixados.push(this.download);
+            });
+            const usuario = userEvent.setup();
+            const { carregar, responder, worker } = renderizarComAfd(<MarcacoesAfdView />);
+            await carregar(afd671);
+            await usuario.click(screen.getByRole("combobox", { name: "Ordem" }));
+            await usuario.click(screen.getByRole("option", { name: "Data decrescente" }));
+            await responder();
+
+            await usuario.click(screen.getByRole("button", { name: "Exportar CSV" }));
+            const [pedido] = worker().exportacoes;
+            await act(async () => worker().responderExportacao(pedido, new Date(5)));
+
+            expect(pedido).toMatchObject({ formato: "csv", criterio: { aba: "marcacoes", ordem: "data-decrescente" } });
+            expect(baixados).toEqual(["afd_marcacoes_5.csv"]);
+            expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeEnabled();
+        });
+
+        it("deve desabilitar a exportação quando nenhuma marcação passa nos filtros", async () => {
+            const { carregar } = renderizarComAfd(<MarcacoesAfdView />);
+            await carregar(parsearAfd(""));
+
+            expect(screen.getByRole("button", { name: "Exportar CSV" })).toBeDisabled();
+        });
+
+        it("deve mostrar o erro de uma exportação que falha", async () => {
+            const usuario = userEvent.setup();
+            const { carregar, worker } = renderizarComAfd(<MarcacoesAfdView />);
+            await carregar(afd671);
+
+            await usuario.click(screen.getByRole("button", { name: "Exportar CSV" }));
+            const [pedido] = worker().exportacoes;
+            await act(async () =>
+                worker().responder({
+                    token: pedido.token,
+                    tipo: "erroExportacao",
+                    idExportacao: pedido.idExportacao,
+                    mensagem: "Não foi possível exportar: sem memória",
+                }),
+            );
+
+            expect(screen.getByRole("alert")).toHaveTextContent("Não foi possível exportar: sem memória");
+        });
+    });
 });

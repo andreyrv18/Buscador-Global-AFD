@@ -227,6 +227,25 @@ export interface ResultadoConsultaAfd<R extends RegistroConsultavel = RegistroCo
   contagemOperacoes?: Record<OperacaoEmpregado, number>
 }
 
+/** Filtros e ordem de uma aba, sem a página: o que a exportação CSV usa. */
+export type CriterioAfd<A extends AbaAfd = AbaAfd> = Omit<ConsultaAfd<A>, 'offset' | 'limite'>
+
+// ---------------------------------------------------------------------------
+// Exportação
+// ---------------------------------------------------------------------------
+
+/**
+ * O que exportar. O JSON é o relatório inteiro, equivalente ao da 3.8; o CSV
+ * é o conjunto filtrado e ordenado de uma aba, sem paginação.
+ */
+export type PedidoExportacaoAfd = { formato: 'json' } | { formato: 'csv'; criterio: CriterioAfd }
+
+/** Arquivo montado no worker, pronto para baixar. */
+export interface ArquivoExportadoAfd {
+  arquivo: Blob
+  nomeArquivo: string
+}
+
 // ---------------------------------------------------------------------------
 // Protocolo do worker
 // ---------------------------------------------------------------------------
@@ -238,6 +257,7 @@ export interface ResultadoConsultaAfd<R extends RegistroConsultavel = RegistroCo
 export type PedidoLeituraAfd =
   | { tipo: 'ler'; token: number; arquivo: File }
   | ({ tipo: 'consultar'; token: number; idConsulta: number } & ConsultaAfd)
+  | ({ tipo: 'exportar'; token: number; idExportacao: number } & PedidoExportacaoAfd)
 
 /** Mensagens do worker; todas carregam o token do pedido que as originou. */
 export type RespostaWorkerAfd =
@@ -245,3 +265,5 @@ export type RespostaWorkerAfd =
   | { token: number; tipo: 'pronto'; resumo: ResumoAfd }
   | { token: number; tipo: 'erro'; mensagem: string }
   | ({ token: number; tipo: 'resultado'; idConsulta: number } & ResultadoConsultaAfd)
+  | ({ token: number; tipo: 'exportado'; idExportacao: number } & ArquivoExportadoAfd)
+  | { token: number; tipo: 'erroExportacao'; idExportacao: number; mensagem: string }
