@@ -1,6 +1,12 @@
+/*
+ * Sem altura fixa: dentro de um pai flex em coluna, ocupa o espaço que sobra e
+ * rola sozinha. O piso de 132px (cabeçalho e duas linhas) evita que a tabela
+ * suma em janela baixa; abaixo disso quem rola é a ilha.
+ */
 .bga-tabela-container {
     border-radius: 4px;
-    max-height: 520px;
+    flex: 1;
+    min-height: 132px;
     overflow: auto;
     width: 100%;
 }
@@ -21,7 +27,7 @@
 
 .bga-tabela th {
     border-bottom: 1px solid var(--outline);
-    color: var(--azul-base);
+    color: var(--tabela-cabecalho-texto);
     font-size: 13px;
     font-weight: var(--sans-bold);
     padding: 12px 16px;
@@ -36,7 +42,7 @@
 }
 
 .bga-tabela tbody tr:hover {
-    background-color: var(--background-2);
+    background-color: var(--linha-hover);
 }
 
 .bga-tabela td.bga-tabela__vazio {

@@ -1,7 +1,10 @@
+/* Ocupa o resto da ilha: só a tabela rola */
 .bga-relogio {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    min-height: 0;
 }
 
 .bga-relogio__titulo {
@@ -13,7 +16,7 @@
 .bga-relogio__carregando,
 .bga-relogio__contador {
     color: var(--corpo-de-texto);
-    margin: 0 0 12px;
+    margin: 0;
 }
 
 .bga-relogio__contador {
@@ -22,15 +25,19 @@
 
 .bga-relogio__erro {
     color: var(--vermelho-red-stop);
-    margin: 0 0 12px;
+    margin: 0;
 }
 
+/* Filtros: faixa interna com fundo próprio */
 .bga-relogio__filtros {
     align-items: flex-end;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 12px;
-    margin-bottom: 16px;
+    padding: 16px;
 }
 
 .bga-relogio__antes {

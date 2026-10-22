@@ -27,7 +27,27 @@ body {
     min-width: 0;
     /* Impede que tabelas ou conteúdos estourem o flexbox */
     height: 100vh;
-    overflow-y: auto;
+    overflow: hidden;
     padding: 24px;
     box-sizing: border-box;
+    background-color: var(--fundo-area);
+    display: flex;
+    flex-direction: column;
+}
+
+/*
+ * Ilha de conteúdo. Cada nível que deve encolher precisa de min-height: 0,
+ * senão o filho em flex adota a altura do conteúdo e a página volta a rolar.
+ * O overflow: auto só entra em ação nas telas sem tabela (coletor, showcase).
+ */
+.bga-dashboard-ilha {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    padding: 24px;
+    background-color: var(--background);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgb(0 0 0 / 10%);
 }

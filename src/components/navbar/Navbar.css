@@ -22,7 +22,7 @@
     width: 100%;
 }
 
-/* A navbar é escura nos dois temas: o texto usa tokens próprios, fixos em claro */
+/* A navbar é azul fixo: o texto usa tokens próprios, fixos em claro */
 .bga-navbar__titulo {
     color: var(--navbar-texto);
 }
@@ -88,7 +88,6 @@
 
 .bga-navbar__item--active {
     background-color: var(--navbar-item-ativo);
-    border-left: 4px solid var(--group-color, transparent);
     font-weight: var(--sans-bold);
 }
 

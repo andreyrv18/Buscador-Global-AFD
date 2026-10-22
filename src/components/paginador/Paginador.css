@@ -1,16 +1,26 @@
+/* Faixa no rodapé da ilha: contagem, navegação e tamanho da página juntos */
 .bga-paginador {
-    align-items: flex-end;
+    align-items: center;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
     display: flex;
+    flex-shrink: 0;
     flex-wrap: wrap;
     gap: 16px;
     justify-content: space-between;
-    margin-top: 12px;
+    padding: 12px 16px;
 }
 
-.bga-paginador__contagem,
-.bga-paginador__pagina {
+.bga-paginador__contagem {
     color: var(--corpo-de-texto);
     font-size: var(--interior-de-campo-de-texto);
+}
+
+.bga-paginador__pagina {
+    color: var(--azul-destaque);
+    font-size: var(--subtitulo);
+    font-weight: var(--sans-bold);
 }
 
 .bga-paginador__navegacao {

@@ -28,13 +28,13 @@ export const Paginador = ({ paginacao, total, id }: PaginadorProps) => {
                 {total.toLocaleString("pt-BR")} registros
             </span>
             <div className="bga-paginador__navegacao">
-                <Button size="small" disabled={pagina <= 1} onClick={() => irPara(pagina - 1)}>
+                <Button size="small" variant="filled" disabled={pagina <= 1} onClick={() => irPara(pagina - 1)}>
                     Anterior
                 </Button>
                 <span className="bga-paginador__pagina" aria-live="polite">
                     Página {pagina.toLocaleString("pt-BR")} de {totalPaginas.toLocaleString("pt-BR")}
                 </span>
-                <Button size="small" disabled={pagina >= totalPaginas} onClick={() => irPara(pagina + 1)}>
+                <Button size="small" variant="filled" disabled={pagina >= totalPaginas} onClick={() => irPara(pagina + 1)}>
                     Próxima
                 </Button>
             </div>

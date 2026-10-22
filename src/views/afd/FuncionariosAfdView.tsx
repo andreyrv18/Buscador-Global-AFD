@@ -18,7 +18,7 @@ import "./FuncionariosAfdView.css";
 
 const OPERACOES: readonly OperacaoEmpregado[] = ["I", "A", "E"];
 
-/** Modificador BEM de cada operação, usado na linha e no card. */
+/** Modificador BEM de cada operação, usado na célula da coluna Operação e no card. */
 const MODIFICADOR_OPERACAO: Record<OperacaoEmpregado, string> = {
     I: "inclusao",
     A: "alteracao",
@@ -28,7 +28,17 @@ const MODIFICADOR_OPERACAO: Record<OperacaoEmpregado, string> = {
 const COLUNAS: ColunaTabela<RegistroTipo5>[] = [
     { key: "data", titulo: "Data", width: "120px", render: (item) => formatarData(item.dataHora.data) },
     { key: "hora", titulo: "Hora", width: "80px", render: (item) => formatarHora(item.dataHora) },
-    { key: "operacao", titulo: "Operação", width: "120px", render: (item) => DESCRICOES_OPERACOES[item.operacao] },
+    {
+        key: "operacao",
+        titulo: "Operação",
+        width: "120px",
+        // Cor só onde significa: a operação pinta a célula, não a linha inteira.
+        render: (item) => (
+            <span className={`bga-funcionarios-afd__operacao bga-funcionarios-afd__operacao--${MODIFICADOR_OPERACAO[item.operacao]}`}>
+                {DESCRICOES_OPERACOES[item.operacao]}
+            </span>
+        ),
+    },
     { key: "cpfPis", titulo: "CPF/PIS", width: "160px" },
     { key: "nome", titulo: "Colaborador" },
 ];
@@ -79,16 +89,10 @@ export const FuncionariosAfdView = () => {
         return mapa;
     }, [itens]);
 
-    const classeDaLinha = (item: RegistroTipo5) => {
-        const indice = indicePorData.get(item.dataHora.data) ?? 0;
-        return [
-            "bga-funcionarios-afd__linha",
-            indice % 2 === 1 && "bga-funcionarios-afd__linha--zebra",
-            `bga-funcionarios-afd__linha--${MODIFICADOR_OPERACAO[item.operacao]}`,
-        ]
-            .filter(Boolean)
-            .join(" ");
-    };
+    const classeDaLinha = (item: RegistroTipo5) =>
+        (indicePorData.get(item.dataHora.data) ?? 0) % 2 === 1
+            ? "bga-funcionarios-afd__linha bga-funcionarios-afd__linha--zebra"
+            : "bga-funcionarios-afd__linha";
 
     if (status !== "pronto") {
         return (

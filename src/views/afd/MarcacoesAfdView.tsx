@@ -35,7 +35,12 @@ const descreverConexao = (marcacao: Marcacao): string => {
 
 const COLUNAS_BASE: ColunaTabela<Marcacao>[] = [
     { key: "data", titulo: "Data", width: "120px", render: (item) => formatarData(item.dataHora.data) },
-    { key: "hora", titulo: "Hora", width: "80px", render: (item) => formatarHora(item.dataHora) },
+    {
+        key: "hora",
+        titulo: "Hora",
+        width: "80px",
+        render: (item) => <span className="bga-marcacoes-afd__hora">{formatarHora(item.dataHora)}</span>,
+    },
     { key: "nsr", titulo: "NSR", width: "120px" },
     { key: "cpfPis", titulo: "CPF/PIS", width: "160px" },
     { key: "nome", titulo: "Colaborador" },

@@ -1,6 +1,5 @@
 import { useId } from "react";
 import Button from "../../components/button/Button";
-import Card from "../../components/card/Card";
 import Combobox from "../../components/combobox/Combobox";
 import Input from "../../components/input/Input";
 import { Paginador } from "../../components/paginador/Paginador";
@@ -60,7 +59,7 @@ export const RelogioAfdView = () => {
                         : "Selecione um arquivo AFD acima para ver os ajustes do relógio."}
                 </p>
             ) : (
-                <Card>
+                <>
                     <div className="bga-relogio__filtros">
                         <Input
                             id={idData}
@@ -119,7 +118,7 @@ export const RelogioAfdView = () => {
                         keyExtractor={(ajuste) => String(ajuste.linha)}
                     />
                     <Paginador paginacao={paginacao} total={total} />
-                </Card>
+                </>
             )}
         </section>
     );

@@ -156,15 +156,15 @@ Prefixo `bga-` e BEM. Elementos clicáveis como `<button>`, `<label>` ligado ao 
 
 ## Checklist
 
-- [ ] Tokens alterados e acrescentados em `index.css`
-- [ ] `color-scheme: light` e bloco de tema escuro neutralizado
-- [ ] Barra lateral azul, item ativo `#0b5ed7`
-- [ ] Ilha branca sobre `--fundo-area`, uma por aba
-- [ ] Cabeçalho da tabela azul com texto branco
-- [ ] Cor da operação só na coluna, não na linha
-- [ ] Hover da linha em `--linha-hover`
-- [ ] Destaques: código do evento e hora da marcação em azul
-- [ ] Cards de filtro com as cores da 3.8, dimensão da 3.9
-- [ ] Rodapé da paginação como faixa destacada
-- [ ] Layout de tela cheia, só a tabela rolando
-- [ ] Conferir as quatro abas em 1366×768, a resolução mais apertada de uso comum
+- [x] Tokens alterados e acrescentados em `index.css`
+- [x] `color-scheme: light` e bloco de tema escuro neutralizado
+- [x] Barra lateral azul, item ativo `#0b5ed7`
+- [x] Ilha branca sobre `--fundo-area`, uma por aba
+- [x] Cabeçalho da tabela azul com texto branco
+- [x] Cor da operação só na coluna, não na linha
+- [x] Hover da linha em `--linha-hover`
+- [x] Destaques: código do evento e hora da marcação em azul
+- [x] Cards de filtro com as cores da 3.8, dimensão da 3.9
+- [x] Rodapé da paginação como faixa destacada
+- [x] Layout de tela cheia, só a tabela rolando
+- [x] Conferir as quatro abas em 1366×768, a resolução mais apertada de uso comum

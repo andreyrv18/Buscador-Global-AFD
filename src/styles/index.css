@@ -1,6 +1,6 @@
 :root {
     /* Sistema */
-    color-scheme: light dark;
+    color-scheme: light;
     /* Cores Dixi */
     --azul-base: #3379bc;
     --azul-hover: #40a5dd;
@@ -20,21 +20,36 @@
     --azul-ativo: #0b5ed7;
     --divisor-itens: #ffffff1a;
     --hover-itens: #ffffff1c;
-    --background-navbar: #2a2a2a;
-    /* Texto da navbar: a navbar é escura nos dois temas, então o texto fica fixo em claro */
+    --background-navbar: #0d6efd;
+    /* Texto da navbar: a navbar é azul fixo, então o texto fica fixo em claro */
     --navbar-texto: #fff;
     --navbar-texto-secundario: #f9fafa;
-    --navbar-item-ativo: rgb(255 255 255 / 15%);
+    --navbar-item-ativo: #0b5ed7;
+    /* Área de conteúdo: fundo atrás da ilha branca */
+    --fundo-area: #f4f6f9;
+    /* "Página X de Y" e contorno do card "Todas" */
+    --azul-destaque: #004085;
+    /* Faixas internas da ilha: filtros e rodapé da paginação */
+    --faixa-fundo: #f8f9fa;
+    --faixa-borda: #dee2e6;
     /* Cabeçalho da tabela */
-    --tabela-cabecalho: #e9ecef;
+    --tabela-cabecalho: #3379bc;
+    --tabela-cabecalho-texto: #fff;
+    /* Linha da tabela sob o cursor */
+    --linha-hover: #e2eafc;
     /* Fundo das linhas alternadas por dia */
     --tabela-zebra: #f1f5f9;
     /* Texto por operação do Tipo 5 e por lado do ajuste do Tipo 4 */
-    --operacao-inclusao: #1e7d32;
-    --operacao-alteracao: #b45309;
-    --operacao-exclusao: #c62828;
-    --ajuste-antes: #c62828;
-    --ajuste-depois: #1e7d32;
+    --operacao-inclusao: #28a745;
+    --operacao-alteracao: #fd7e14;
+    --operacao-exclusao: #dc3545;
+    --ajuste-antes: #dc3545;
+    --ajuste-depois: #28a745;
+    /* Fundo dos cards de filtro por operação quando ativos */
+    --card-todas-fundo: #e2eafc;
+    --card-inclusao-fundo: #e8f5e9;
+    --card-alteracao-fundo: #fff3e0;
+    --card-exclusao-fundo: #ffebee;
 
     /* CORES ORDENADOR DE FILA */
 
@@ -74,32 +89,37 @@
     }
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --azul-base: #3379bc;
-        --azul-hover: #40a5dd;
-        --azul-leve: #c8e5f4;
-        --background: #121212;
-        --background-2: #1e1e1e;
-        --outline: #2c2c2c;
-        --trancado-ou-explicativo: #5c5c5c;
-        --texto-placeholder: #808080;
-        --titulo-de-campo: #b3b3b3;
-        --corpo-de-texto: #e0e0e0;
-        --tooltip: #2a2a2a;
-        --texto-destaque: #fff;
-        --navbar-texto: #fff;
-        --navbar-texto-secundario: #f9fafa;
-        --navbar-item-ativo: rgb(255 255 255 / 15%);
-        --tabela-cabecalho: #2a2a2a;
-        --tabela-zebra: #1b2026;
-        --operacao-inclusao: #6fcf75;
-        --operacao-alteracao: #f5a524;
-        --operacao-exclusao: #ff6b6b;
-        --ajuste-antes: #ff6b6b;
-        --ajuste-depois: #6fcf75;
-    }
-}
+/*
+ * Tema escuro suspenso: com a barra lateral em azul fixo, o tema escuro do
+ * sistema produzia uma tela híbrida. Os tokens ficam guardados para quando o
+ * assunto voltar (e precisarão dos tokens novos: fundo-area, faixas, cards).
+ *
+ * @media (prefers-color-scheme: dark) {
+ *     :root {
+ *         --azul-base: #3379bc;
+ *         --azul-hover: #40a5dd;
+ *         --azul-leve: #c8e5f4;
+ *         --background: #121212;
+ *         --background-2: #1e1e1e;
+ *         --outline: #2c2c2c;
+ *         --trancado-ou-explicativo: #5c5c5c;
+ *         --texto-placeholder: #808080;
+ *         --titulo-de-campo: #b3b3b3;
+ *         --corpo-de-texto: #e0e0e0;
+ *         --tooltip: #2a2a2a;
+ *         --texto-destaque: #fff;
+ *         --navbar-texto: #fff;
+ *         --navbar-texto-secundario: #f9fafa;
+ *         --tabela-cabecalho: #2a2a2a;
+ *         --tabela-zebra: #1b2026;
+ *         --operacao-inclusao: #6fcf75;
+ *         --operacao-alteracao: #f5a524;
+ *         --operacao-exclusao: #ff6b6b;
+ *         --ajuste-antes: #ff6b6b;
+ *         --ajuste-depois: #6fcf75;
+ *     }
+ * }
+ */
 
 body {
     font-family: "Open Sans", sans-serif;

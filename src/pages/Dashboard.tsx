@@ -18,14 +18,17 @@ export const Dashboard = () => {
             />
 
             <main className="bga-dashboard-content">
-                {/* Fora das abas: o mesmo arquivo alimenta todas as views */}
-                <AreaUploadAfd />
+                {/* Ilha branca: uma por aba, a tela não rola, só o corpo da tabela */}
+                <div className="bga-dashboard-ilha">
+                    {/* Fora das abas: o mesmo arquivo alimenta todas as views */}
+                    <AreaUploadAfd />
 
-                {ActiveViewComponent ? (
-                    <ActiveViewComponent />
-                ) : (
-                    <div>Página em desenvolvimento...</div>
-                )}
+                    {ActiveViewComponent ? (
+                        <ActiveViewComponent />
+                    ) : (
+                        <div>Página em desenvolvimento...</div>
+                    )}
+                </div>
             </main>
         </div>
     );

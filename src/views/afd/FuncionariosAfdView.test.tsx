@@ -137,7 +137,7 @@ describe("FuncionariosAfdView", () => {
         expect(todas).toHaveTextContent("Todas12de 12 no arquivo");
     });
 
-    it("deve alternar a zebra a cada dia e colorir a linha pela operação", async () => {
+    it("deve alternar a zebra a cada dia e colorir só a célula da operação", async () => {
         const { carregar } = renderizarComAfd(<FuncionariosAfdView />);
         await carregar(relatorio);
 
@@ -148,8 +148,9 @@ describe("FuncionariosAfdView", () => {
         expect(dia2b).toHaveClass("bga-funcionarios-afd__linha--zebra");
         expect(dia3a).not.toHaveClass("bga-funcionarios-afd__linha--zebra");
 
-        expect(dia1a).toHaveClass("bga-funcionarios-afd__linha--inclusao");
+        expect(dia1a).not.toHaveClass("bga-funcionarios-afd__linha--inclusao");
+        expect(within(dia1a).getByText("Inclusão")).toHaveClass("bga-funcionarios-afd__operacao--inclusao");
         const linhaAlteracao = linhasDaTabela()[6];
-        expect(linhaAlteracao).toHaveClass("bga-funcionarios-afd__linha--alteracao");
+        expect(within(linhaAlteracao).getByText("Alteração")).toHaveClass("bga-funcionarios-afd__operacao--alteracao");
     });
 });

@@ -1,7 +1,10 @@
+/* Ocupa o resto da ilha: só a tabela rola */
 .bga-funcionarios-afd {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    min-height: 0;
 }
 
 .bga-funcionarios-afd__titulo {
@@ -24,7 +27,7 @@
     margin: 0;
 }
 
-/* Cards de operação */
+/* Cards de operação: neutros em branco, a cor fica no texto e no estado ativo */
 
 .bga-funcionarios-afd__cards {
     display: grid;
@@ -33,25 +36,26 @@
 }
 
 .bga-funcionarios-afd__card {
+    --card-cor: var(--azul-destaque);
+    --card-fundo-ativo: var(--card-todas-fundo);
+
     align-items: flex-start;
     background-color: var(--background);
-    border: 1px solid var(--outline);
-    border-left: 4px solid var(--azul-base);
+    border: 2px solid var(--faixa-borda);
     border-radius: 12px;
-    box-shadow: 0 2px 8px rgb(0 0 0 / 4%);
-    color: var(--corpo-de-texto);
+    color: var(--card-cor);
     cursor: pointer;
     display: flex;
     flex-direction: column;
     font-family: inherit;
     gap: 4px;
-    padding: 16px;
+    padding: 15px;
     text-align: left;
     transition: background-color 0.2s, border-color 0.2s;
 }
 
 .bga-funcionarios-afd__card:hover {
-    background-color: var(--background-2);
+    background-color: var(--faixa-fundo);
 }
 
 .bga-funcionarios-afd__card:focus-visible {
@@ -60,21 +64,24 @@
 }
 
 .bga-funcionarios-afd__card--inclusao {
-    border-left-color: var(--operacao-inclusao);
+    --card-cor: var(--operacao-inclusao);
+    --card-fundo-ativo: var(--card-inclusao-fundo);
 }
 
 .bga-funcionarios-afd__card--alteracao {
-    border-left-color: var(--operacao-alteracao);
+    --card-cor: var(--operacao-alteracao);
+    --card-fundo-ativo: var(--card-alteracao-fundo);
 }
 
 .bga-funcionarios-afd__card--exclusao {
-    border-left-color: var(--operacao-exclusao);
+    --card-cor: var(--operacao-exclusao);
+    --card-fundo-ativo: var(--card-exclusao-fundo);
 }
 
-.bga-funcionarios-afd__card--ativo {
-    background-color: var(--background-2);
-    border-color: var(--azul-base);
-    box-shadow: 0 0 0 1px var(--azul-base);
+.bga-funcionarios-afd__card--ativo,
+.bga-funcionarios-afd__card--ativo:hover {
+    background-color: var(--card-fundo-ativo);
+    border-color: var(--card-cor);
 }
 
 .bga-funcionarios-afd__card-rotulo {
@@ -83,43 +90,54 @@
 }
 
 .bga-funcionarios-afd__card-valor {
-    color: var(--texto-destaque);
     font-size: var(--titulo-de-modal);
     font-weight: var(--sans-bold);
 }
 
 .bga-funcionarios-afd__card-total {
+    color: var(--corpo-de-texto);
     font-size: 12px;
 }
 
-/* Filtros */
+/* Filtros: faixa interna com fundo próprio */
 
 .bga-funcionarios-afd__filtros {
     align-items: flex-end;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
     display: grid;
     gap: 12px;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    /* 140px: os seis controles cabem numa linha em 1366px de largura */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    padding: 16px;
 }
 
 .bga-funcionarios-afd__limpar {
     justify-self: start;
 }
 
-/* Linhas da tabela: zebra por dia e cor por operação */
+/* Linhas da tabela: zebra por dia */
 
 .bga-funcionarios-afd__linha--zebra {
     background-color: var(--tabela-zebra);
 }
 
-tr.bga-funcionarios-afd__linha--inclusao > td {
+/* Coluna Operação: a cor da operação fica só na célula */
+
+.bga-funcionarios-afd__operacao {
+    font-weight: var(--sans-bold);
+}
+
+.bga-funcionarios-afd__operacao--inclusao {
     color: var(--operacao-inclusao);
 }
 
-tr.bga-funcionarios-afd__linha--alteracao > td {
+.bga-funcionarios-afd__operacao--alteracao {
     color: var(--operacao-alteracao);
 }
 
-tr.bga-funcionarios-afd__linha--exclusao > td {
+.bga-funcionarios-afd__operacao--exclusao {
     color: var(--operacao-exclusao);
 }
 

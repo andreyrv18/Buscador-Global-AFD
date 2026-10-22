@@ -3,7 +3,6 @@
 
 import { useId } from "react";
 import Button from "../../components/button/Button";
-import Card from "../../components/card/Card";
 import Combobox from "../../components/combobox/Combobox";
 import Input from "../../components/input/Input";
 import { Paginador } from "../../components/paginador/Paginador";
@@ -28,7 +27,13 @@ const COLUNAS: ColunaTabela<RegistroTipo6>[] = [
         width: "180px",
         render: (evento) => formatarDataHora(evento.dataHora),
     },
-    { key: "codigo", titulo: "Código", width: "100px", align: "center" },
+    {
+        key: "codigo",
+        titulo: "Código",
+        width: "100px",
+        align: "center",
+        render: (evento) => <span className="bga-eventos__codigo">{evento.codigo}</span>,
+    },
     { key: "descricao", titulo: "Descrição" },
 ];
 
@@ -62,55 +67,53 @@ export const EventosAfdView = () => {
                 </p>
             ) : (
                 <>
-                    <Card title="Filtros">
-                        <div className="bga-eventos__filtros">
-                            <Combobox
-                                id={idCodigo}
-                                className="bga-eventos__filtro bga-eventos__filtro--codigo"
-                                label="Código do evento"
-                                placeholder="Todos os eventos"
-                                options={OPCOES_CODIGO}
-                                value={filtros.codigoEvento}
-                                onChange={filtros.mudarCodigoEvento}
-                            />
-                            <Input
-                                id={idData}
-                                className="bga-eventos__filtro"
-                                type="date"
-                                label="Data"
-                                value={filtros.campos.data}
-                                onChange={(evento) => filtros.mudarData(evento.target.value)}
-                            />
-                            <Combobox
-                                id={idOrdem}
-                                className="bga-eventos__filtro"
-                                label={ROTULO_ORDEM}
-                                limpavel={false}
-                                options={OPCOES_ORDEM}
-                                value={filtros.ordem}
-                                onChange={(valor) => {
-                                    if (ehDirecaoOrdem(valor)) filtros.mudarOrdem(valor);
-                                }}
-                            />
-                            <Button
-                                type="button"
-                                size="small"
-                                className="bga-eventos__limpar"
-                                disabled={!temFiltro}
-                                onClick={filtros.limpar}
-                            >
-                                Limpar filtros
-                            </Button>
-                            <Button
-                                size="small"
-                                variant="filled"
-                                disabled={exportando || total === 0}
-                                onClick={exportarCsv}
-                            >
-                                {exportando ? "Exportando…" : "Exportar CSV"}
-                            </Button>
-                        </div>
-                    </Card>
+                    <div className="bga-eventos__filtros" role="group" aria-label="Filtros">
+                        <Combobox
+                            id={idCodigo}
+                            className="bga-eventos__filtro bga-eventos__filtro--codigo"
+                            label="Código do evento"
+                            placeholder="Todos os eventos"
+                            options={OPCOES_CODIGO}
+                            value={filtros.codigoEvento}
+                            onChange={filtros.mudarCodigoEvento}
+                        />
+                        <Input
+                            id={idData}
+                            className="bga-eventos__filtro"
+                            type="date"
+                            label="Data"
+                            value={filtros.campos.data}
+                            onChange={(evento) => filtros.mudarData(evento.target.value)}
+                        />
+                        <Combobox
+                            id={idOrdem}
+                            className="bga-eventos__filtro"
+                            label={ROTULO_ORDEM}
+                            limpavel={false}
+                            options={OPCOES_ORDEM}
+                            value={filtros.ordem}
+                            onChange={(valor) => {
+                                if (ehDirecaoOrdem(valor)) filtros.mudarOrdem(valor);
+                            }}
+                        />
+                        <Button
+                            type="button"
+                            size="small"
+                            className="bga-eventos__limpar"
+                            disabled={!temFiltro}
+                            onClick={filtros.limpar}
+                        >
+                            Limpar filtros
+                        </Button>
+                        <Button
+                            size="small"
+                            variant="filled"
+                            disabled={exportando || total === 0}
+                            onClick={exportarCsv}
+                        >
+                            {exportando ? "Exportando…" : "Exportar CSV"}
+                        </Button>
+                    </div>
 
                     <p className="bga-eventos__contador" aria-live="polite">
                         <strong>{formatarNumero(total)}</strong>{" "}

@@ -1,10 +1,12 @@
+/* Compacta de propósito: a tela não rola, então cada pixel aqui sai da tabela */
 .bga-upload-afd {
     border-bottom: 1px solid var(--outline);
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     gap: 12px;
-    margin-bottom: 24px;
-    padding-bottom: 24px;
+    margin-bottom: 12px;
+    padding-bottom: 12px;
 }
 
 .bga-upload-afd__titulo {
@@ -17,7 +19,14 @@
 .bga-upload-afd__descricao {
     color: var(--corpo-de-texto);
     font-size: var(--interior-de-campo-de-texto);
-    margin: 0;
+    margin: 2px 0 0;
+}
+
+.bga-upload-afd__controles {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 24px;
 }
 
 .bga-upload-afd__status {

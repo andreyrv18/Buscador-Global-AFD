@@ -1,7 +1,10 @@
+/* Ocupa o resto da ilha: só a tabela rola */
 .bga-eventos {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    min-height: 0;
 }
 
 .bga-eventos__titulo {
@@ -28,11 +31,16 @@
     text-align: center;
 }
 
+/* Filtros: faixa interna com fundo próprio */
 .bga-eventos__filtros {
     align-items: flex-end;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
     display: flex;
     flex-wrap: wrap;
     gap: 16px;
+    padding: 16px;
 }
 
 .bga-eventos__filtro {
@@ -52,6 +60,11 @@
 
 .bga-eventos__contador strong {
     color: var(--texto-destaque);
+    font-weight: var(--sans-bold);
+}
+
+.bga-eventos__codigo {
+    color: var(--azul-base);
     font-weight: var(--sans-bold);
 }
 

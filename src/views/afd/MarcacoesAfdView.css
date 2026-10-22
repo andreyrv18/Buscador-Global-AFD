@@ -1,7 +1,10 @@
+/* Ocupa o resto da ilha: só a tabela rola */
 .bga-marcacoes-afd {
     display: flex;
+    flex: 1;
     flex-direction: column;
-    gap: 16px;
+    gap: 12px;
+    min-height: 0;
 }
 
 .bga-marcacoes-afd__titulo {
@@ -25,19 +28,33 @@
     margin: 0;
 }
 
+/* Filtros: faixa interna com fundo próprio */
 .bga-marcacoes-afd__filtros {
     align-items: flex-end;
+    background-color: var(--faixa-fundo);
+    border: 1px solid var(--faixa-borda);
+    border-radius: 8px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    /* 140px: os quatro campos e os dois botões cabem numa linha em 1366px */
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 12px;
+    padding: 16px;
 }
 
+/* Dois botões: ocupa duas colunas para o texto não quebrar */
 .bga-marcacoes-afd__limpar {
     display: flex;
     align-items: flex-end;
+    gap: 12px;
+    grid-column: span 2;
 }
 
 /* Zebra por dia: alterna a cada mudança de data dentro da página */
 .bga-marcacoes-afd__linha--zebra {
     background-color: var(--tabela-zebra);
+}
+
+.bga-marcacoes-afd__hora {
+    color: var(--azul-base);
+    font-weight: var(--sans-semibold);
 }
