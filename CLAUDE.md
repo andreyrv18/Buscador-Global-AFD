@@ -165,14 +165,18 @@ As posições completas de cada tipo de registro estão em `PLANO-DE-ACAO.md`, s
 
 | Parte | Quando subir |
 |---|---|
-| MAJOR | mudança que quebra o fluxo do usuário ou remove funcionalidade |
-| MINOR | funcionalidade nova compatível (nova aba, novo filtro, suporte a outro leiaute) |
+| MAJOR | mudança que quebra o fluxo do usuário ou remove funcionalidade que ele realmente usava |
+| MINOR | funcionalidade nova compatível (nova aba, novo filtro, suporte a outro leiaute) **ou redesenho visual sem funcionalidade nova** |
 | PATCH | correção de bug, sem funcionalidade nova |
 
+- **A versão só muda quando publica.** Ela descreve o que o usuário recebe, não o que foi feito. Enquanto o pacote não vai para a loja, o número fica parado, por mais etapas que o desenvolvimento tenha. Subir a cada etapa cria uma fila de versões que nunca existiram para ninguém.
+- A tag do git segue a mesma regra: marque só o commit que virar o pacote enviado. Tag de versão não publicada pode ser refeita à vontade; depois de publicada, fica congelada.
 - A versão vive no `package.json`; o `manifest.config.ts` a consome. **Altere só o `package.json`.**
 - **Nunca publique versão menor que a da loja.** A Chrome Web Store recusa.
 - O campo `version` do manifest aceita de 1 a 4 números separados por ponto. **Sufixo de pré-lançamento do SemVer não é válido ali** — `3.9.0-rc.1` quebra. Para rótulo de pré-lançamento use `version_name`, que aceita texto livre.
+- O Chrome compara cada trecho como número inteiro, não como texto: 3.10.0 é maior que 3.9.0.
 - Correção de bug de parsing é PATCH, mesmo mudando número de laudo: o comportamento anterior estava errado.
+- Remover algo que só existe em código ainda não publicado não é remoção, e não leva a MAJOR.
 
 ### Commits
 
